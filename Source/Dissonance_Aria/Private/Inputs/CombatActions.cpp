@@ -42,4 +42,11 @@ UActivateSkills::UActivateSkills()
 		<UInputTriggerHoldAndRelease>(TEXT("HoldAndRelease"));
 	Triggers.Add(trigger);
 }
+
+USwitchEnemy::USwitchEnemy()
+{
+	UInputTriggerPressed* trigger = CreateDefaultSubobject
+		<UInputTriggerPressed>(TEXT("PressedTrigger"));
+	Triggers.Add(trigger);
+}
 //Start assign triggers to Input Actions

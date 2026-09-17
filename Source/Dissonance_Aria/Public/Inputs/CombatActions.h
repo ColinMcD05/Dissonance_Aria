@@ -55,4 +55,12 @@ class DISSONANCE_ARIA_API UActivateSkills : public UInputAction
 public:
 	UActivateSkills();
 };
+
+UCLASS()
+class DISSONANCE_ARIA_API USwitchEnemy : public UInputAction
+{
+	GENERATED_BODY()
+public:
+	USwitchEnemy();
+};
 //End Create Input actions
