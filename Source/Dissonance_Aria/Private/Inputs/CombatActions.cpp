@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "InputActions/CombatActions.h"
+#include "Inputs/CombatActions.h"
 #include "InputTriggers.h"
 
+//Start assign triggers to Input Actions
 ULightAttack::ULightAttack()
 {
 	UInputTriggerPressed* trigger = CreateDefaultSubobject<UInputTriggerPressed>(TEXT("PressedTrigger"));
@@ -41,3 +42,4 @@ UActivateSkills::UActivateSkills()
 		<UInputTriggerHoldAndRelease>(TEXT("HoldAndRelease"));
 	Triggers.Add(trigger);
 }
+//Start assign triggers to Input Actions

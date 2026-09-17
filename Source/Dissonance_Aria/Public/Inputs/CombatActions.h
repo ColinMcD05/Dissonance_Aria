@@ -6,9 +6,7 @@
 #include "InputAction.h"
 #include "CombatActions.generated.h"
 
-/**
- * 
- */
+//Start Create Input actions
 UCLASS()
 class DISSONANCE_ARIA_API ULightAttack : public UInputAction
 {
@@ -57,3 +55,4 @@ class DISSONANCE_ARIA_API UActivateSkills : public UInputAction
 public:
 	UActivateSkills();
 };
+//End Create Input actions
