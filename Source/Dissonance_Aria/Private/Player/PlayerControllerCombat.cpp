@@ -4,14 +4,14 @@
 #include "Player/PlayerControllerCombat.h"
 #include "EnhancedInputSubsystems.h"
 
-void APlayerController::BeginPlay()
+void APlayerControllerCombat::BeginPlay()
 {
+	Super::BeginPlay();
+	SetUpController();
 
 }
 
 void APlayerControllerCombat::SetUpController()
 {
-	APlayerController* playerController = Cast<APlayerController>(GetController());
-
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer());
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(this->GetLocalPlayer());
 }

@@ -34,4 +34,13 @@ public:
 
 	//Set mappings to Input Action
 	void SetMappings(UInputAction* action, const TArray<FKey> keys);
+
+	void SetMappings(UInputAction* action, const TMap<FKey, TArray<UInputModifier*>>& keys);
 };
+
+
+template<typename T>
+T* UBasicPlayerMapping::SetUpAction(FName name)
+{
+	return CreateDefaultSubobject<T>(name);
+}

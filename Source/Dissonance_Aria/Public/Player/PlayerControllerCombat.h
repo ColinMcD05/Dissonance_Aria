@@ -17,4 +17,9 @@ class DISSONANCE_ARIA_API APlayerControllerCombat : public APlayerController
 
 private:
 	void SetUpController();
+
+protected:
+	virtual void BeginPlay() override;
+
+public:
 };

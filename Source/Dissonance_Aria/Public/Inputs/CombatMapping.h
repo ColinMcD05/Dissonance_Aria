@@ -38,11 +38,4 @@ private:
 
 public:
 	UCombatMapping();
-
-	//Initialize a new Input Action
-	template<typename T>
-	T* SetUpAction(FName name);
-
-	//Set mappings to Input Action
-	void SetMappings(UInputAction* action, const TArray<FKey> keys);
 };

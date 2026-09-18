@@ -5,7 +5,6 @@
 
 UMovement::UMovement()
 {
-	
 }
 
 UJump::UJump()
