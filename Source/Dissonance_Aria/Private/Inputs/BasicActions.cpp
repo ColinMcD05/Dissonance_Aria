@@ -5,6 +5,7 @@
 
 UMovement::UMovement()
 {
+	ValueType = EInputActionValueType::Axis2D;
 }
 
 UJump::UJump()

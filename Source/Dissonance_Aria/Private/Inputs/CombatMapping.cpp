@@ -9,44 +9,75 @@ UCombatMapping::UCombatMapping()
 	//Start setting up input actions and create default mappiings
 	if (!lightAttack) 
 	{
-		lightAttack = Super::SetUpAction<ULightAttack>("LightAttack");
+		lightAttack = SetUpAction<ULightAttack>("LightAttack");
 	}
 
-	Super::SetMappings(lightAttack, {EKeys::LeftMouseButton, EKeys::Gamepad_FaceButton_Left });
+	SetMappings(lightAttack, {EKeys::LeftMouseButton, EKeys::Gamepad_FaceButton_Left });
 	
 	
 	if (!heavyAttack)
 	{
-		heavyAttack = Super::SetUpAction<UHeavyAttack>("HeavyAttack");
+		heavyAttack = SetUpAction<UHeavyAttack>("HeavyAttack");
 	}
 	
-	Super::SetMappings(heavyAttack, { EKeys::RightMouseButton, EKeys::Gamepad_FaceButton_Top });
+	SetMappings(heavyAttack, { EKeys::RightMouseButton, EKeys::Gamepad_FaceButton_Top });
 
 	if (!sideStep)
 	{
-		sideStep = Super::SetUpAction<USidestep>("Sidestep");
+		sideStep = SetUpAction<USidestep>("Sidestep");
 	}
 
-	Super::SetMappings(sideStep, { EKeys::F, EKeys::Gamepad_FaceButton_Right });
+	SetMappings(sideStep, { EKeys::F, EKeys::Gamepad_FaceButton_Right });
 
 	if (!changeWeapon)
 	{
-		changeWeapon = Super::SetUpAction<UChangeWeapon>("ChangeWeapon");
+		changeWeapon = SetUpAction<UChangeWeapon>("ChangeWeapon");
 	}
 
 	SetMappings(changeWeapon, { EKeys::C, EKeys::Gamepad_DPad_Down });
 
 	if (!activateChangeTuning)
 	{
-		activateChangeTuning = Super::SetUpAction<UActivateChangeTuning>("ActivateChangeTuning");
+		activateChangeTuning = SetUpAction<UActivateChangeTuning>("ActivateChangeTuning");
 	}
 
-	Super::SetMappings(activateChangeTuning, { EKeys::T, EKeys::Gamepad_RightShoulder });
+	SetMappings(activateChangeTuning, { EKeys::T, EKeys::Gamepad_RightShoulder });
 
 	if (!activateSkills)
 	{
-		activateSkills = Super::SetUpAction<UActivateSkills>("ActivateSkills");
+		activateSkills = SetUpAction<UActivateSkills>("ActivateSkills");
 	}
 
-	Super::SetMappings(activateSkills, { EKeys::Q, EKeys::Gamepad_LeftShoulder });
+	SetMappings(activateSkills, { EKeys::Q, EKeys::Gamepad_LeftShoulder });
+}
+
+template<typename T>
+T* UCombatMapping::SetUpAction(FName name)
+{
+	return CreateDefaultSubobject<T>(name);
+}
+
+//Set mappings to Input Action
+void UCombatMapping::SetMappings(UInputAction* action, const TArray<FKey> keys)
+{
+	for (FKey key : keys)
+	{
+		MapKey(action, key);
+	}
+}
+
+void UCombatMapping::SetMappings(UInputAction* action, const TMap<FKey, TArray<UInputModifier*>>& keys)
+{
+	for (const TPair<FKey, TArray<UInputModifier*>> pair : keys)
+	{
+		FEnhancedActionKeyMapping& mapping = MapKey(action, pair.Key);
+
+		for (UInputModifier* modifier : pair.Value)
+		{
+			if (modifier)
+			{
+				mapping.Modifiers.Add(modifier);
+			}
+		}
+	}
 }

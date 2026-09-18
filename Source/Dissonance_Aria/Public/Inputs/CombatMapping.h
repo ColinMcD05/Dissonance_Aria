@@ -5,14 +5,13 @@
 #include "CoreMinimal.h"
 #include "CombatActions.h"
 #include "InputMappingContext.h"
-#include "BasicPlayerMapping.h"
 #include "CombatMapping.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class DISSONANCE_ARIA_API UCombatMapping : public UBasicPlayerMapping
+class DISSONANCE_ARIA_API UCombatMapping : public UInputMappingContext
 {
 	GENERATED_BODY()
 
@@ -38,4 +37,13 @@ private:
 
 public:
 	UCombatMapping();
+
+	//Initialize a new Input Action
+	template<typename T>
+	T* SetUpAction(FName name);
+
+	//Set mappings to Input Action
+	void SetMappings(UInputAction* action, const TArray<FKey> keys);
+
+	void SetMappings(UInputAction* action, const TMap<FKey, TArray<UInputModifier*>>& keys);
 };
