@@ -21,18 +21,6 @@ private:
 	UPROPERTY()
 	bool isDead = false;
 
-	UPROPERTY(EditAnywhere, Category = "Genre")
-	EGenre favoriteGenre = EGenre::None;
-
-	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
-	float damagePercentageLost;
-
-	UPROPERTY(EditAnywhere, Category = "Genre")
-	EGenre hatedGenre = EGenre::None;
-
-	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
-	float damagePercentageGained;
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
