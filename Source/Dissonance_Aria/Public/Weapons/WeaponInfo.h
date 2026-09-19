@@ -18,7 +18,7 @@ enum class EWeaponType : uint8
 
 //Struct to hold all the experience
 USTRUCT(BlueprintType)
-struct FExperience
+struct FS_Experience
 {
 	GENERATED_BODY();
 public:
@@ -32,14 +32,11 @@ public:
 
 
 USTRUCT(BlueprintType)
-struct FTuning
+struct FS_Tuning
 {
 	GENERATED_BODY();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	int level;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	int maxHP;
 
@@ -53,12 +50,12 @@ public:
 	float sidestepDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
-	EGenre genre;
+	ESubGenre subGenre;
 };
 
 //Struct for all important weapon info. This is what weapons reference
 USTRUCT(BlueprintType)
-struct FWeaponInfo
+struct FS_WeaponInfo
 {
 	GENERATED_BODY();
 public:
@@ -82,11 +79,11 @@ public:
 	EWeaponType weaponType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	FExperience exp;
+	FS_Experience exp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
 	EGenre genre;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	TArray<FTuning> tunings;
+	TArray<FS_Tuning> tunings;
 };

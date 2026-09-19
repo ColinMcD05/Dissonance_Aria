@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "DamageSystem/DamageInfo.h"
+#include "Music/MusicInfo.h"
 #include "DamageSystemComponent.generated.h"
 
 
@@ -20,13 +21,28 @@ private:
 	UPROPERTY()
 	bool isDead = false;
 
+	UPROPERTY(EditAnywhere, Category = "Genre")
+	EGenre favoriteGenre = EGenre::None;
+
+	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float favortieResistance;
+
+	UPROPERTY(EditAnywhere, Category = "Genre")
+	EGenre hatedGenre = EGenre::None;
+
+	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float hatedBonus;
+
+	UPROPERTY(EditAnywhere, Category = "Stats", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float defense;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float maxHealth = 100;
 
 	// Sets default values for this component's properties
@@ -36,7 +52,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-	bool HandleIncomingDamage(FDamageInfo& damageInfo);
+	bool HandleIncomingDamage(FS_DamageInfo& damageInfo);
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void HandleIncomingHeal(float healAmount, AActor* healer);
