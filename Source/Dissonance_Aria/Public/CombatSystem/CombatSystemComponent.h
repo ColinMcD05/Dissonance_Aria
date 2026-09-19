@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "DamageSystem/DamageInfo.h"
 #include "CombatSystemComponent.generated.h"
 
 
@@ -24,5 +25,5 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	void DealDamage(AActor*& enemyHit, FS_DamageInfo* damageInfo);
 };

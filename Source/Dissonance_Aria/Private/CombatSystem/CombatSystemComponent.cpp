@@ -32,3 +32,7 @@ void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+void UCombatSystemComponent::DealDamage(AActor*& enemyHit, FS_DamageInfo* damageInfo)
+{
+
+}

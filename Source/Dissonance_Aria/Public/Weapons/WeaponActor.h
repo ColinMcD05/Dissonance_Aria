@@ -7,10 +7,13 @@
 #include "Weapons/WeaponInfo.h"
 #include "Components/CapsuleComponent.h"
 #include "DamageSystem/DamageableInterface.h"
+#include "CombatSystem/CanAttackInterface.h"
 #include "WeaponActor.generated.h"
 
+class APlayerCharacterCombat;
+
 UCLASS()
-class DISSONANCE_ARIA_API AWeaponActor : public AActor
+class DISSONANCE_ARIA_API AWeaponActor : public AActor, public ICanAttackInterface
 {
 	GENERATED_BODY()
 	
@@ -23,7 +26,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
 	int currentTuning;
-	
+
+	UPROPERTY(VisibleAnywhere, Category = "Player")
+	APlayerCharacterCombat* playerOwner;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -31,14 +37,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponData")
 	FS_WeaponInfo weaponInfo;
 
-public:	
+public:
+
 	AWeaponActor();
+
+	AWeaponActor(APlayerCharacterCombat* player);
+
+	//Interface Functions
+	virtual bool HitActor_Implementation(AActor* hitEnemy) override;
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Hit")
-	bool HitEnemy(AActor* hitEnemy);
+	void OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
-	FS_WeaponInfo* GetWeaponInfo() { return &weaponInfo; }
+	UFUNCTION(BlueprintCallable, Category = "WeaponData")
+	FS_WeaponInfo GetWeaponInfo() { return weaponInfo; }
 };

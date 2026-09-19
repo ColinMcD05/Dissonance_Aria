@@ -1,9 +1,16 @@
 
 
 #include "Weapons/WeaponActor.h"
+#include "Player/PlayerCharacterCombat.h"
 
 // Sets default values
 AWeaponActor::AWeaponActor()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = false;
+}
+
+AWeaponActor::AWeaponActor(APlayerCharacterCombat* player)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -17,8 +24,9 @@ AWeaponActor::AWeaponActor()
 	//Setup Capsule
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
 	capsuleComponent->SetupAttachment(weaponMesh);
-	
-	
+	capsuleComponent->SetGenerateOverlapEvents(true);
+
+	playerOwner = player;
 }
 
 // Called when the game starts or when spawned
@@ -35,7 +43,13 @@ void AWeaponActor::Tick(float DeltaTime)
 
 }
 
-bool AWeaponActor::HitEnemy_Implementation(AActor* enemyHit)
+void AWeaponActor::OnPickupOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
+{
+	HitActor(otherActor);
+}
+
+bool AWeaponActor::HitActor_Implementation(AActor* enemyHit)
 {
 	IDamageableInterface* enemy = Cast<IDamageableInterface>(enemyHit);
 
@@ -56,7 +70,7 @@ bool AWeaponActor::HitEnemy_Implementation(AActor* enemyHit)
 		damageInfo->damageAmount = weaponInfo.damage;
 	}
 	
-	enemy->Execute_TakeDamage(Cast<UObject>(enemy), *damageInfo);
+	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
 
 	free(damageInfo);
 

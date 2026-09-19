@@ -9,6 +9,13 @@ APlayerCharacterCombat::APlayerCharacterCombat()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//Setup Components
+	//Setup Combat System
+	combatSystem = CreateDefaultSubobject<UCombatSystemComponent>(TEXT("CombatSystem"));
+
+	//Setup Weapons and weapons system
+	weaponsSystem = CreateDefaultSubobject<UWeaponsSystemComponent>(TEXT("WeaponsSystem"));
+
 }
 
 // Called when the game starts or when spawned

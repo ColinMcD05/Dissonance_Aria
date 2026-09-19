@@ -22,13 +22,13 @@ private:
 	bool isDead = false;
 
 	UPROPERTY(EditAnywhere, Category = "Genre")
-	EGenre favoriteGenre = EGenre::None;
+	E_Genre favoriteGenre = E_Genre::None;
 
 	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 	float favortieResistance;
 
 	UPROPERTY(EditAnywhere, Category = "Genre")
-	EGenre hatedGenre = EGenre::None;
+	E_Genre hatedGenre = E_Genre::None;
 
 	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 	float hatedBonus;

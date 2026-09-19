@@ -7,7 +7,7 @@
 
 //Damage Response type
 UENUM(BlueprintType)
-enum class EDamageResponse : uint8
+enum class E_DamageResponse : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Stun  UMETA(DisplayName = "Stun"),
@@ -33,8 +33,8 @@ public:
 	bool canInterrupt = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-	EGenre genreAttack = EGenre::None;
+	E_Genre genreAttack = E_Genre::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-	EDamageResponse damageResponse = EDamageResponse::None;
+	E_DamageResponse damageResponse = E_DamageResponse::None;
 };
