@@ -8,11 +8,13 @@
 UENUM(BlueprintType)
 enum class EGenre : uint8
 {
+	None UMETA(DisplayName = "None"),
 	Metal UMETA(DisplayName = "Metal"),
 	Heavy UMETA(DisplayName = "Heavy"),
 	Gothic UMETA(DisplayName = "Gothic"),
 	Classical UMETA(DisplayName = "Orchestral"),
-	Concerto UMETA(DisplayName = "Concerto")
+	Brass UMETA(DisplayName = "Brass"),
+	Choral UMETA(DisplayName = "Choral")
 };
 
 USTRUCT(BlueprintType)
