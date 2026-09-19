@@ -25,13 +25,13 @@ private:
 	EGenre favoriteGenre = EGenre::None;
 
 	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
-	float damagePercentageLost;
+	float favortieResistance;
 
 	UPROPERTY(EditAnywhere, Category = "Genre")
 	EGenre hatedGenre = EGenre::None;
 
 	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
-	float damagePercentageGained;
+	float hatedBonus;
 
 	UPROPERTY(EditAnywhere, Category = "Stats", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 	float defense;

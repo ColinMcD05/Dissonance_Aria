@@ -50,7 +50,7 @@ public:
 	float sidestepDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
-	EGenre genre;
+	ESubGenre genre;
 };
 
 //Struct for all important weapon info. This is what weapons reference

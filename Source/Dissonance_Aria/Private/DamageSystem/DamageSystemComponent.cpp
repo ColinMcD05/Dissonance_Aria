@@ -41,14 +41,17 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo& damageInfo)
 
 	float damageTaken = damageInfo.damageAmount;
 
-	if (damageInfo.genreAttack == favoriteGenre)
+	if (damageInfo.genreAttack != EGenre::None)
 	{
-		damageTaken *= damagePercentageLost;
-	}
+		if (damageInfo.genreAttack == favoriteGenre)
+		{
+			damageTaken -= damageTaken * favortieResistance;
+		}
 
-	if (damageInfo.genreAttack == hatedGenre)
-	{
-		damageTaken *= damagePercentageGained;
+		if (damageInfo.genreAttack == hatedGenre)
+		{
+			damageTaken *= hatedBonus;
+		}
 	}
 
 	currentHealth = FMath::Clamp(currentHealth - damageTaken, 0.0f, maxHealth);
