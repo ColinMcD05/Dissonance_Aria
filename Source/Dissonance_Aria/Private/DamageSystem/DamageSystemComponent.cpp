@@ -10,7 +10,7 @@ UDamageSystemComponent::UDamageSystemComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	damagePercentageGained += 1;
+	hatedBonus += 1;
 }
 
 
