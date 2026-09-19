@@ -41,7 +41,7 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo& damageInfo)
 
 	float damageTaken = damageInfo.damageAmount;
 
-	if (damageInfo.genreAttack != EGenre::None)
+	if (damageInfo.genreAttack != E_Genre::None)
 	{
 		if (damageInfo.genreAttack == favoriteGenre)
 		{

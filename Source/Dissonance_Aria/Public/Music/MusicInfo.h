@@ -6,7 +6,7 @@
 #include "MusicInfo.generated.h"
 
 UENUM(BlueprintType)
-enum class EGenre : uint8
+enum class E_Genre : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Metal UMETA(DisplayName = "Metal"),
@@ -15,7 +15,7 @@ enum class EGenre : uint8
 };
 
 UENUM(BlueprintType)
-enum class ESubGenre : uint8
+enum class E_SubGenre : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Heavy UMETA(DisplayName = "Heavy"),
@@ -40,5 +40,5 @@ public:
 	int bpm;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song")
-	EGenre genre;
+	E_Genre genre;
 };

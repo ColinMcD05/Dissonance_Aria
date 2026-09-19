@@ -8,7 +8,7 @@
 
 //Enumerator for each weapon type
 UENUM(BlueprintType)
-enum class EWeaponType : uint8
+enum class E_WeaponType : uint8
 {
 	Dagger UMETA(DisplayName = "Dagger"),
 	Sword UMETA(DisplayName = "Sword"),
@@ -50,7 +50,7 @@ public:
 	float sidestepDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
-	ESubGenre subGenre;
+	E_SubGenre subGenre;
 };
 
 //Struct for all important weapon info. This is what weapons reference
@@ -76,13 +76,13 @@ public:
 	float sidestepDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-	EWeaponType weaponType;
+	E_WeaponType weaponType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	FS_Experience exp;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-	EGenre genre;
+	E_Genre genre;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	TArray<FS_Tuning> tunings;
