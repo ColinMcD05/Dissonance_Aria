@@ -21,13 +21,28 @@ private:
 	UPROPERTY()
 	bool isDead = false;
 
+	UPROPERTY(EditAnywhere, Category = "Genre")
+	EGenre favoriteGenre = EGenre::None;
+
+	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float damagePercentageLost;
+
+	UPROPERTY(EditAnywhere, Category = "Genre")
+	EGenre hatedGenre = EGenre::None;
+
+	UPROPERTY(EditAnywhere, Category = "Genre", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float damagePercentageGained;
+
+	UPROPERTY(EditAnywhere, Category = "Stats", meta = (ClampMin = "0.0", ClampMax = "1.0"))
+	float defense;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
 	float maxHealth = 100;
 
 	// Sets default values for this component's properties
