@@ -17,7 +17,7 @@ enum class EDamageResponse : uint8
 
 //Information on type of damage
 USTRUCT(BlueprintType)
-struct FDamageInfo
+struct FS_DamageInfo
 {
 	GENERATED_BODY()
 

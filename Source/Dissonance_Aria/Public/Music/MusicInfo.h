@@ -10,15 +10,22 @@ enum class EGenre : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Metal UMETA(DisplayName = "Metal"),
+	Classical UMETA(DisplayName = "Orchestral"),
+
+};
+
+UENUM(BlueprintType)
+enum class ESubGenre : uint8
+{
+	None UMETA(DisplayName = "None"),
 	Heavy UMETA(DisplayName = "Heavy"),
 	Gothic UMETA(DisplayName = "Gothic"),
-	Classical UMETA(DisplayName = "Orchestral"),
 	Brass UMETA(DisplayName = "Brass"),
 	Choral UMETA(DisplayName = "Choral")
 };
 
 USTRUCT(BlueprintType)
-struct FSongInfo
+struct FS_SongInfo
 {
 	GENERATED_BODY();
 

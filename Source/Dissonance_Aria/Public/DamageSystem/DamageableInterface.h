@@ -36,8 +36,8 @@ public:
 	void Heal(float HealAmount, AActor* Healer);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
-	bool TakeDamage(FDamageInfo DamageInfo);
+	bool TakeDamage(FS_DamageInfo DamageInfo);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
-	bool HandleDeath();
+	void HandleDeath(AActor* killer);
 };

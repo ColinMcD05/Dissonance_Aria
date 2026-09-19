@@ -10,7 +10,7 @@ UDamageSystemComponent::UDamageSystemComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	damagePercentageGained += 1;
 }
 
 
@@ -32,14 +32,26 @@ void UDamageSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-bool UDamageSystemComponent::HandleIncomingDamage(FDamageInfo& damageInfo)
+bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo& damageInfo)
 {
 	if (isDead)
 	{
 		return false;
 	}
 
-	currentHealth = FMath::Clamp(currentHealth - damageInfo.damageAmount, 0.0f, maxHealth);
+	float damageTaken = damageInfo.damageAmount;
+
+	if (damageInfo.genreAttack == favoriteGenre)
+	{
+		damageTaken *= damagePercentageLost;
+	}
+
+	if (damageInfo.genreAttack == hatedGenre)
+	{
+		damageTaken *= damagePercentageGained;
+	}
+
+	currentHealth = FMath::Clamp(currentHealth - damageTaken, 0.0f, maxHealth);
 	return true;
 }
 
