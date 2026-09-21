@@ -2,6 +2,7 @@
 
 
 #include "CombatSystem/CombatSystemComponent.h"
+#include "Player/PlayerCharacterCombat.h"
 
 // Sets default values for this component's properties
 UCombatSystemComponent::UCombatSystemComponent()
@@ -9,7 +10,6 @@ UCombatSystemComponent::UCombatSystemComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
 	// ...
 }
 
@@ -30,6 +30,11 @@ void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void UCombatSystemComponent::AddToCombatQueue(UCombatActionBase& action)
+{
+	combatQueue.Enqueue(action.combatActionType);
 }
 
 void UCombatSystemComponent::DealDamage(AActor*& enemyHit, FS_DamageInfo* damageInfo)

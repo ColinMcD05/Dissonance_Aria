@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "CombatSystem/CombatSystemComponent.h"
 #include "Weapons/WeaponActor.h"
+#include "BasicFunctions/GetGameInfo.h"
 #include "Weapons/WeaponsSystemComponent.h"
 #include "PlayerCharacterCombat.generated.h"
 
