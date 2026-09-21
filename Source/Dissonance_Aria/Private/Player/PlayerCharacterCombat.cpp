@@ -16,6 +16,7 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 	//Setup Weapons and weapons system
 	weaponsSystem = CreateDefaultSubobject<UWeaponsSystemComponent>(TEXT("WeaponsSystem"));
 
+	GameInfoUtilities::GetDAGameInstance(this);
 }
 
 // Called when the game starts or when spawned
