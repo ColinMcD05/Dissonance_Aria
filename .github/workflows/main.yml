@@ -15,5 +15,5 @@ jobs:
       run:
         curl -H "Content-Type: application/json" \
              -X POST \
-             -d '{"content": "A merge has occured in the ${{ github.ref_name}}' \
+             -d '{"content": "A merge has occured in the ${{ github.ref_name}}}' \
              ${{ secrets.DISCORD_WEBHOOK_URL}}
