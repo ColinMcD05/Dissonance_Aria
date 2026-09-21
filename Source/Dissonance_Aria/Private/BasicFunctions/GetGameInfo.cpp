@@ -6,8 +6,8 @@
 
 namespace GameInfoUtilities
 {
-	UDissonanceAriaGameInstance* GetDAGameInstance(const AActor* player)
+	UDissonanceAriaGameInstance* GetDAGameInstance(const AActor* actor)
 	{
-		return Cast<UDissonanceAriaGameInstance>(player->GetGameInstance());
+		return Cast<UDissonanceAriaGameInstance>(actor->GetGameInstance());
 	}
 }

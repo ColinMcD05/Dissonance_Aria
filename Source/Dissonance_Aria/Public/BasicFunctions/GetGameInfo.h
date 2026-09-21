@@ -12,5 +12,5 @@ class UDissonanceAriaGameInstance;
  */
 namespace GameInfoUtilities
 {
-	UDissonanceAriaGameInstance* GetDAGameInstance(const AActor* player);
+	UDissonanceAriaGameInstance* GetDAGameInstance(const AActor* actor);
 }
