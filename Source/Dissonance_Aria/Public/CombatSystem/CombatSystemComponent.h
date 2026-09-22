@@ -11,6 +11,8 @@
 
 class APlayerCharacterCombat;
 
+DECLARE_
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
 {
