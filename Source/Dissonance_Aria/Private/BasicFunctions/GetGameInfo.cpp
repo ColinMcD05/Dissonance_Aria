@@ -2,12 +2,12 @@
 
 
 #include "BasicFunctions/GetGameInfo.h"
-#include "GameInfo/DissonanceAriaGameInstance.h"
+#include "GameInfo/DAGameInstance.h"
 
 namespace GameInfoUtilities
 {
-	UDissonanceAriaGameInstance* GetDAGameInstance(const AActor* actor)
+	UDAGameInstance* GetDAGameInstance(const AActor* actor)
 	{
-		return Cast<UDissonanceAriaGameInstance>(actor->GetGameInstance());
+		return Cast<UDAGameInstance>(actor->GetGameInstance());
 	}
 }

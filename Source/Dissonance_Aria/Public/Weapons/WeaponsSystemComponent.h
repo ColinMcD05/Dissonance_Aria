@@ -38,5 +38,5 @@ public:
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
 
 	//Set Weapons
-	void SetWeapons(AWeaponActor* currentHeldWeapon, AWeaponActor* storedWeapons);
+	//void SetWeapons(AWeaponActor& weaponOne, AWeaponActor& weaponTwo);
 };

@@ -6,11 +6,11 @@
 #include "CoreMinimal.h"
 
 class AActor;
-class UDissonanceAriaGameInstance;
+class UDAGameInstance;
 /**
  * 
  */
 namespace GameInfoUtilities
 {
-	UDissonanceAriaGameInstance* GetDAGameInstance(const AActor* actor);
+	UDAGameInstance* GetDAGameInstance(const AActor* actor);
 }
