@@ -32,12 +32,17 @@ void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-void UCombatSystemComponent::AddToCombatQueue(UCombatActionBase& action)
+void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType& action)
 {
-	combatQueue.Enqueue(action.combatActionType);
+	if (queueCount < 3)
+	{
+		combatQueue.Enqueue(action);
+		queueCount++;
+	}
 }
 
-void UCombatSystemComponent::DealDamage(AActor*& enemyHit, FS_DamageInfo* damageInfo)
+void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damageInfo)
 {
-
+	IDamageableInterface* damageActor = Cast<IDamageableInterface>(actorHit);
+	damageActor->Execute_TakeDamage(Cast<UObject>(this), damageInfo);
 }

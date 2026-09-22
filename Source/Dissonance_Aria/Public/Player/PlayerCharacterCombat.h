@@ -16,6 +16,7 @@ class DISSONANCE_ARIA_API APlayerCharacterCombat : public ACharacter
 	GENERATED_BODY()
 
 private:
+#pragma region Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCombatSystemComponent* combatSystem;
 
@@ -27,6 +28,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	AWeaponActor* weapon2;
+#pragma endregion
 
 protected:
 	// Called when the game starts or when spawned

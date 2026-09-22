@@ -10,6 +10,7 @@
 UENUM(BlueprintType)
 enum class E_WeaponType : uint8
 {
+	None UMETA(DisplayName = "None"),
 	Dagger UMETA(DisplayName = "Dagger"),
 	Sword UMETA(DisplayName = "Sword"),
 	Greatsword UMETA(DisplayName = "Greatsword"),
@@ -76,7 +77,7 @@ public:
 	float sidestepDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-	E_WeaponType weaponType;
+	E_WeaponType weaponType = E_WeaponType::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	FS_Experience exp;

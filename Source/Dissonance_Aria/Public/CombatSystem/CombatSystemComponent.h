@@ -17,8 +17,10 @@ class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
+#pragma region Input
 	TQueue<E_CombatActionType> combatQueue;
-
+	int queueCount;
+#pragma endregion
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -29,7 +31,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void AddToCombatQueue(UCombatActionBase& action);
+	void AddToCombatQueue(E_CombatActionType& action);
 
-	void DealDamage(AActor*& enemyHit, FS_DamageInfo* damageInfo);
+	UFUNCTION(BlueprintCallable, Category = "Damage")
+	void DealDamage(AActor*& enemyHit, FS_DamageInfo& damageInfo);
 };

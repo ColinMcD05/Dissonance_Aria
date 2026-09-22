@@ -70,7 +70,7 @@ bool AWeaponActor::HitActor_Implementation(AActor* enemyHit)
 		damageInfo->damageAmount = weaponInfo.damage;
 	}
 	
-	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
+	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
 
 	free(damageInfo);
 
