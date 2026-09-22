@@ -35,4 +35,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void DealDamage(AActor*& enemyHit, FS_DamageInfo& damageInfo);
+
+	void ReadCombat();
 };

@@ -26,3 +26,7 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void UWeaponsSystemComponent::SetWeapons(AWeaponActor* currentHeldWeapon, AWeaponActor* storedWeapons)
+{
+
+}

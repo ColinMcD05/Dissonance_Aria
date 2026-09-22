@@ -36,4 +36,7 @@ public:
 	//Getters
 	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
+
+	//Set Weapons
+	void SetWeapons(AWeaponActor* currentHeldWeapon, AWeaponActor* storedWeapons);
 };

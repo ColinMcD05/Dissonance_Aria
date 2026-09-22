@@ -34,6 +34,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void AddNewWeapon(const FS_WeaponInfo newWeapon);
 	//Getters
 	//Returns weapon struct based on the index
@@ -43,7 +44,7 @@ public:
 	FS_WeaponInfo* GetWeaponByType(E_WeaponType weaponType);
 
 	//Returns the whole weapon array
-	UFUNCTION(BlueprintCallable, Category = "Getter")
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TArray<FS_WeaponInfo>& GetWeaponsArray() { return weapons; }
 
 	//Swaps what weapons are equipped
