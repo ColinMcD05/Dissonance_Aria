@@ -34,14 +34,13 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponData")
-	FS_WeaponInfo weaponInfo;
+	FS_WeaponInfo* weaponInfo;
 
 public:
 
 	AWeaponActor();
 
-	AWeaponActor(APlayerCharacterCombat* player);
+	void InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo* newWeaponInfo);
 
 	//Interface Functions
 	virtual bool HitActor_Implementation(AActor* hitEnemy) override;
@@ -53,5 +52,8 @@ public:
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION(BlueprintCallable, Category = "WeaponData")
-	FS_WeaponInfo GetWeaponInfo() { return weaponInfo; }
+	FS_WeaponInfo& GetWeaponInfo() { return *weaponInfo; }
+
+	UFUNCTION(BlueprintCallable, Category = "WeaponData")
+	void SetWeaponInfo(FS_WeaponInfo& newWeaponInfo);
 };

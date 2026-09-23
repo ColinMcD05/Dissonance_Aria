@@ -65,6 +65,16 @@ FS_WeaponInfo* UInventoryComponent::GetWeaponByType(E_WeaponType weaponType)
 	return NULL;
 }
 
+FS_WeaponInfo* UInventoryComponent::GetWeaponOne()
+{
+	return GetWeaponAtIndex(weaponOneIndex);
+}
+
+FS_WeaponInfo* UInventoryComponent::GetWeaponTwo()
+{
+	return GetWeaponAtIndex(weaponTwoIndex);
+}
+
 bool UInventoryComponent::SwapEquipedWeapons(E_WeaponType weaponToEquip, E_WeaponType weaponToUnequip)
 {
 	//Checks if both items are in the inventory

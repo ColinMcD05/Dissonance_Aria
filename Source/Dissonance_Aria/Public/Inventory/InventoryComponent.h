@@ -43,6 +43,12 @@ public:
 	//Returns weapon struct based on the type
 	FS_WeaponInfo* GetWeaponByType(E_WeaponType weaponType);
 
+	//Returns weapon one
+	FS_WeaponInfo* GetWeaponOne();
+
+	//Returns weapon two
+	FS_WeaponInfo* GetWeaponTwo();
+
 	//Returns the whole weapon array
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	TArray<FS_WeaponInfo>& GetWeaponsArray() { return weapons; }

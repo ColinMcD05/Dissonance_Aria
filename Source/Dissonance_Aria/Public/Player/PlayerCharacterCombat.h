@@ -8,6 +8,7 @@
 #include "Weapons/WeaponActor.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "Weapons/WeaponsSystemComponent.h"
+#include "Inventory/InventoryComponent.h"
 #include "PlayerCharacterCombat.generated.h"
 
 UCLASS()
@@ -16,7 +17,11 @@ class DISSONANCE_ARIA_API APlayerCharacterCombat : public ACharacter
 	GENERATED_BODY()
 
 private:
+
 #pragma region Components
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UInventoryComponent* inventory;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UCombatSystemComponent* combatSystem;
 

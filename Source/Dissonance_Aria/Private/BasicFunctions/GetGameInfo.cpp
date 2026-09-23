@@ -6,7 +6,7 @@
 
 namespace GameInfoUtilities
 {
-	UDAGameInstance* GetDAGameInstance(const AActor* actor)
+	UDAGameInstance* GetDAGameInstance(AActor* actor)
 	{
 		return Cast<UDAGameInstance>(actor->GetGameInstance());
 	}

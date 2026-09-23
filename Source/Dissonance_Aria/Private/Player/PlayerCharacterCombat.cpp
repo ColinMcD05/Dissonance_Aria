@@ -2,6 +2,7 @@
 
 
 #include "Player/PlayerCharacterCombat.h"
+#include "GameInfo/DAGameInstance.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -15,8 +16,6 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 
 	//Setup Weapons and weapons system
 	weaponsSystem = CreateDefaultSubobject<UWeaponsSystemComponent>(TEXT("WeaponsSystem"));
-
-	GameInfoUtilities::GetDAGameInstance(this);
 }
 
 // Called when the game starts or when spawned
@@ -24,6 +23,12 @@ void APlayerCharacterCombat::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	inventory = GameInfoUtilities::GetDAGameInstance(this)->GetInventory();
+
+	if (weaponsSystem && inventory)
+	{
+		weaponsSystem->SpawnWeapons(inventory, this);
+	}
 }
 
 // Called every frame

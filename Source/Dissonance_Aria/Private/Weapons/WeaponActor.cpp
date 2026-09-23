@@ -8,12 +8,6 @@ AWeaponActor::AWeaponActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bTickEvenWhenPaused = false;
-}
-
-AWeaponActor::AWeaponActor(APlayerCharacterCombat* player)
-{
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bTickEvenWhenPaused = false;
 
 	//Setup basic components
 	//Setup Mesh
@@ -25,8 +19,16 @@ AWeaponActor::AWeaponActor(APlayerCharacterCombat* player)
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
 	capsuleComponent->SetupAttachment(weaponMesh);
 	capsuleComponent->SetGenerateOverlapEvents(true);
+}
+
+void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo* newWeaponInfo)
+{
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = false;
 
 	playerOwner = player;
+
+	weaponInfo = newWeaponInfo;
 }
 
 // Called when the game starts or when spawned
@@ -60,14 +62,14 @@ bool AWeaponActor::HitActor_Implementation(AActor* enemyHit)
 
 	FS_DamageInfo* damageInfo = new FS_DamageInfo();
 	damageInfo->damageCauser = GetOwner();
-	damageInfo->genreAttack = weaponInfo.genre;
+	damageInfo->genreAttack = weaponInfo->genre;
 	if (currentTuning != 0)
 	{
-		damageInfo->damageAmount = weaponInfo.tunings[currentTuning - 1].damage;
+		damageInfo->damageAmount = weaponInfo->tunings[currentTuning - 1].damage;
 	}
 	else
 	{
-		damageInfo->damageAmount = weaponInfo.damage;
+		damageInfo->damageAmount = weaponInfo->damage;
 	}
 	
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
@@ -75,4 +77,9 @@ bool AWeaponActor::HitActor_Implementation(AActor* enemyHit)
 	free(damageInfo);
 
 	return true;
+}
+
+void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
+{
+	*weaponInfo = newWeaponInfo;
 }
