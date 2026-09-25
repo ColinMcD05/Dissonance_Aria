@@ -22,7 +22,7 @@ public:
 	TArray<FS_WeaponInfo> weapons;
 
 	int weaponOneIndex = 0;
-	int weaponTwoIndex;
+	int weaponTwoIndex = -1;
 #pragma endregion
 
 
@@ -56,6 +56,14 @@ public:
 	//Swaps what weapons are equipped
 	UFUNCTION(BlueprintCallable, Category = "Swap")
 	bool SwapEquipedWeapons(E_WeaponType weaponToEquip, E_WeaponType weaponToUnequip);
+
+	//Returns negative one if there is no equppied weapon at this spot
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int GetEquippedWeaponOneIndex() { return weaponOneIndex; }
+
+	//Returns negative one if there is no equppied weapon at this spot
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int GetEquippedWeaponTwoIndex() { return weaponTwoIndex; }
 
 	//Checks if the weapon is currently equipped
 	bool CheckIfWeaponEquipped(E_WeaponType weaponType);

@@ -45,13 +45,7 @@ void AWeaponActor::Tick(float DeltaTime)
 
 }
 
-void AWeaponActor::OnPickupOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
-	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
-{
-	HitActor(otherActor);
-}
-
-bool AWeaponActor::HitActor_Implementation(AActor* enemyHit)
+bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 {
 	IDamageableInterface* enemy = Cast<IDamageableInterface>(enemyHit);
 

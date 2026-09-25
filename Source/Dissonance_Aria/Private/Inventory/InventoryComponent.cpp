@@ -35,7 +35,7 @@ void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 {
 	for (int i = 0; i < MAX_WEAPONS_AMOUNT; i++)
 	{
-		if (weapons[i].weaponType == E_WeaponType::None)
+		if (weapons[i].weaponType == newWeapon.weaponType && !weapons[i].aquired)
 		{
 			weapons[i] = newWeapon;
 			return;
@@ -45,7 +45,7 @@ void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 
 FS_WeaponInfo* UInventoryComponent::GetWeaponAtIndex(int index)
 {
-	if (index >= MAX_WEAPONS_AMOUNT || weapons[index].weaponType == E_WeaponType::None)
+	if (index >= MAX_WEAPONS_AMOUNT || !weapons[index].aquired)
 	{
 		return NULL;
 	}
@@ -131,7 +131,7 @@ bool UInventoryComponent::CheckIfWeaponInInventory(E_WeaponType weaponType)
 	{
 		if (info.weaponType == weaponType)
 		{
-			return true;
+			return info.aquired;
 		}
 	}
 	return false;

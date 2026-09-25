@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/CapsuleComponent.h"
-#include "CombatSystem/CanAttackInterface.h"
+#include "CombatSystem/HurtBoxInterface.h"
 #include "WeaponHitbox.generated.h"
 
 /**

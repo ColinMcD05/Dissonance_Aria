@@ -12,7 +12,6 @@ class AWeaponActor;
 UENUM(BlueprintType)
 enum class E_WeaponType : uint8
 {
-	None UMETA(DisplayName = "None"),
 	Dagger UMETA(DisplayName = "Dagger"),
 	Sword UMETA(DisplayName = "Sword"),
 	Greatsword UMETA(DisplayName = "Greatsword"),
@@ -52,6 +51,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	float sidestepDistance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = "0", ClampMax = "1"))
+	float toleranceMeter = 1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	E_SubGenre subGenre;
 };
@@ -78,8 +80,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	float sidestepDistance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = "0", ClampMax = "1"))
+	float toleranceMeter = 1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
-	E_WeaponType weaponType = E_WeaponType::None;
+	E_WeaponType weaponType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	FS_Experience exp;
@@ -92,4 +97,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	TSubclassOf<AWeaponActor> weaponActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	bool aquired = false;
 };

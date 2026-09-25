@@ -14,10 +14,10 @@ void UWeaponHitbox::BeginPlay()
 void UWeaponHitbox::StartOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
 {
-	ICanAttackInterface* attacker = Cast<ICanAttackInterface>(attackingOwner);
+	IHurtBoxInterface* attacker = Cast<IHurtBoxInterface>(attackingOwner);
 
 	if (attacker)
 	{
-		attacker->Execute_HitActor(Cast<UObject>(attacker), otherActor);
+		attacker->Execute_OverlappedActor(Cast<UObject>(attacker), otherActor);
 	}
 }
