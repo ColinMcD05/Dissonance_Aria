@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InputAction.h"
+#include "InputMappingContext.h"
 #include "CombatActionBase.generated.h"
 
 
@@ -11,7 +12,7 @@ UENUM(BlueprintType)
 enum class E_CombatActionType : uint8
 {
 	LightAttack UMETA(DisplayName = "LightAttack"),
-	HeavyAttack UMETA(DisplayName = "HeavyAttack"),
+	HeavyAttack UMETA(DisplayName = "HeavyAttack")
 };
 
 UCLASS()
