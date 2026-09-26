@@ -37,3 +37,12 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	}
 }
 
+void APlayerCharacterBase::Move()
+{
+
+}
+
+void APlayerCharacterBase::PlayerJump()
+{
+
+}
