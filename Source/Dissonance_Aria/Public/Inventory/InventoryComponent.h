@@ -76,4 +76,9 @@ public:
 
 	//Returns the index of the weapon base on type -1 for failure
 	int GetIndexByWeaponType(E_WeaponType weaponType);
+
+	int GetWeaponsLength() { return MAX_WEAPONS_AMOUNT; }
+
+	void SetWeaponOne(int newWeaponOne) { weaponOneIndex = newWeaponOne; }
+	void SetWeaponTwo(int newWeaponTwo) { weaponTwoIndex = newWeaponTwo; }
 };

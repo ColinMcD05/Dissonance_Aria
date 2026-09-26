@@ -38,6 +38,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
 		currentHeldWeapon->InitializeWeapon(player, weaponOne);
+
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();

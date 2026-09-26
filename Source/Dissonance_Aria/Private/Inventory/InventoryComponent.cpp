@@ -45,7 +45,7 @@ void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 
 FS_WeaponInfo* UInventoryComponent::GetWeaponAtIndex(int index)
 {
-	if (index >= MAX_WEAPONS_AMOUNT || !weapons[index].aquired)
+	if ((index >= MAX_WEAPONS_AMOUNT || !weapons[index].aquired) && (!weapons.IsEmpty()))
 	{
 		return NULL;
 	}
