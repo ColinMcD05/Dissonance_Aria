@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
+#include "Input/InputActions/CombatActionBase.h"
 #include "AttacksInterface.generated.h"
 
 // This class does not need to be modified.
@@ -24,11 +25,11 @@ class DISSONANCE_ARIA_API IAttacksInterface
 public:
 	//Performs light attacks and returns animation length
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attacks")
-	float LightAttack();
+	float LightAttack(TArray<E_CombatActionType>& previousActions);
 
 	//Performs heavy attacks and returns animation length
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attacks")
-	float HeavyAttack(bool charged);
+	float HeavyAttack(TArray<E_CombatActionType>& previousActions, bool charged);
 
 	//Performs special attacks and returns animation length
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attacks")

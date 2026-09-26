@@ -41,13 +41,13 @@ private:
 #pragma endregion
 
 #pragma region Inputs
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UCombatActionBase* lightAttack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UCombatActionBase* heavyAttack;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* sideStep;
 #pragma endregion
 protected:
@@ -84,8 +84,8 @@ public:
 
 	//Implementation of Damageable interface
 #pragma region DamageableInterface
-	virtual float LightAttack_Implementation() override;
-	virtual float HeavyAttack_Implementation(bool charged) override;
+	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;
+	virtual float HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged) override;
 	virtual float SpecialAttack_Implementation() override;
 #pragma
 };

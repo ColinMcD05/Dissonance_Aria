@@ -31,8 +31,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Player")
 	APlayerCharacterCombat* playerOwner;
 
-	TArray<E_CombatActionType> previousActions;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -56,4 +54,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "WeaponData")
 	void SetWeaponInfo(FS_WeaponInfo& newWeaponInfo);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+	void PerformLightAttack(const TArray<E_CombatActionType>& previousActions);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+	void PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
+
+	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
 };

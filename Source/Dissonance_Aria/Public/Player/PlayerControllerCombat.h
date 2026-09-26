@@ -16,7 +16,7 @@ class DISSONANCE_ARIA_API APlayerControllerCombat : public APlayerControllerBase
 
 protected:
 #pragma region Inputs
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* combatMapping;
 #pragma endregion
 

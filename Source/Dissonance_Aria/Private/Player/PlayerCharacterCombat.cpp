@@ -76,12 +76,12 @@ void APlayerCharacterCombat::ReadSidestep()
 
 //Implementation of Damageable interface
 #pragma region DamageableInterface
-float APlayerCharacterCombat::LightAttack_Implementation()
+float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
 {
 	return 0;
 }
 
-float APlayerCharacterCombat::HeavyAttack_Implementation(bool charged)
+float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
 {
 	return 0;
 }

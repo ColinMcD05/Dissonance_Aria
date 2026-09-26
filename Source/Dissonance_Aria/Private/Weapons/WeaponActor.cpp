@@ -77,3 +77,45 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 {
 	*weaponInfo = newWeaponInfo;
 }
+
+void AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+{
+	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
+
+	//Animation logic will go here, but I need animations first
+}
+
+void AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+{
+	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
+
+	//Animation logic will go here, but I need animations first
+}
+
+int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction)
+{
+	int currentPosition = -1;
+
+	for (E_CombatActionType action : previousActions)
+	{
+		switch (action)
+		{
+			case E_CombatActionType::HeavyAttack:
+				currentPosition += 2;
+				break;
+			case E_CombatActionType::LightAttack:
+				currentPosition += 1;
+		}
+	}
+
+	switch (currentAction)
+	{
+		case E_CombatActionType::HeavyAttack:
+			currentPosition += 2;
+			break;
+		case E_CombatActionType::LightAttack:
+			currentPosition += 1;
+	}
+	
+	return currentPosition;
+}

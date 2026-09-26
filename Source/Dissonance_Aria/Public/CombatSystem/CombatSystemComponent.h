@@ -23,6 +23,8 @@ private:
 	TQueue<E_CombatActionType> combatQueue;
 
 	int queueCount;
+
+	TArray<E_CombatActionType> previousActions;
 #pragma endregion
 
 #pragma region References

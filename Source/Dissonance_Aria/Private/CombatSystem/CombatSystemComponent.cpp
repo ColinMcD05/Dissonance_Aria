@@ -81,26 +81,36 @@ void UCombatSystemComponent::ReadCombatQueue()
 	//Inizialize some variables
 	IAttacksInterface* attacker = Cast<IAttacksInterface>(owner);
 	float waitTime;
+	E_CombatActionType nextAction;
+	combatQueue.Dequeue(nextAction);
 
 	//Looks at the tail of queue and perform correlated actions. Then Pop
-	switch (*combatQueue.Peek())
+	switch (nextAction)
 	{
 		case E_CombatActionType::HeavyAttack:
 			
 			if (attacker)
 			{
-				waitTime = attacker->Execute_HeavyAttack(Cast<UObject>(attacker), false);
+				waitTime = attacker->Execute_HeavyAttack(Cast<UObject>(attacker), previousActions, false);
+				previousActions.Add(E_CombatActionType::HeavyAttack);
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Heavy"));
+				}
 			}
 			break;
 		case E_CombatActionType::LightAttack:
 			if (attacker)
 			{
-				waitTime = attacker->Execute_LightAttack(Cast<UObject>(attacker));
+				waitTime = attacker->Execute_LightAttack(Cast<UObject>(attacker), previousActions);
+				previousActions.Add(E_CombatActionType::LightAttack);	
+				if (GEngine)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Light."));
+				}
 			}
 			break;
 	}
-	combatQueue.Pop();
-
 	//Start the timer
 	world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, waitTime, false);
 
@@ -138,6 +148,7 @@ void UCombatSystemComponent::ResetQueue(float waitTime)
 
 	//Empty queue
 	combatQueue.Empty();
+	previousActions.Empty();
 
 	//Sets timer
 	world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime, false);
