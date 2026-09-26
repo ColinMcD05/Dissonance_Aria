@@ -5,8 +5,13 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Weapons/WeaponActor.h"
+#include "Inventory/InventoryComponent.h"
 #include "WeaponsSystemComponent.generated.h"
 
+class AWeaponActor;
+class PlayerCharacterCombat;
+
+DECLARE_MULTICAST_DELEGATE(FWeaponsSpawned);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
@@ -36,4 +41,7 @@ public:
 	//Getters
 	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
+
+	//Set Weapons
+	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
 };
