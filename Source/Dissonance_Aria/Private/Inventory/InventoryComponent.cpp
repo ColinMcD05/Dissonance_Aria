@@ -11,9 +11,12 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 	
 	weapons.Reserve(MAX_WEAPONS_AMOUNT);
-	// ...
 }
 
+void UInventoryComponent::SetupInventory()
+{
+
+}
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
@@ -45,7 +48,7 @@ void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 
 FS_WeaponInfo* UInventoryComponent::GetWeaponAtIndex(int index)
 {
-	if ((index >= MAX_WEAPONS_AMOUNT || !weapons[index].aquired) && (!weapons.IsEmpty()))
+	if (weapons.IsEmpty() || index >= MAX_WEAPONS_AMOUNT || !weapons[index].aquired)
 	{
 		return NULL;
 	}
