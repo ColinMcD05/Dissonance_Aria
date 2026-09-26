@@ -8,12 +8,6 @@ AWeaponActor::AWeaponActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bTickEvenWhenPaused = false;
-}
-
-AWeaponActor::AWeaponActor(APlayerCharacterCombat* player)
-{
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bTickEvenWhenPaused = false;
 
 	//Setup basic components
 	//Setup Mesh
@@ -25,8 +19,16 @@ AWeaponActor::AWeaponActor(APlayerCharacterCombat* player)
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
 	capsuleComponent->SetupAttachment(weaponMesh);
 	capsuleComponent->SetGenerateOverlapEvents(true);
+}
+
+void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo* newWeaponInfo)
+{
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = false;
 
 	playerOwner = player;
+
+	weaponInfo = newWeaponInfo;
 }
 
 // Called when the game starts or when spawned
@@ -43,13 +45,7 @@ void AWeaponActor::Tick(float DeltaTime)
 
 }
 
-void AWeaponActor::OnPickupOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
-	UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult)
-{
-	HitActor(otherActor);
-}
-
-bool AWeaponActor::HitActor_Implementation(AActor* enemyHit)
+bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 {
 	IDamageableInterface* enemy = Cast<IDamageableInterface>(enemyHit);
 
@@ -60,19 +56,66 @@ bool AWeaponActor::HitActor_Implementation(AActor* enemyHit)
 
 	FS_DamageInfo* damageInfo = new FS_DamageInfo();
 	damageInfo->damageCauser = GetOwner();
-	damageInfo->genreAttack = weaponInfo.genre;
+	damageInfo->genreAttack = weaponInfo->genre;
 	if (currentTuning != 0)
 	{
-		damageInfo->damageAmount = weaponInfo.tunings[currentTuning - 1].damage;
+		damageInfo->damageAmount = weaponInfo->tunings[currentTuning - 1].damage;
 	}
 	else
 	{
-		damageInfo->damageAmount = weaponInfo.damage;
+		damageInfo->damageAmount = weaponInfo->damage;
 	}
 	
-	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
+	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
 
 	free(damageInfo);
 
 	return true;
+}
+
+void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
+{
+	*weaponInfo = newWeaponInfo;
+}
+
+void AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+{
+	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
+
+	//Animation logic will go here, but I need animations first
+}
+
+void AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+{
+	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
+
+	//Animation logic will go here, but I need animations first
+}
+
+int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction)
+{
+	int currentPosition = -1;
+
+	for (E_CombatActionType action : previousActions)
+	{
+		switch (action)
+		{
+			case E_CombatActionType::HeavyAttack:
+				currentPosition += 2;
+				break;
+			case E_CombatActionType::LightAttack:
+				currentPosition += 1;
+		}
+	}
+
+	switch (currentAction)
+	{
+		case E_CombatActionType::HeavyAttack:
+			currentPosition += 2;
+			break;
+		case E_CombatActionType::LightAttack:
+			currentPosition += 1;
+	}
+	
+	return currentPosition;
 }

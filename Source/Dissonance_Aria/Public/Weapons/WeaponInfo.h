@@ -6,6 +6,8 @@
 #include "Music/MusicInfo.h"
 #include "WeaponInfo.generated.h"
 
+class AWeaponActor;
+
 //Enumerator for each weapon type
 UENUM(BlueprintType)
 enum class E_WeaponType : uint8
@@ -49,6 +51,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	float sidestepDistance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = "0", ClampMax = "1"))
+	float toleranceMeter = 1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	E_SubGenre subGenre;
 };
@@ -75,6 +80,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	float sidestepDistance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = "0", ClampMax = "1"))
+	float toleranceMeter = 1;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapons")
 	E_WeaponType weaponType;
 
@@ -86,4 +94,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	TArray<FS_Tuning> tunings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	TSubclassOf<AWeaponActor> weaponActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
+	bool aquired = false;
 };
