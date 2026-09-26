@@ -36,7 +36,14 @@ void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	if (timeBetweenInput < maxTimeBetweenInput)
+	{
+		timeBetweenInput += world->DeltaTimeSeconds;
+	}
+	else
+	{
+		ResetReadInputs();
+	}
 }
 
 //Adds action type to combat queue
@@ -45,11 +52,8 @@ void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 	//Checks if can add input, then add input
 	if (canReadInput)
 	{
-		if (queueCount < MAX_COMBO_LENGTH)
-		{
-			combatQueue.Enqueue(action);
-			queueCount++;
-		}
+		combatQueue.Enqueue(action);
+		queueCount++;
 
 		//Read input
 		ReadCombatQueue();
@@ -111,12 +115,20 @@ void UCombatSystemComponent::ReadCombatQueue()
 			}
 			break;
 	}
-	//Start the timer
-	world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, waitTime, false);
 
 	//Ensures players can no longer attack
 	canAttack = false;
-	queueCount -= 1;
+
+	if (queueCount >= MAX_COMBO_LENGTH)
+	{
+		canReadInput = false;
+		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime + 1, false);
+	}
+	else
+	{
+		//Start the timer
+		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, waitTime, false);
+	}
 }
 
 //Deals damage to hit actor

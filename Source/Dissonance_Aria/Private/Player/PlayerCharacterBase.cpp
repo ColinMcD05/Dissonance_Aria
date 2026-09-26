@@ -2,6 +2,7 @@
 
 
 #include "Player/PlayerCharacterBase.h"
+#include "EnhancedInputComponent.h"
 
 // Sets default values
 APlayerCharacterBase::APlayerCharacterBase()
@@ -30,5 +31,18 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		inputComponent->BindAction(pause, ETriggerEvent::Started, this, &APlayerCharacterBase::Pause);
+	}
 }
 
+void APlayerCharacterBase::Move()
+{
+
+}
+
+void APlayerCharacterBase::PlayerJump()
+{
+
+}
