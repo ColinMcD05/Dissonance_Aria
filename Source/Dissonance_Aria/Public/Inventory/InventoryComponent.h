@@ -19,6 +19,7 @@ public:
 	UInventoryComponent();
 
 #pragma region Weapons
+	UPROPERTY(EditAnywhere)
 	TArray<FS_WeaponInfo> weapons;
 
 	int weaponOneIndex = 0;
@@ -33,6 +34,8 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	void SetupInventory();
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void AddNewWeapon(const FS_WeaponInfo newWeapon);

@@ -116,6 +116,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 
 	//Ensures players can no longer attack
 	canAttack = false;
+	queueCount -= 1;
 }
 
 //Deals damage to hit actor
@@ -148,6 +149,7 @@ void UCombatSystemComponent::ResetQueue(float waitTime)
 
 	//Empty queue
 	combatQueue.Empty();
+	queueCount = 0;
 	previousActions.Empty();
 
 	//Sets timer
