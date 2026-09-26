@@ -78,12 +78,12 @@ void APlayerCharacterCombat::ReadSidestep()
 #pragma region DamageableInterface
 float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
 {
-	return 0;
+	return 3;
 }
 
 float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
 {
-	return 0;
+	return 3;
 }
 
 float APlayerCharacterCombat::SpecialAttack_Implementation()
