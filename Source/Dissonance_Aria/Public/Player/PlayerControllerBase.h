@@ -7,6 +7,8 @@
 #include "InputMappingContext.h"
 #include "PlayerControllerBase.generated.h"
 
+class APlayerCharacterBase;
+
 /**
  * 
  */
@@ -19,7 +21,12 @@ protected:
 #pragma region Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* basicMapping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UInputMappingContext* freeLookMapping;
 #pragma endregion
+
+	APlayerCharacterBase* playerBase;
 
 public:
 	virtual void BeginPlay() override;

@@ -33,16 +33,43 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		inputComponent->BindAction(move, ETriggerEvent::Triggered, this, &APlayerCharacterBase::Move);
+		inputComponent->BindAction(jumpAction, ETriggerEvent::Started, this, &APlayerCharacterBase::PlayerJump);
+		inputComponent->BindAction(jumpAction, ETriggerEvent::Completed, this, &APlayerCharacterBase::StopPlayerJump);
 		inputComponent->BindAction(pause, ETriggerEvent::Started, this, &APlayerCharacterBase::Pause);
+
+		if (useFreeCamera)
+		{
+			inputComponent->BindAction(look, ETriggerEvent::Triggered, this, &APlayerCharacterBase::Look);
+		}
 	}
 }
 
-void APlayerCharacterBase::Move()
+void APlayerCharacterBase::Move_Implementation(const FInputActionValue& value)
 {
-
+	FVector2D moveVector = value.Get<FVector2D>();
+	
+	AddMovementInput(GetActorRightVector(), moveVector.X);
+	AddMovementInput(GetActorForwardVector(), moveVector.Y);
 }
 
-void APlayerCharacterBase::PlayerJump()
+void APlayerCharacterBase::PlayerJump_Implementation()
 {
+	Jump();
+}
 
+void APlayerCharacterBase::StopPlayerJump_Implementation()
+{
+	StopJumping();
+}
+
+void APlayerCharacterBase::Look_Implementation(const FInputActionValue& value)
+{
+	FVector2D lookVector = value.Get<FVector2D>();
+
+	if (Controller != nullptr)
+	{
+		AddControllerYawInput(lookVector.X);
+		AddControllerYawInput(lookVector.Y);
+	}
 }
