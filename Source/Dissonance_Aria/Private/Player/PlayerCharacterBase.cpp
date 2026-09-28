@@ -36,7 +36,7 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		inputComponent->BindAction(move, ETriggerEvent::Triggered, this, &APlayerCharacterBase::Move);
 		inputComponent->BindAction(jumpAction, ETriggerEvent::Started, this, &APlayerCharacterBase::PlayerJump);
 		inputComponent->BindAction(jumpAction, ETriggerEvent::Completed, this, &APlayerCharacterBase::StopPlayerJump);
-		inputComponent->BindAction(pause, ETriggerEvent::Started, this, &APlayerCharacterBase::Pause);
+		inputComponent->BindAction(pause, ETriggerEvent::Triggered, this, &APlayerCharacterBase::PauseGame);
 
 		if (useFreeCamera)
 		{

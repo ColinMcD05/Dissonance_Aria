@@ -37,7 +37,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		spawnParams.Instigator = player->GetInstigator();
 
 		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
-		currentHeldWeapon->InitializeWeapon(player, weaponOne);
+		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
 
 	}
 
@@ -49,6 +49,6 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		spawnParams.Instigator = player->GetInstigator();
 
 		storedWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponTwo->weaponActor, player->GetActorTransform(), spawnParams);
-		storedWeapon->InitializeWeapon(player, weaponTwo);
+		storedWeapon->InitializeWeapon(player, *weaponTwo);
 	}
 }

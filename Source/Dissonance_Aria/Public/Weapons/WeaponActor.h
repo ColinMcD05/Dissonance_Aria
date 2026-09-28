@@ -35,13 +35,14 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	FS_WeaponInfo* weaponInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponData", meta = (AllowPrivateAccess = "true"))
+	FS_WeaponInfo weaponInfo;
 
 public:
 
 	AWeaponActor();
 
-	void InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo* newWeaponInfo);
+	void InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo);
 
 	//Interface Functions
 	virtual bool OverlappedActor_Implementation(AActor* hitEnemy) override;
@@ -50,7 +51,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "WeaponData")
-	FS_WeaponInfo& GetWeaponInfo() { return *weaponInfo; }
+	FS_WeaponInfo& GetWeaponInfo() { return weaponInfo; }
 
 	UFUNCTION(BlueprintCallable, Category = "WeaponData")
 	void SetWeaponInfo(FS_WeaponInfo& newWeaponInfo);

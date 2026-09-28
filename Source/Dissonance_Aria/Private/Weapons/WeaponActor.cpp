@@ -21,7 +21,7 @@ AWeaponActor::AWeaponActor()
 	capsuleComponent->SetGenerateOverlapEvents(true);
 }
 
-void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo* newWeaponInfo)
+void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -56,14 +56,14 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 
 	FS_DamageInfo* damageInfo = new FS_DamageInfo();
 	damageInfo->damageCauser = GetOwner();
-	damageInfo->genreAttack = weaponInfo->genre;
+	damageInfo->genreAttack = weaponInfo.genre;
 	if (currentTuning != 0)
 	{
-		damageInfo->damageAmount = weaponInfo->tunings[currentTuning - 1].damage;
+		damageInfo->damageAmount = weaponInfo.tunings[currentTuning - 1].damage;
 	}
 	else
 	{
-		damageInfo->damageAmount = weaponInfo->damage;
+		damageInfo->damageAmount = weaponInfo.damage;
 	}
 	
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
@@ -75,7 +75,7 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 
 void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 {
-	*weaponInfo = newWeaponInfo;
+	weaponInfo = newWeaponInfo;
 }
 
 void AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)

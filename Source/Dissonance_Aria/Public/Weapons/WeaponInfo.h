@@ -12,10 +12,10 @@ class AWeaponActor;
 UENUM(BlueprintType)
 enum class E_WeaponType : uint8
 {
-	Dagger UMETA(DisplayName = "Dagger"),
-	Sword UMETA(DisplayName = "Sword"),
 	Greatsword UMETA(DisplayName = "Greatsword"),
-	Scythe UMETA(DisplayName = "Scythe")
+	Sword UMETA(DisplayName = "Sword"),
+	Scythe UMETA(DisplayName = "Scythe"),
+	Dagger UMETA(DisplayName = "Dagger")
 };
 
 //Struct to hold all the experience

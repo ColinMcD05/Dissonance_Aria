@@ -55,7 +55,7 @@ public:
 	void Look(const FInputActionValue& value);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void Pause();
+	void PauseGame();
 
 	bool GetUseFreeCamera() { return useFreeCamera; }
 };

@@ -16,7 +16,7 @@ class DISSONANCE_ARIA_API UDAGameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintGetter = GetInventory, BlueprintSetter = SetInventory, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintGetter = GetInventory, BlueprintSetter = SetInventory, meta = (AllowPrivateAccess = "true"))
 	UInventoryComponent* inventory;
 
 public:
