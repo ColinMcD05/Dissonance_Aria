@@ -27,6 +27,17 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+void UWeaponsSystemComponent::SwapWeapons()
+{
+	AWeaponActor* tempWeapon = currentHeldWeapon;
+	
+	currentHeldWeapon = storedWeapon;
+	currentHeldWeapon->Activate();
+
+	storedWeapon = tempWeapon;
+	storedWeapon->Deactivate();
+}
+
 void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
 {
 	FS_WeaponInfo* weaponOne = inventory->GetWeaponOne();
@@ -38,7 +49,6 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
 		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
-
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();

@@ -38,6 +38,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void SwapWeapons();
+
 	//Getters
 	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }

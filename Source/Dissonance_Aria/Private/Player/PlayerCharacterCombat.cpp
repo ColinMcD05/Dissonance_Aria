@@ -53,6 +53,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(lightAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadLightAttack);
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
+		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 	}
 }
 
@@ -72,6 +73,12 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 void APlayerCharacterCombat::ReadSidestep()
 {
 
+}
+
+//Read Swap Input
+void APlayerCharacterCombat::ReadSwapWeapon()
+{
+	weaponsSystem
 }
 
 //Implementation of Damageable interface

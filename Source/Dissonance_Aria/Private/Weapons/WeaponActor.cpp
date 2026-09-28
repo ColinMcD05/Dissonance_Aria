@@ -18,7 +18,7 @@ AWeaponActor::AWeaponActor()
 	//Setup Capsule
 	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
 	capsuleComponent->SetupAttachment(weaponMesh);
-	capsuleComponent->SetGenerateOverlapEvents(true);
+	capsuleComponent->SetGenerateOverlapEvents(false);
 }
 
 void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo)
@@ -29,6 +29,21 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 	playerOwner = player;
 
 	weaponInfo = newWeaponInfo;
+	ChangeWeaponStats();
+}
+
+
+void AWeaponActor::Activate()
+{
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(true);
+}
+
+void AWeaponActor::Deactivate()
+{
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(false);
+	capsuleComponent->SetGenerateOverlapEvents(false);
 }
 
 // Called when the game starts or when spawned
@@ -59,11 +74,11 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 	damageInfo->genreAttack = weaponInfo.genre;
 	if (currentTuning != 0)
 	{
-		damageInfo->damageAmount = weaponInfo.tunings[currentTuning - 1].damage;
+		damageInfo->damageAmount = stats.damage;
 	}
 	else
 	{
-		damageInfo->damageAmount = weaponInfo.damage;
+		damageInfo->damageAmount = stats.damage;
 	}
 	
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
@@ -81,14 +96,14 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 void AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
-
+	capsuleComponent->SetGenerateOverlapEvents(true);
 	//Animation logic will go here, but I need animations first
 }
 
 void AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
-
+	capsuleComponent->SetGenerateOverlapEvents(true);
 	//Animation logic will go here, but I need animations first
 }
 
@@ -118,4 +133,11 @@ int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& p
 	}
 	
 	return currentPosition;
+}
+
+void AWeaponActor::ChangeWeaponStats()
+{
+	FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
+
+	stats = *newStats;
 }

@@ -28,6 +28,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
 	int currentTuning;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
+	FS_Stats stats;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
+	TArray<UDataTable*> statsTable;
+
 	UPROPERTY(VisibleAnywhere, Category = "Player")
 	APlayerCharacterCombat* playerOwner;
 
@@ -63,4 +69,9 @@ public:
 	void PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
 
 	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
+
+	void ChangeWeaponStats();
+
+	void Activate();
+	void Deactivate();
 };

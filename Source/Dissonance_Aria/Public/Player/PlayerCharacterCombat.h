@@ -49,6 +49,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* sideStep;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* swapWeapon;
 #pragma endregion
 protected:
 	// Called when the game starts or when spawned
@@ -81,6 +84,9 @@ public:
 
 	//Read the side step input
 	void ReadSidestep();
+
+	//Read Swap Weapon input
+	void ReadSwapWeapon();
 
 	//Implementation of Damageable interface
 #pragma region DamageableInterface
