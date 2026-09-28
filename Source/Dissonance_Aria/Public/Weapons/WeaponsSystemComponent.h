@@ -27,6 +27,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
 	AWeaponActor* storedWeapon;
 #pragma endregion
+
+	bool canSwap;
+	FTimerHandle swapWeaponsTimer;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -45,5 +49,6 @@ public:
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
 
 	//Set Weapons
-	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
+	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player, AWeaponActor* weapon1, AWeaponActor* weapon2);
+	void ResetCanSwap() { canSwap = true; }
 };

@@ -29,16 +29,22 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void UWeaponsSystemComponent::SwapWeapons()
 {
-	AWeaponActor* tempWeapon = currentHeldWeapon;
-	
-	currentHeldWeapon = storedWeapon;
-	currentHeldWeapon->Activate();
+	if (canSwap)
+	{
+		AWeaponActor* tempWeapon = currentHeldWeapon;
 
-	storedWeapon = tempWeapon;
-	storedWeapon->Deactivate();
+		currentHeldWeapon = storedWeapon;
+		currentHeldWeapon->Activate();
+
+		storedWeapon = tempWeapon;
+		storedWeapon->Deactivate();
+		canSwap = false;
+
+		GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwap, 2, false);
+	}
 }
 
-void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
+void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player, AWeaponActor* weapon1, AWeaponActor* weapon2)
 {
 	FS_WeaponInfo* weaponOne = inventory->GetWeaponOne();
 	if (weaponOne)
@@ -49,6 +55,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
 		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
+		weapon1 = currentHeldWeapon;
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();
@@ -60,5 +67,6 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		storedWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponTwo->weaponActor, player->GetActorTransform(), spawnParams);
 		storedWeapon->InitializeWeapon(player, *weaponTwo);
+		weapon2 = storedWeapon;
 	}
 }

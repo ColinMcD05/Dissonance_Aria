@@ -71,7 +71,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 		{
 			return;
 		}
-		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, false);
+		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, 0.1f, false);
 
 		return;
 	}

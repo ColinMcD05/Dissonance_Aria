@@ -32,7 +32,7 @@ void APlayerCharacterCombat::BeginPlay()
 	//Spawns weapons in once in
 	if (weaponsSystem && inventory)
 	{
-		weaponsSystem->SpawnWeapons(inventory, this);
+		weaponsSystem->SpawnWeapons(inventory, this, weapon1, weapon2);
 	}
 }
 
@@ -78,7 +78,7 @@ void APlayerCharacterCombat::ReadSidestep()
 //Read Swap Input
 void APlayerCharacterCombat::ReadSwapWeapon()
 {
-	weaponsSystem
+	weaponsSystem->SwapWeapons();
 }
 
 //Implementation of Damageable interface
