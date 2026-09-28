@@ -8,7 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "DamageSystem/DamageableInterface.h"
 #include "CombatSystem/HurtBoxInterface.h"
-#include "Input/InputActions/CombatActionBase.cpp"
+#include "Input/InputActions/CombatActionBase.h"
+#include "Components/WeaponHitbox.h"
 #include "WeaponActor.generated.h"
 
 class APlayerCharacterCombat;
@@ -20,18 +21,18 @@ class DISSONANCE_ARIA_API AWeaponActor : public AActor, public IHurtBoxInterface
 	
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* weaponMesh;
+	UStaticMeshComponent* weaponMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	UCapsuleComponent* capsuleComponent;
+	TArray<UWeaponHitbox*> hurtboxes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
-	int currentTuning;
+	int currentTuning = 0;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
 	FS_Stats stats;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true"))
 	TArray<UDataTable*> statsTable;
 
 	UPROPERTY(VisibleAnywhere, Category = "Player")
@@ -47,6 +48,10 @@ protected:
 public:
 
 	AWeaponActor();
+
+	void Activate();
+
+	void Deactivate();
 
 	void InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo);
 
@@ -68,10 +73,13 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
 	void PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
 
+	void EnableHurtboxes();
+
+	void DisableHurtboxes();
+
+	int GetMaxHealth() { return stats.maxHP; }
+
 	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
 
 	void ChangeWeaponStats();
-
-	void Activate();
-	void Deactivate();
 };

@@ -67,3 +67,11 @@ void UDamageSystemComponent::HandleIncomingHeal(float healAmount, AActor* healer
 
 	currentHealth = FMath::Clamp(currentHealth + healAmount, 0.0f, maxHealth);
 }
+
+void UDamageSystemComponent::SetMaxHealthAndCurrent(int newMaxHealth)
+{
+	float percentage = currentHealth/maxHealth;
+
+	maxHealth = newMaxHealth;
+	currentHealth = FMath::Clamp(maxHealth * percentage, 0, maxHealth);
+}

@@ -11,14 +11,9 @@ AWeaponActor::AWeaponActor()
 
 	//Setup basic components
 	//Setup Mesh
-	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
 	weaponMesh->SetupAttachment(RootComponent);
-
-	//Setup Capsule
-	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
-	capsuleComponent->SetupAttachment(weaponMesh);
-	capsuleComponent->SetGenerateOverlapEvents(false);
 }
 
 void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo)
@@ -30,6 +25,15 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 
 	weaponInfo = newWeaponInfo;
 	ChangeWeaponStats();
+
+	for (UActorComponent* component : GetComponents())
+	{
+		UWeaponHitbox* newHurtbox = Cast<UWeaponHitbox>(component);
+		if (newHurtbox)
+		{
+			hurtboxes.Add(newHurtbox);
+		}
+	}
 }
 
 
@@ -43,7 +47,7 @@ void AWeaponActor::Deactivate()
 {
 	SetActorHiddenInGame(false);
 	SetActorEnableCollision(false);
-	capsuleComponent->SetGenerateOverlapEvents(false);
+	DisableHurtboxes();
 }
 
 // Called when the game starts or when spawned
@@ -96,14 +100,14 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 void AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
-	capsuleComponent->SetGenerateOverlapEvents(true);
+	EnableHurtboxes();
 	//Animation logic will go here, but I need animations first
 }
 
 void AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
-	capsuleComponent->SetGenerateOverlapEvents(true);
+	EnableHurtboxes();
 	//Animation logic will go here, but I need animations first
 }
 
@@ -140,4 +144,21 @@ void AWeaponActor::ChangeWeaponStats()
 	FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
 
 	stats = *newStats;
+}
+
+void AWeaponActor::EnableHurtboxes()
+{
+	for (UWeaponHitbox* hurtbox : hurtboxes)
+	{
+		hurtbox->SetGenerateOverlapEvents(true);
+	}
+}
+
+void AWeaponActor::DisableHurtboxes()
+{
+	for (UWeaponHitbox* hurtbox : hurtboxes)
+	{
+		hurtbox->SetGenerateOverlapEvents(false);
+	}
+
 }

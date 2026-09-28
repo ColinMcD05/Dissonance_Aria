@@ -27,7 +27,7 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-void UWeaponsSystemComponent::SwapWeapons()
+bool UWeaponsSystemComponent::SwapWeapons()
 {
 	if (canSwap)
 	{
@@ -41,7 +41,11 @@ void UWeaponsSystemComponent::SwapWeapons()
 		canSwap = false;
 
 		GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwap, 2, false);
+
+		return true;
 	}
+
+	return false;
 }
 
 void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player, AWeaponActor* weapon1, AWeaponActor* weapon2)

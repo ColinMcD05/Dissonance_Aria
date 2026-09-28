@@ -19,6 +19,9 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 
 	//Setup Weapons and weapons system
 	weaponsSystem = CreateDefaultSubobject<UWeaponsSystemComponent>(TEXT("WeaponsSystem"));
+
+	//Setup Damage System
+	damageSystem = CreateDefaultSubobject <UDamageSystemComponent>(TEXT("DamageSystem"));
 }
 
 // Called when the game starts or when spawned
@@ -78,7 +81,10 @@ void APlayerCharacterCombat::ReadSidestep()
 //Read Swap Input
 void APlayerCharacterCombat::ReadSwapWeapon()
 {
-	weaponsSystem->SwapWeapons();
+	if (weaponsSystem->SwapWeapons())
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
 }
 
 //Implementation of Damageable interface

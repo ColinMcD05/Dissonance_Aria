@@ -11,6 +11,7 @@
 #include "Weapons/WeaponsSystemComponent.h"
 #include "Inventory/InventoryComponent.h"
 #include "DamageSystem/DamageableInterface.h"
+#include "DamageSystem/DamageSystemComponent.h"
 #include "PlayerCharacterCombat.generated.h"
 
 class UInputAction;
@@ -32,6 +33,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UWeaponsSystemComponent* weaponsSystem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UDamageSystemComponent* damageSystem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	AWeaponActor* weapon1;
