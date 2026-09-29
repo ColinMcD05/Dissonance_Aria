@@ -14,6 +14,10 @@ AWeaponActor::AWeaponActor()
 	weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
 	weaponMesh->SetupAttachment(RootComponent);
+	weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	weaponMesh->SetSimulatePhysics(false);
+
+	SetActorEnableCollision(false);
 }
 
 void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo)
@@ -40,7 +44,6 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 void AWeaponActor::Activate()
 {
 	SetActorHiddenInGame(false);
-	SetActorEnableCollision(false);
 }
 
 void AWeaponActor::Deactivate()

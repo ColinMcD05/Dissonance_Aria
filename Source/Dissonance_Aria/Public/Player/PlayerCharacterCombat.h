@@ -83,6 +83,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	AWeaponActor* GetWeaponActor(int weapon) { return (weapon == 0) ? weapon1 : weapon2; }
 
+	USceneComponent* GetWeaponSpot() { return weaponSpot; }
+
 	//Read the light attack input
 	void ReadLightAttack();
 

@@ -71,7 +71,7 @@ void APlayerCharacterBase::Look_Implementation(const FInputActionValue& value)
 	if (Controller != nullptr)
 	{
 		AddControllerYawInput(lookVector.X);
-		AddControllerYawInput(lookVector.Y);
+		AddControllerPitchInput(lookVector.Y);
 	}
 }
 

@@ -60,6 +60,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
 		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
 		currentHeldWeapon->Activate();
+		currentHeldWeapon->AttachToActor(player, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();
@@ -72,5 +73,6 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		storedWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponTwo->weaponActor, player->GetActorTransform(), spawnParams);
 		storedWeapon->InitializeWeapon(player, *weaponTwo);
 		storedWeapon->Deactivate();
+		storedWeapon->AttachToActor(player, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 	}
 }
