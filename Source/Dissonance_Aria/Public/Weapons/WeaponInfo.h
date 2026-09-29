@@ -91,5 +91,5 @@ public:
 	TSubclassOf<AWeaponActor> weaponActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	bool aquired = false;
+	bool acquired = false;
 };

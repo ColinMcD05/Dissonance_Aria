@@ -38,7 +38,7 @@ void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 {
 	for (int i = 0; i < MAX_WEAPONS_AMOUNT; i++)
 	{
-		if (weapons[i].weaponType == newWeapon.weaponType && !weapons[i].aquired)
+		if (weapons[i].weaponType == newWeapon.weaponType && !weapons[i].acquired)
 		{
 			weapons[i] = newWeapon;
 			return;
@@ -48,7 +48,7 @@ void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 
 FS_WeaponInfo* UInventoryComponent::GetWeaponAtIndex(int index)
 {
-	if (weapons.IsEmpty() || index >= MAX_WEAPONS_AMOUNT || !weapons[index].aquired)
+	if (weapons.IsEmpty() || index >= MAX_WEAPONS_AMOUNT || !weapons[index].acquired)
 	{
 		return NULL;
 	}
@@ -134,7 +134,7 @@ bool UInventoryComponent::CheckIfWeaponInInventory(E_WeaponType weaponType)
 	{
 		if (info.weaponType == weaponType)
 		{
-			return info.aquired;
+			return info.acquired;
 		}
 	}
 	return false;
@@ -164,4 +164,47 @@ int UInventoryComponent::GetIndexByWeaponType(E_WeaponType weaponType)
 		}
 	}
 	return -1;
+}
+
+FS_InventorySave UInventoryComponent::SaveInventory()
+{
+	FS_InventorySave newSave;
+
+	for (FS_WeaponInfo currentInfo : weapons)
+	{
+		FS_WeaponSave weaponSave;
+		weaponSave.level = currentInfo.level;
+		weaponSave.experience = currentInfo.exp;
+		weaponSave.isAcquired = currentInfo.acquired;
+		weaponSave.toleranceMeter = currentInfo.toleranceMeter;
+		weaponSave.weaponType = currentInfo.weaponType;
+
+		newSave.weapons.Add(weaponSave);
+	}
+
+	newSave.weaponOneIndex = weaponOneIndex;
+	newSave.weaponTwoIndex = weaponTwoIndex;
+
+	return newSave;
+}
+
+void UInventoryComponent::LoadInventory(const FS_InventorySave& loadedInventory)
+{
+	weaponOneIndex = loadedInventory.weaponOneIndex;
+	weaponTwoIndex = loadedInventory.weaponTwoIndex;
+
+	for (FS_WeaponSave currentInfo : loadedInventory.weapons)
+	{
+		for (FS_WeaponInfo& currentWeapon : weapons)
+		{
+			if (currentWeapon.weaponType == currentInfo.weaponType)
+			{
+				currentWeapon.level = currentInfo.level;
+				currentWeapon.exp = currentInfo.experience;
+				currentWeapon.acquired = currentInfo.isAcquired;
+				currentWeapon.toleranceMeter = currentInfo.toleranceMeter;
+				break;
+			}
+		}
+	}
 }
