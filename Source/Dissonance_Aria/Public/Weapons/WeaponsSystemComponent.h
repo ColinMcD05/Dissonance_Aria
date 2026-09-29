@@ -28,7 +28,7 @@ private:
 	AWeaponActor* storedWeapon;
 #pragma endregion
 
-	bool canSwap;
+	bool canSwap = true;
 	FTimerHandle swapWeaponsTimer;
 
 protected:
@@ -49,6 +49,6 @@ public:
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
 
 	//Set Weapons
-	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player, AWeaponActor* weapon1, AWeaponActor* weapon2);
+	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
 	void ResetCanSwap() { canSwap = true; }
 };

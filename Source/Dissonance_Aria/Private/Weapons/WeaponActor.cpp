@@ -39,13 +39,13 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 
 void AWeaponActor::Activate()
 {
-	SetActorHiddenInGame(true);
-	SetActorEnableCollision(true);
+	SetActorHiddenInGame(false);
+	SetActorEnableCollision(false);
 }
 
 void AWeaponActor::Deactivate()
 {
-	SetActorHiddenInGame(false);
+	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	DisableHurtboxes();
 }
@@ -141,9 +141,12 @@ int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& p
 
 void AWeaponActor::ChangeWeaponStats()
 {
-	FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
+	if (currentTuning < statsTable.Num() && statsTable[currentTuning])
+	{
+		FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
 
-	stats = *newStats;
+		stats = *newStats;
+	}
 }
 
 void AWeaponActor::EnableHurtboxes()

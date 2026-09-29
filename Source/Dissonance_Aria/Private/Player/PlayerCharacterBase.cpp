@@ -2,6 +2,7 @@
 
 
 #include "Player/PlayerCharacterBase.h"
+#include "Player/PlayerControllerBase.h"
 #include "EnhancedInputComponent.h"
 
 // Sets default values
@@ -72,4 +73,9 @@ void APlayerCharacterBase::Look_Implementation(const FInputActionValue& value)
 		AddControllerYawInput(lookVector.X);
 		AddControllerYawInput(lookVector.Y);
 	}
+}
+
+void APlayerCharacterBase::PauseGame_Implementation()
+{
+	Cast<APlayerControllerBase>(GetController())->PausedGame();
 }

@@ -24,7 +24,7 @@ public:
 	TArray<FS_WeaponInfo> weapons;
 
 	int weaponOneIndex = 0;
-	int weaponTwoIndex = -1;
+	int weaponTwoIndex = 1;
 #pragma endregion
 
 

@@ -54,7 +54,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Look(const FInputActionValue& value);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void PauseGame();
 
 	bool GetUseFreeCamera() { return useFreeCamera; }

@@ -48,7 +48,7 @@ bool UWeaponsSystemComponent::SwapWeapons()
 	return false;
 }
 
-void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player, AWeaponActor* weapon1, AWeaponActor* weapon2)
+void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
 {
 	FS_WeaponInfo* weaponOne = inventory->GetWeaponOne();
 	if (weaponOne)
@@ -59,7 +59,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
 		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
-		weapon1 = currentHeldWeapon;
+		currentHeldWeapon->Activate();
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();
@@ -71,6 +71,6 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		storedWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponTwo->weaponActor, player->GetActorTransform(), spawnParams);
 		storedWeapon->InitializeWeapon(player, *weaponTwo);
-		weapon2 = storedWeapon;
+		storedWeapon->Deactivate();
 	}
 }

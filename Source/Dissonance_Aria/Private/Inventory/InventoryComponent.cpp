@@ -48,11 +48,18 @@ void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 
 FS_WeaponInfo* UInventoryComponent::GetWeaponAtIndex(int index)
 {
-	if (weapons.IsEmpty() || index >= MAX_WEAPONS_AMOUNT || !weapons[index].acquired)
+	if (weapons.IsEmpty() || index >= weapons.Num() || index < 0)
 	{
 		return NULL;
 	}
-
+	if (!weapons[index].acquired)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Not acquired"));
+		}
+		return NULL;
+	}
 	return &weapons[index];
 }
 

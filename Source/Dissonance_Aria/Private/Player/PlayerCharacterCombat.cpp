@@ -19,6 +19,7 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 
 	//Setup Weapons and weapons system
 	weaponsSystem = CreateDefaultSubobject<UWeaponsSystemComponent>(TEXT("WeaponsSystem"));
+	weaponSpot = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponsSpot"));
 
 	//Setup Damage System
 	damageSystem = CreateDefaultSubobject <UDamageSystemComponent>(TEXT("DamageSystem"));
@@ -35,7 +36,29 @@ void APlayerCharacterCombat::BeginPlay()
 	//Spawns weapons in once in
 	if (weaponsSystem && inventory)
 	{
-		weaponsSystem->SpawnWeapons(inventory, this, weapon1, weapon2);
+		weaponsSystem->SpawnWeapons(inventory, this);
+
+		weapon1 = weaponsSystem->GetCurrentHeldWeapon();
+		weapon2 = weaponsSystem->GetStoredWeapon();
+
+		if (weapon1)
+		{
+			weapon1->AttachToComponent(weaponSpot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Swapped"));
+			}
+		}
+		if (weapon2)
+		{
+			weapon2->AttachToComponent(weaponSpot, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Swapped"));
+			}
+		}
 	}
 }
 
