@@ -52,6 +52,10 @@ void APlayerCharacterBase::Move_Implementation(const FInputActionValue& value)
 	
 	AddMovementInput(GetActorRightVector(), moveVector.X);
 	AddMovementInput(GetActorForwardVector(), moveVector.Y);
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Heavy"));
+	}
 }
 
 void APlayerCharacterBase::PlayerJump_Implementation()

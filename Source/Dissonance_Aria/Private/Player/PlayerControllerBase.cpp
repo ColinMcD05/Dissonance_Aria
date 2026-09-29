@@ -8,6 +8,8 @@
 
 void APlayerControllerBase::BeginPlay()
 {
+	Super::BeginPlay();
+
 	playerBase = Cast<APlayerCharacterBase>(GetCharacter());
 
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
