@@ -97,8 +97,8 @@ public:
 	//Read Swap Weapon input
 	void ReadSwapWeapon();
 
-	//Implementation of Damageable interface
-#pragma region DamageableInterface
+	//Implementation of Attack interface
+#pragma region AttackInterface
 	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;
 	virtual float HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged) override;
 	virtual float SpecialAttack_Implementation() override;

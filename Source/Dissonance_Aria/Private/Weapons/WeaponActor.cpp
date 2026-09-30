@@ -100,18 +100,22 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 	weaponInfo = newWeaponInfo;
 }
 
-void AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
 	EnableHurtboxes();
+	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 1.2f, false);
 	//Animation logic will go here, but I need animations first
+	return 1.5;
 }
 
-void AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
 	EnableHurtboxes();
+	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 1.2f, false);
 	//Animation logic will go here, but I need animations first
+	return 1.5;
 }
 
 int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction)
@@ -160,11 +164,10 @@ void AWeaponActor::EnableHurtboxes()
 	}
 }
 
-void AWeaponActor::DisableHurtboxes()
+void AWeaponActor::DisableHurtboxes_Implementation()
 {
 	for (UWeaponHitbox* hurtbox : hurtboxes)
 	{
 		hurtbox->SetGenerateOverlapEvents(false);
 	}
-
 }

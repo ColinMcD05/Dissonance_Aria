@@ -93,16 +93,16 @@ void APlayerCharacterCombat::ReadSwapWeapon()
 	}
 }
 
-//Implementation of Damageable interface
+//Implementation of Attack interface
 #pragma region DamageableInterface
 float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
 {
-	return 3;
+	return weaponsSystem->GetCurrentHeldWeapon()->PerformLightAttack(previousActions);
 }
 
 float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
 {
-	return 3;
+	return weaponsSystem->GetCurrentHeldWeapon()->PerformHeavyAttack(previousActions);
 }
 
 float APlayerCharacterCombat::SpecialAttack_Implementation()

@@ -39,6 +39,8 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Player")
 	APlayerCharacterCombat* playerOwner;
 
+	FTimerHandle disableTimer;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -69,13 +71,14 @@ public:
 	void SetWeaponInfo(FS_WeaponInfo& newWeaponInfo);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void PerformLightAttack(const TArray<E_CombatActionType>& previousActions);
+	float PerformLightAttack(const TArray<E_CombatActionType>& previousActions);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
+	float PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
 
 	void EnableHurtboxes();
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
 	void DisableHurtboxes();
 
 	int GetMaxHealth() { return stats.maxHP; }
