@@ -12,10 +12,10 @@ class AWeaponActor;
 UENUM(BlueprintType)
 enum class E_WeaponType : uint8
 {
-	Dagger UMETA(DisplayName = "Dagger"),
-	Sword UMETA(DisplayName = "Sword"),
 	Greatsword UMETA(DisplayName = "Greatsword"),
-	Scythe UMETA(DisplayName = "Scythe")
+	Sword UMETA(DisplayName = "Sword"),
+	Scythe UMETA(DisplayName = "Scythe"),
+	Dagger UMETA(DisplayName = "Dagger")
 };
 
 //Struct to hold all the experience
@@ -32,6 +32,23 @@ public:
 	int storedExperience;
 };
 
+USTRUCT(BlueprintType)
+struct FS_Stats : public FTableRowBase
+{
+	GENERATED_BODY()
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	int maxHP;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float damage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float speed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float sidestepDistance;
+};
 
 USTRUCT(BlueprintType)
 struct FS_Tuning
@@ -39,18 +56,6 @@ struct FS_Tuning
 	GENERATED_BODY();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	int maxHP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	float damage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	float speed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	float sidestepDistance;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = "0", ClampMax = "1"))
 	float toleranceMeter = 1;
 
@@ -64,21 +69,8 @@ struct FS_WeaponInfo
 {
 	GENERATED_BODY();
 public:
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	int level;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	int maxHP;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	float damage;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	float speed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	float sidestepDistance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (ClampMin = "0", ClampMax = "1"))
 	float toleranceMeter = 1;
@@ -99,5 +91,5 @@ public:
 	TSubclassOf<AWeaponActor> weaponActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
-	bool aquired = false;
+	bool acquired = false;
 };

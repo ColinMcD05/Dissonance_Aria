@@ -27,6 +27,27 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
+bool UWeaponsSystemComponent::SwapWeapons()
+{
+	if (canSwap)
+	{
+		AWeaponActor* tempWeapon = currentHeldWeapon;
+
+		currentHeldWeapon = storedWeapon;
+		currentHeldWeapon->Activate();
+
+		storedWeapon = tempWeapon;
+		storedWeapon->Deactivate();
+		canSwap = false;
+
+		GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwap, 2, false);
+
+		return true;
+	}
+
+	return false;
+}
+
 void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
 {
 	FS_WeaponInfo* weaponOne = inventory->GetWeaponOne();
@@ -37,8 +58,9 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		spawnParams.Instigator = player->GetInstigator();
 
 		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
-		currentHeldWeapon->InitializeWeapon(player, weaponOne);
-
+		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
+		currentHeldWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		currentHeldWeapon->Activate();
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();
@@ -49,6 +71,8 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		spawnParams.Instigator = player->GetInstigator();
 
 		storedWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponTwo->weaponActor, player->GetActorTransform(), spawnParams);
-		storedWeapon->InitializeWeapon(player, weaponTwo);
+		storedWeapon->InitializeWeapon(player, *weaponTwo);
+		storedWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+		storedWeapon->Deactivate();
 	}
 }

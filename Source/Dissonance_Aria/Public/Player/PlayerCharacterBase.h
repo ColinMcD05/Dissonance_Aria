@@ -25,6 +25,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* pause;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* look;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	bool useFreeCamera;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -36,10 +42,20 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void Move();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Move(const FInputActionValue& value);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void PlayerJump();
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void Pause();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void StopPlayerJump();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Look(const FInputActionValue& value);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void PauseGame();
+
+	bool GetUseFreeCamera() { return useFreeCamera; }
 };
