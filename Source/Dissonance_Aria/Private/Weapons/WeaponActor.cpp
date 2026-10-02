@@ -13,7 +13,9 @@ AWeaponActor::AWeaponActor()
 	//Setup Mesh
 	weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
-	weaponMesh->SetupAttachment(RootComponent);
+	//Set RootComponent
+	RootComponent = weaponMesh;
+
 	weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	weaponMesh->SetSimulatePhysics(false);
 

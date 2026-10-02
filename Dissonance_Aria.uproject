@@ -26,5 +26,8 @@
 			"Name": "Rive",
 			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows"
 	]
 }

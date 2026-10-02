@@ -111,11 +111,6 @@ void UCombatSystemComponent::ReadCombatQueue()
 	//Ensures players can no longer attack
 	canAttack = false;
 
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, FString::FromInt(canAttack));
-	}
-
 	if (previousActions.Num() >= MAX_COMBO_LENGTH)
 	{
 		canReadInput = false;

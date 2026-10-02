@@ -3,6 +3,7 @@
 
 #include "BasicFunctions/GetGameInfo.h"
 #include "GameInfo/DAGameInstance.h"
+#include "GameInfo/DAGameStateCombat.h"
 
 namespace GameInfoUtilities
 {

@@ -27,22 +27,30 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UWeaponsSystemComponent::SwapWeapons()
+bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo)
 {
 	if (canSwap)
 	{
-		AWeaponActor* tempWeapon = currentHeldWeapon;
+		if (swapTo != currentHeldWeapon)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Yes"));
+			}
+			AWeaponActor* tempWeapon = currentHeldWeapon;
 
-		currentHeldWeapon = storedWeapon;
-		currentHeldWeapon->Activate();
+			currentHeldWeapon = storedWeapon;
+			currentHeldWeapon->Activate();
 
-		storedWeapon = tempWeapon;
-		storedWeapon->Deactivate();
-		canSwap = false;
+			storedWeapon = tempWeapon;
+			storedWeapon->Deactivate();
+			canSwap = false;
 
-		GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwap, 2, false);
+			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwap, 2, false);
 
-		return true;
+			return true;
+		}
+		return false;
 	}
 
 	return false;
