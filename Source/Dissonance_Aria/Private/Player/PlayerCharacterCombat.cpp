@@ -5,6 +5,7 @@
 #include "GameInfo/DAGameInstance.h"
 #include "Input/InputActions/CombatActionBase.h"
 #include "InputAction.h"
+#include "GameInfo/DAGameStateCombat.h"
 #include "EnhancedInputComponent.h"
 
 // Sets default values
@@ -25,6 +26,33 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 
 	//Setup Damage System
 	damageSystem = CreateDefaultSubobject <UDamageSystemComponent>(TEXT("DamageSystem"));
+
+	//Setup camera
+	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+
+	//SpringArm setup
+	springArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+
+	springArm->SetupAttachment(RootComponent);
+	springArm->TargetArmLength = distanceFromPlayer;
+	springArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+
+	//Camera lag. Comment out if unneeded
+	if (cameraMoveLag)
+	{
+		springArm->bEnableCameraLag = true;
+		springArm->CameraLagSpeed = 2;
+		springArm->CameraLagMaxDistance = 1.5f;
+	}
+
+	if (cameraRotationLag)
+	{
+		springArm->bEnableCameraLag = true;
+		springArm->CameraRotationLagSpeed = 4;
+		springArm->CameraLagMaxTimeStep = 1;
+	}
+
+	camera->SetupAttachment(springArm, USpringArmComponent::SocketName);
 }
 
 // Called when the game starts or when spawned
@@ -43,6 +71,13 @@ void APlayerCharacterCombat::BeginPlay()
 		weapon1 = weaponsSystem->GetCurrentHeldWeapon();
 		weapon2 = weaponsSystem->GetStoredWeapon();
 	}
+
+	//Get game state
+	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
+	if (gameState)
+	{
+		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
+	}
 }
 
 // Called every frame
@@ -52,6 +87,7 @@ void APlayerCharacterCombat::Tick(float DeltaTime)
 
 }
 
+#pragma region Inputs
 // Called to bind functionality to input
 void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -63,19 +99,26 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
+		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
 	}
 }
 
 //Read the light attack input
 void APlayerCharacterCombat::ReadLightAttack()
 {
-	combatSystem->AddToCombatQueue(E_CombatActionType::LightAttack);
+	if (combatSystem)
+	{
+		combatSystem->AddToCombatQueue(E_CombatActionType::LightAttack);
+	}
 }
 
 //Read the heavy attack input
 void APlayerCharacterCombat::ReadHeavyAttack()
 {
-	combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+	if (combatSystem)
+	{
+		combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+	}
 }
 
 //Read the side step input
@@ -85,16 +128,69 @@ void APlayerCharacterCombat::ReadSidestep()
 }
 
 //Read Swap Input
-void APlayerCharacterCombat::ReadSwapWeapon()
+void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 {
-	if (weaponsSystem->SwapWeapons())
+	bool didSwap = false;
+	int swapValue = value.Get<float>();
+	if (weaponsSystem)
+	{
+		switch (swapValue)
+		{
+		case 1:
+			weaponsSystem->SwapWeapons(weapon1);
+			break;
+		case 2:
+			weaponsSystem->SwapWeapons(weapon2);
+			break;
+		}
+	}
+
+	if (didSwap && damageSystem)
 	{
 		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
 	}
 }
 
+//Read the change lock on input
+void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
+{
+	float changeTo = value.Get<float>();
+
+	if (gameState)
+	{
+		if (changeTo > 0)
+		{
+			lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
+		}
+		else
+		{
+			lockedOnEnemy = gameState->GetPreviousEnemy(enemyIndex);
+		}
+	}
+}
+#pragma endregion
+
+#pragma region Camera
+//Relook for a valid enemy when one dies
+void APlayerCharacterCombat::CameraEnemySearch()
+{
+	if (gameState)
+	{
+		lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
+	}
+}
+
+void APlayerCharacterCombat::RotatePlayer()
+{
+	if (lockedOnEnemy)
+	{
+		FVector3d distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+	}
+}
+#pragma endregion
+
 //Implementation of Attack interface
-#pragma region DamageableInterface
+#pragma region AttacksInterface
 float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
 {
 	return weaponsSystem->GetCurrentHeldWeapon()->PerformLightAttack(previousActions);
