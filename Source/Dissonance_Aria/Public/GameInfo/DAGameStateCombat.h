@@ -14,6 +14,7 @@ class DISSONANCE_ARIA_API ADAGameStateCombat : public AGameStateBase
 	GENERATED_BODY()
 	
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Experience", meta = (AllowPrivateAccess = "true"))
 	int totalEnemyExp;
 
 	TArray<AActor*> enemies;
