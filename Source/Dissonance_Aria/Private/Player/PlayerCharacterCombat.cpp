@@ -7,6 +7,7 @@
 #include "InputAction.h"
 #include "GameInfo/DAGameStateCombat.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -180,11 +181,24 @@ void APlayerCharacterCombat::CameraEnemySearch()
 	}
 }
 
-void APlayerCharacterCombat::RotatePlayer()
+void APlayerCharacterCombat::FocusOnEnemy()
 {
 	if (lockedOnEnemy)
 	{
-		FVector3d distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+		RotatePlayer();
+	}
+}
+
+void APlayerCharacterCombat::RotatePlayer()
+{
+	if (camera)
+	{
+		//Get angle
+		FRotator rotator = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), lockedOnEnemy->GetActorLocation());
+
+		FRotator newRotation = FMath::RInterpTo(GetActorRotation(), rotator, GetWorld()->DeltaTimeSeconds, rotateSpeed);
+
+		Controller->SetControlRotation(FRotator(GetActorRotation().Roll, GetActorRotation().Pitch, newRotation.Yaw));
 	}
 }
 #pragma endregion

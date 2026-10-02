@@ -5,6 +5,8 @@
 
 void UWeaponHitbox::BeginPlay()
 {
+	Super::BeginPlay();
+
 	PrimaryComponentTick.bCanEverTick = true;
 
 	attackingOwner = GetOwner();
