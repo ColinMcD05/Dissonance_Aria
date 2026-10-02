@@ -3,13 +3,13 @@
 
 #include "GameInfo/DAGameStateCombat.h"
 
-void ADAGameStateCombat::AddEnemies_Implementation(UObject* newEnemy)
+void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
 {
 	enemies.Add(newEnemy);
 	IncreaseTotalExp(newEnemy);
 }
 
-UObject* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
+AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 {
 	currentIndex++;
 	if (enemies.Num() == 0)
@@ -24,7 +24,7 @@ UObject* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 	return enemies[currentIndex];
 }
 
-UObject* ADAGameStateCombat::GetPreviousEnemy(int& currentIndex)
+AActor* ADAGameStateCombat::GetPreviousEnemy(int& currentIndex)
 {
 	currentIndex--;
 	if (currentIndex < 0)

@@ -84,7 +84,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float distanceFromPlayer;
 
-	UObject* lockedOnEnemy;
+	AActor* lockedOnEnemy;
 
 	int enemyIndex = 0;
 #pragma endregion

@@ -184,7 +184,7 @@ void APlayerCharacterCombat::RotatePlayer()
 {
 	if (lockedOnEnemy)
 	{
-		//FVector3d distance = lockedOnEnemy
+		FVector3d distance = lockedOnEnemy->Actor
 	}
 }
 #pragma endregion

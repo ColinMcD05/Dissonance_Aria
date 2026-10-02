@@ -16,14 +16,14 @@ class DISSONANCE_ARIA_API ADAGameStateCombat : public AGameStateBase
 private:
 	int totalEnemyExp;
 
-	TArray<UObject*> enemies;
+	TArray<AActor*> enemies;
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Enemies")
-	void AddEnemies(UObject* newEnemy);
+	void AddEnemies(AActor* newEnemy);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Enemies")
-	void IncreaseTotalExp(UObject* newEnemy);
+	void IncreaseTotalExp(AActor* newEnemy);
 
 #pragma region Delegates
 	UPROPERTY(BlueprintAssignable)
@@ -33,10 +33,10 @@ public:
 #pragma region Getters
 	//Get next enemy
 	UFUNCTION(BlueprintCallable, Category = "Enemies")
-	UObject* GetNextEnemy(int& currentIndex);
+	AActor* GetNextEnemy(int& currentIndex);
 
 	//Get previous enemy
 	UFUNCTION(BlueprintCallable, Category = "Enemies")
-	UObject* GetPreviousEnemy(int& currentIndex);
+	AActor* GetPreviousEnemy(int& currentIndex);
 #pragma endregion
 };
