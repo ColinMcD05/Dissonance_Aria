@@ -78,6 +78,7 @@ void APlayerCharacterCombat::BeginPlay()
 	if (gameState)
 	{
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
+		gameState->OnEnemySpawned.AddDynamic(this, &APlayerCharacterCombat::FocusOnEnemy);
 	}
 }
 
@@ -138,10 +139,10 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 		switch (swapValue)
 		{
 		case 1:
-			weaponsSystem->SwapWeapons(weapon1);
+			weaponsSystem->SwapWeapons(weapon1, 1);
 			break;
 		case 2:
-			weaponsSystem->SwapWeapons(weapon2);
+			weaponsSystem->SwapWeapons(weapon2, 2);
 			break;
 		}
 	}
@@ -183,7 +184,7 @@ void APlayerCharacterCombat::CameraEnemySearch()
 
 void APlayerCharacterCombat::FocusOnEnemy()
 {
-	if (lockedOnEnemy)
+	if (lockedOnEnemy && enemyIndex > -1)
 	{
 		RotatePlayer();
 	}

@@ -11,7 +11,7 @@
 class AWeaponActor;
 class PlayerCharacterCombat;
 
-DECLARE_MULTICAST_DELEGATE(FWeaponsSpawned);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
@@ -42,7 +42,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	bool SwapWeapons(AWeaponActor*& swapTo);
+	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
 
 	//Getters
 	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
@@ -51,4 +51,10 @@ public:
 	//Set Weapons
 	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
 	void ResetCanSwap() { canSwap = true; }
+
+#pragma region Delegates
+	//Delegate that gets broadcasted once weapons spawn
+	UPROPERTY(BlueprintAssignable)
+	FWeaponsSwapped OnWeaponSwapped;
+#pragma endregion
 };

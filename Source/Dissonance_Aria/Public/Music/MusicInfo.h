@@ -8,25 +8,25 @@
 UENUM(BlueprintType)
 enum class E_Genre : uint8
 {
-	None UMETA(DisplayName = "None"),
-	Classical UMETA(DisplayName = "Orchestral"),
-	Folk UMETA(DisplayName = "Folk"),
-	Metal UMETA(DisplayName = "Metal"),
-	Jazz UMETA(DisplayName = "Jazz")
+	None = 0 UMETA(DisplayName = "None"),
+	Classical = 1 UMETA(DisplayName = "Orchestral"),
+	Folk = 4 UMETA(DisplayName = "Folk"), 
+	Jazz = 7 UMETA(DisplayName = "Jazz"),
+	Metal = 10 UMETA(DisplayName = "Metal")
 };
 
 UENUM(BlueprintType)
 enum class E_SubGenre : uint8
 {
-	None UMETA(DisplayName = "None"),
-	Brass UMETA(DisplayName = "Brass"),
-	Choral UMETA(DisplayName = "Choral"),
-	Irish UMETA(DisplayName = "Irish"),
-	Banjo UMETA(DisplayName = "Banjo"),
-	Heavy UMETA(DisplayName = "Heavy"),
-	Gothic UMETA(DisplayName = "Gothic"),
-	Bebop UMETA(DisplayName = "Bebop"),
-	Blues UMETA(DisplayName = "Blues")
+	None = 0 UMETA(DisplayName = "None"),
+	Choral = 1 UMETA(DisplayName = "Choral"),
+	Brass = 2 UMETA(DisplayName = "Brass"),
+	Banjo = 1 UMETA(DisplayName = "Banjo"),
+	Celtic = 2 UMETA(DisplayName = "Irish"),
+	Bebop = 1 UMETA(DisplayName = "Bebop"),
+	Blues = 2 UMETA(DisplayName = "Blues"),
+	Heavy = 1 UMETA(DisplayName = "Heavy"),
+	Gothic = 2 UMETA(DisplayName = "Gothic")
 };
 
 USTRUCT(BlueprintType)
