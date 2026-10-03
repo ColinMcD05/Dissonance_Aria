@@ -89,7 +89,7 @@ private:
 
 	AActor* lockedOnEnemy;
 
-	int enemyIndex = 0;
+	int enemyIndex = -1;
 #pragma endregion
 
 #pragma region GameInfo

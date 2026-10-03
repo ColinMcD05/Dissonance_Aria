@@ -80,6 +80,7 @@ void APlayerCharacterCombat::BeginPlay()
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
 	}
 
+	CameraEnemySearch();
 	FocusOnEnemy();
 }
 
@@ -87,7 +88,6 @@ void APlayerCharacterCombat::BeginPlay()
 void APlayerCharacterCombat::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 #pragma region Inputs
@@ -189,17 +189,6 @@ void APlayerCharacterCombat::FocusOnEnemy()
 	{
 		RotatePlayer();
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayerCharacterCombat::FocusOnEnemy);
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "Rotating");
-		}
-	}
-	else
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "No Enemies");
-		}
 	}
 }
 
@@ -212,7 +201,7 @@ void APlayerCharacterCombat::RotatePlayer()
 
 		FRotator newRotation = FMath::RInterpTo(GetActorRotation(), rotator, GetWorld()->DeltaTimeSeconds, rotateSpeed);
 
-		Controller->SetControlRotation(FRotator(GetActorRotation().Roll, GetActorRotation().Pitch, newRotation.Yaw));
+		Controller->SetControlRotation(FRotator(GetActorRotation().Pitch, newRotation.Yaw, GetActorRotation().Roll));
 	}
 }
 #pragma endregion
