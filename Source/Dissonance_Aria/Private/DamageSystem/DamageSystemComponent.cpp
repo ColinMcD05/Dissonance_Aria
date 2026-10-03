@@ -55,6 +55,12 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo)
 	}
 
 	currentHealth = FMath::Clamp(currentHealth - damageTaken, 0.0f, maxHealth);
+
+	if (currentHealth <= 0)
+	{
+		isDead = true;
+	}
+
 	OnTakeDamage.Broadcast(currentHealth);
 
 	return true;

@@ -17,10 +17,10 @@ class DISSONANCE_ARIA_API UDamageSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	float currentHealth = maxHealth;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	bool isDead = false;
 
 	UPROPERTY(EditAnywhere, Category = "Genre")
