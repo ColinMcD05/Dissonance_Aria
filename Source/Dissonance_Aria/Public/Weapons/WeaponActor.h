@@ -39,7 +39,23 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Player")
 	APlayerCharacterCombat* playerOwner;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float timeToDrainTolerance = 90;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float timeToFillTolerance = 45;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float timeToDrainTuning = 35;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float timeToFillTuning = 25;
+
 	FTimerHandle disableTimer;
+
+	FTimerHandle raiserTimer;
+
+	bool activated = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -86,4 +102,8 @@ public:
 	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
 
 	void ChangeWeaponStats();
+
+	void LowerTolerance();
+
+	void RaiseTolerance();
 };
