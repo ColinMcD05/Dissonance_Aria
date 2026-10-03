@@ -32,7 +32,7 @@ void UDamageSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo& damageInfo)
+bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo)
 {
 	if (isDead)
 	{

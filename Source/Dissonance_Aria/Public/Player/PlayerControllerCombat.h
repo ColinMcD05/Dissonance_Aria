@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Player/PlayerControllerBase.h"
+#include "DamageSystem/DamageableInterface.h"
 #include "PlayerControllerCombat.generated.h"
 
 UCLASS()
