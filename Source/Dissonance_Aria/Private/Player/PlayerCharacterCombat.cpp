@@ -7,6 +7,7 @@
 #include "InputAction.h"
 #include "GameInfo/DAGameStateCombat.h"
 #include "EnhancedInputComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -78,6 +79,8 @@ void APlayerCharacterCombat::BeginPlay()
 	{
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
 	}
+
+	FocusOnEnemy();
 }
 
 // Called every frame
@@ -137,10 +140,10 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 		switch (swapValue)
 		{
 		case 1:
-			weaponsSystem->SwapWeapons(weapon1);
+			weaponsSystem->SwapWeapons(weapon1, 1);
 			break;
 		case 2:
-			weaponsSystem->SwapWeapons(weapon2);
+			weaponsSystem->SwapWeapons(weapon2, 2);
 			break;
 		}
 	}
@@ -180,11 +183,36 @@ void APlayerCharacterCombat::CameraEnemySearch()
 	}
 }
 
+void APlayerCharacterCombat::FocusOnEnemy()
+{
+	if (lockedOnEnemy && enemyIndex > -1)
+	{
+		RotatePlayer();
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayerCharacterCombat::FocusOnEnemy);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "Rotating");
+		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "No Enemies");
+		}
+	}
+}
+
 void APlayerCharacterCombat::RotatePlayer()
 {
-	if (lockedOnEnemy)
+	if (camera)
 	{
-		FVector3d distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+		//Get angle
+		FRotator rotator = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), lockedOnEnemy->GetActorLocation());
+
+		FRotator newRotation = FMath::RInterpTo(GetActorRotation(), rotator, GetWorld()->DeltaTimeSeconds, rotateSpeed);
+
+		Controller->SetControlRotation(FRotator(GetActorRotation().Roll, GetActorRotation().Pitch, newRotation.Yaw));
 	}
 }
 #pragma endregion

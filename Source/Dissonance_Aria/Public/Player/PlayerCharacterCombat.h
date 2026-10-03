@@ -82,7 +82,10 @@ private:
 	bool cameraRotationLag = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	float distanceFromPlayer;
+	float distanceFromPlayer = 100;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float rotateSpeed = 10;
 
 	AActor* lockedOnEnemy;
 
@@ -140,9 +143,14 @@ public:
 #pragma endregion
 
 #pragma region Camera
+	UFUNCTION()
 	//Relook for a valid enemy when one dies
 	void CameraEnemySearch();
 
+	//Focus the camera on enemy
+	void FocusOnEnemy();
+
+	//Rotate the player to face enemy
 	void RotatePlayer();
 #pragma endregion
 	//Implementation of Attack interface

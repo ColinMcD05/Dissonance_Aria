@@ -27,7 +27,7 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo)
+bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon)
 {
 	if (canSwap)
 	{
@@ -47,6 +47,8 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo)
 			canSwap = false;
 
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwap, 2, false);
+
+			OnWeaponSwapped.Broadcast(whichWeapon);
 
 			return true;
 		}

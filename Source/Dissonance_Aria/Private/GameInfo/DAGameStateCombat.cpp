@@ -7,16 +7,22 @@ void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
 {
 	enemies.Add(newEnemy);
 	IncreaseTotalExp(newEnemy);
+
+	if (enemies.Num() == 1)
+	{
+		OnEnemySpawned.Broadcast();
+	}
 }
 
 AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 {
-	currentIndex++;
 	if (enemies.Num() == 0)
 	{
 		currentIndex = -1;
 		return nullptr;
 	}
+
+	currentIndex++;
 	if (currentIndex >= enemies.Num())
 	{
 		currentIndex = 0;
@@ -26,6 +32,12 @@ AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 
 AActor* ADAGameStateCombat::GetPreviousEnemy(int& currentIndex)
 {
+	if (enemies.Num() == 0)
+	{
+		currentIndex = -1;
+		return nullptr;
+	}
+
 	currentIndex--;
 	if (currentIndex < 0)
 	{

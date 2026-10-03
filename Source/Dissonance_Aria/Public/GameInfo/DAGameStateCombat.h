@@ -7,6 +7,7 @@
 #include "DAGameStateCombat.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemyDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemySpawned);
 
 UCLASS()
 class DISSONANCE_ARIA_API ADAGameStateCombat : public AGameStateBase
@@ -14,6 +15,7 @@ class DISSONANCE_ARIA_API ADAGameStateCombat : public AGameStateBase
 	GENERATED_BODY()
 	
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Experience", meta = (AllowPrivateAccess = "true"))
 	int totalEnemyExp;
 
 	TArray<AActor*> enemies;
@@ -28,6 +30,9 @@ public:
 #pragma region Delegates
 	UPROPERTY(BlueprintAssignable)
 	FOnEnemyDeath OnEnemyDeath;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnEnemySpawned OnEnemySpawned;
 #pragma endregion
 
 #pragma region Getters
