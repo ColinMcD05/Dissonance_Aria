@@ -13,7 +13,9 @@ AWeaponActor::AWeaponActor()
 	//Setup Mesh
 	weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
-	weaponMesh->SetupAttachment(RootComponent);
+	//Set RootComponent
+	RootComponent = weaponMesh;
+
 	weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	weaponMesh->SetSimulatePhysics(false);
 
@@ -104,7 +106,7 @@ float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActio
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
 	EnableHurtboxes();
-	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 1.2f, false);
+	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 0.17f, false);
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
@@ -113,7 +115,7 @@ float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActio
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
 	EnableHurtboxes();
-	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 1.2f, false);
+	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 0.17f, false);
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
