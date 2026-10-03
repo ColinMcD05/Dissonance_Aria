@@ -87,6 +87,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float rotateSpeed = 10;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	AActor* lockedOnEnemy;
 
 	int enemyIndex = -1;
@@ -158,5 +159,14 @@ public:
 	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;
 	virtual float HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged) override;
 	virtual float SpecialAttack_Implementation() override;
+#pragma
+
+#pragma region DamageableInterface
+	virtual float GetCurrentHealth_Implementation() override;
+	virtual float GetMaxHealth_Implementation() override;
+	virtual bool GetIsDead_Implementation() override;
+	virtual void Heal_Implementation(float HealAmount, AActor* Healer) override;
+	virtual bool TakeDamage_Implementation(FS_DamageInfo DamageInfo) override;
+	virtual void HandleDeath_Implementation(AActor* killer) override;
 #pragma
 };
