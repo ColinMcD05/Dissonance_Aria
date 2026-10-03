@@ -55,6 +55,8 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo& damageInfo)
 	}
 
 	currentHealth = FMath::Clamp(currentHealth - damageTaken, 0.0f, maxHealth);
+	OnTakeDamage.Broadcast(currentHealth);
+
 	return true;
 }
 
@@ -74,4 +76,6 @@ void UDamageSystemComponent::SetMaxHealthAndCurrent(int newMaxHealth)
 
 	maxHealth = newMaxHealth;
 	currentHealth = FMath::Clamp(maxHealth * percentage, 0, maxHealth);
+
+	OnHealthChange.Broadcast(maxHealth, currentHealth);
 }

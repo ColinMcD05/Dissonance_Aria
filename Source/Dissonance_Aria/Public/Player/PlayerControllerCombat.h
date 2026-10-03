@@ -6,9 +6,6 @@
 #include "Player/PlayerControllerBase.h"
 #include "PlayerControllerCombat.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class DISSONANCE_ARIA_API APlayerControllerCombat : public APlayerControllerBase
 {

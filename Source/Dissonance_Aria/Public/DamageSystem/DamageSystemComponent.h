@@ -8,6 +8,8 @@
 #include "Music/MusicInfo.h"
 #include "DamageSystemComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTakeDamage, float, newHealth);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChange, float, newMax, float, newCurrent);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UDamageSystemComponent : public UActorComponent
@@ -69,4 +71,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void SetMaxHealthAndCurrent(int newMaxHealth);
+
+#pragma region Delegates
+	UPROPERTY(BlueprintAssignable)
+	FOnTakeDamage OnTakeDamage;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnHealthChange OnHealthChange;
+#pragma endregion
 };

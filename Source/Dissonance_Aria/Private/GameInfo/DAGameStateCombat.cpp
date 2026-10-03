@@ -7,6 +7,11 @@ void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
 {
 	enemies.Add(newEnemy);
 	IncreaseTotalExp(newEnemy);
+
+	if (enemies.Num() == 1)
+	{
+		OnEnemySpawned.Broadcast();
+	}
 }
 
 AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)

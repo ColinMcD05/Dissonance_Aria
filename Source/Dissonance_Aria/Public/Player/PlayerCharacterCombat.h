@@ -143,6 +143,7 @@ public:
 #pragma endregion
 
 #pragma region Camera
+	UFUNCTION()
 	//Relook for a valid enemy when one dies
 	void CameraEnemySearch();
 
