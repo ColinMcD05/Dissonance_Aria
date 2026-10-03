@@ -46,6 +46,8 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 void AWeaponActor::Activate()
 {
 	SetActorHiddenInGame(false);
+	activated = true;
+	LowerTolerance();
 }
 
 void AWeaponActor::Deactivate()
@@ -53,6 +55,9 @@ void AWeaponActor::Deactivate()
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	DisableHurtboxes();
+	activated = false;
+	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
+	RaiseTolerance();
 }
 
 // Called when the game starts or when spawned
@@ -171,5 +176,53 @@ void AWeaponActor::DisableHurtboxes_Implementation()
 	for (UWeaponHitbox* hurtbox : hurtboxes)
 	{
 		hurtbox->SetGenerateOverlapEvents(false);
+	}
+}
+
+void AWeaponActor::LowerTolerance()
+{
+	if (activated)
+	{
+		if (weaponInfo.toleranceMeter > 0)
+		{
+			weaponInfo.toleranceMeter -= GetWorld()->DeltaTimeSeconds / timeToDrainTolerance;
+			if (currentTuning > 0)
+			{
+				if (weaponInfo.tunings.Num() == currentTuning + 1)
+				{
+					weaponInfo.tunings[currentTuning].toleranceMeter -= GetWorld()->DeltaTimeSeconds / timeToDrainTuning;
+				}
+			}
+			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::LowerTolerance);
+		}
+		else
+		{
+			stats.damage *= 0.75f;
+			stats.sidestepDistance *= 0.75f;
+		}
+	}
+}
+
+void AWeaponActor::RaiseTolerance()
+{
+	if (!activated)
+	{
+		if (weaponInfo.toleranceMeter < 1)
+		{
+			weaponInfo.toleranceMeter += GetWorld()->DeltaTimeSeconds / timeToFillTolerance;
+			if (currentTuning > 0)
+			{
+				if (weaponInfo.tunings.Num() == currentTuning + 1)
+				{
+					weaponInfo.tunings[currentTuning].toleranceMeter += GetWorld()->DeltaTimeSeconds / timeToFillTuning;
+				}
+			}
+			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::RaiseTolerance);
+		}
+		else
+		{
+			stats.damage /= 0.75f;
+			stats.sidestepDistance /= 0.75f;
+		}
 	}
 }
