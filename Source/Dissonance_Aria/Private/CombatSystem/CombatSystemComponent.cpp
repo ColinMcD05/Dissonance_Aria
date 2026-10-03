@@ -35,15 +35,6 @@ void UCombatSystemComponent::BeginPlay()
 void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (timeBetweenInput < maxTimeBetweenInput)
-	{
-		timeBetweenInput += world->DeltaTimeSeconds;
-	}
-	else
-	{
-		ResetReadInputs();
-	}
 }
 
 //Adds action type to combat queue
@@ -52,11 +43,15 @@ void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 	//Checks if can add input, then add input
 	if (canReadInput)
 	{
-		combatQueue.Enqueue(action);
-		queueCount++;
+		if (queueCount < MAX_COMBO_LENGTH)
+		{
+			combatQueue.Enqueue(action);
+			queueCount++;
 
-		//Read input
-		ReadCombatQueue();
+
+			//Read input
+			ReadCombatQueue();
+		}
 	}
 }
 
@@ -71,7 +66,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 		{
 			return;
 		}
-		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, false);
+		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, 0.1f, false);
 
 		return;
 	}
@@ -96,11 +91,12 @@ void UCombatSystemComponent::ReadCombatQueue()
 			if (attacker)
 			{
 				waitTime = attacker->Execute_HeavyAttack(Cast<UObject>(attacker), previousActions, false);
-				previousActions.Add(E_CombatActionType::HeavyAttack);
-				if (GEngine)
+				if (previousActions.IsEmpty())
 				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Heavy"));
+					ResetQueue(waitTime+0.5f);
+					return;
 				}
+				previousActions.Add(E_CombatActionType::HeavyAttack);
 			}
 			break;
 		case E_CombatActionType::LightAttack:
@@ -108,10 +104,6 @@ void UCombatSystemComponent::ReadCombatQueue()
 			{
 				waitTime = attacker->Execute_LightAttack(Cast<UObject>(attacker), previousActions);
 				previousActions.Add(E_CombatActionType::LightAttack);	
-				if (GEngine)
-				{
-					GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Light."));
-				}
 			}
 			break;
 	}
@@ -119,7 +111,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 	//Ensures players can no longer attack
 	canAttack = false;
 
-	if (queueCount >= MAX_COMBO_LENGTH)
+	if (previousActions.Num() >= MAX_COMBO_LENGTH)
 	{
 		canReadInput = false;
 		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime + 1, false);
@@ -174,4 +166,22 @@ void UCombatSystemComponent::ResetReadInputs()
 	//Allows player to attack
 	canReadInput = true;
 	canAttack = true;
+
+	//Empty queue
+	combatQueue.Empty();
+	queueCount = 0;
+	previousActions.Empty();
+}
+
+void UCombatSystemComponent::QueueCountUp()
+{
+	if (timeBetweenInput < maxTimeBetweenInput)
+	{
+		timeBetweenInput += world->DeltaTimeSeconds;
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombatSystemComponent::QueueCountUp);
+	}
+	else
+	{
+		ResetQueue(0.1f);
+	}
 }

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Weapons/WeaponInfo.h"
+#include "Saving/SaveInfo.h"
 #include "InventoryComponent.generated.h"
 
 #define MAX_WEAPONS_AMOUNT 4
@@ -23,7 +24,7 @@ public:
 	TArray<FS_WeaponInfo> weapons;
 
 	int weaponOneIndex = 0;
-	int weaponTwoIndex = -1;
+	int weaponTwoIndex = 1;
 #pragma endregion
 
 
@@ -84,4 +85,12 @@ public:
 
 	void SetWeaponOne(int newWeaponOne) { weaponOneIndex = newWeaponOne; }
 	void SetWeaponTwo(int newWeaponTwo) { weaponTwoIndex = newWeaponTwo; }
+
+	//Returns an InventorySace struct for saving.
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	FS_InventorySave SaveInventory();
+
+	//Takes an InventorySace struct for loading
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void LoadInventory(const FS_InventorySave& loadedInventory);
 };

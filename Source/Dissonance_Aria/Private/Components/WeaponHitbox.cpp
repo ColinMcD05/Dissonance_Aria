@@ -5,7 +5,7 @@
 
 void UWeaponHitbox::BeginPlay()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+	PrimaryComponentTick.bCanEverTick = true;
 
 	attackingOwner = GetOwner();
 	SetGenerateOverlapEvents(false);
