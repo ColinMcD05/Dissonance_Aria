@@ -73,6 +73,11 @@ void APlayerCharacterCombat::BeginPlay()
 		weapon2 = weaponsSystem->GetStoredWeapon();
 	}
 
+	if (damageSystem)
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+
 	//Get game state
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
@@ -221,5 +226,60 @@ float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionTy
 float APlayerCharacterCombat::SpecialAttack_Implementation()
 {
 	return 0;
+}
+#pragma endregion
+
+#pragma region DamageableInterface
+float APlayerCharacterCombat::GetCurrentHealth_Implementation()
+{
+	if (damageSystem)
+	{
+		return damageSystem->GetCurrentHealth();
+	}
+	return 0;
+}
+
+float APlayerCharacterCombat::GetMaxHealth_Implementation()
+{
+	if (damageSystem)
+	{
+		return damageSystem->GetMaxHealth();
+	}
+	return 0;
+}
+
+bool APlayerCharacterCombat::GetIsDead_Implementation()
+{
+	if (damageSystem)
+	{
+		return damageSystem->GetIsDead();
+	}
+	return false;
+}
+
+void APlayerCharacterCombat::Heal_Implementation(float HealAmount, AActor* Healer)
+{
+
+}
+
+bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
+{
+	if (damageSystem)
+	{
+		if (damageSystem->HandleIncomingDamage(damageInfo))
+		{
+			if (damageSystem->GetIsDead())
+			{
+				HandleDeath(damageInfo.damageCauser);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+void APlayerCharacterCombat::HandleDeath_Implementation(AActor* killer)
+{
+
 }
 #pragma endregion
