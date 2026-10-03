@@ -78,8 +78,9 @@ void APlayerCharacterCombat::BeginPlay()
 	if (gameState)
 	{
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
-		gameState->OnEnemySpawned.AddDynamic(this, &APlayerCharacterCombat::FocusOnEnemy);
 	}
+
+	FocusOnEnemy();
 }
 
 // Called every frame
@@ -187,6 +188,18 @@ void APlayerCharacterCombat::FocusOnEnemy()
 	if (lockedOnEnemy && enemyIndex > -1)
 	{
 		RotatePlayer();
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayerCharacterCombat::FocusOnEnemy);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "Rotating");
+		}
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "No Enemies");
+		}
 	}
 }
 
