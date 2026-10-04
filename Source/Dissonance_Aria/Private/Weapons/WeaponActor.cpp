@@ -66,7 +66,10 @@ void AWeaponActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this)->OnCombatEnd.AddDynamic(this, &AWeaponActor::CombatEnd);
+	if (ADAGameStateCombat* gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this))
+	{
+		gameState->OnCombatEnd.AddDynamic(this, &AWeaponActor::CombatEnd);
+	}
 }
 
 // Called every frame

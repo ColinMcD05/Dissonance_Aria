@@ -233,11 +233,15 @@ void APlayerCharacterCombat::RotatePlayer()
 
 //Logic specifically for heavy attacks
 #pragma region HeavyAttack
-void APlayerCharacterCombat::StartHeavyAttack_Implementation()
+void APlayerCharacterCombat::StartChargedAttack_Implementation()
 {
-
+	combatSystem->StartCharge(true);
 }
 
+void APlayerCharacterCombat::StopChargedAttack()
+{
+	combatSystem->StopCharge();
+}
 #pragma endregion
 
 //Implementation of Attack interface

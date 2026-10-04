@@ -164,7 +164,8 @@ public:
 	//Logic specifically for heavy attacks
 #pragma region HeavyAttack
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
-	void StartHeavyAttack();
+	void StartChargedAttack();
+	void StopChargedAttack();
 #pragma endregion
 
 	//Implementation of Attack interface

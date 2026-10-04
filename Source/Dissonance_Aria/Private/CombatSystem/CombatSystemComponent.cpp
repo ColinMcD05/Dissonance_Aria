@@ -123,6 +123,42 @@ void UCombatSystemComponent::ReadCombatQueue()
 	}
 }
 
+void UCombatSystemComponent::StartCharge(bool first)
+{
+	if(first)
+	{
+		canReadInput = false;
+		canAttack = false;
+		isCharging = true;
+	}
+	else
+	{
+
+	}
+}
+
+void UCombatSystemComponent::Charge()
+{
+	if (isCharging && maxMult > powerMult)
+	{
+		powerMult += GetWorld()->DeltaTimeSeconds;
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombatSystemComponent::Charge);
+	}
+	else if (!isCharging)
+	{
+		AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, 2, false);
+	}
+}
+
+void UCombatSystemComponent::StopCharge()
+{
+	if (isCharging)
+	{
+		isCharging = false;
+	}
+}
+
 //Deals damage to hit actor
 void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damageInfo)
 {

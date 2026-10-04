@@ -36,6 +36,13 @@ private:
 
 	bool canReadInput = true;
 
+	bool isCharging = false;
+
+	float powerMult;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	float maxMult = 2;
+
 	float timeBetweenInput;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -79,4 +86,10 @@ public:
 	void QueueCountUp();
 
 	int GetPreviousActionsAmount() { return previousActions.Num(); }
+
+	void StartCharge(bool first);
+
+	void Charge();
+
+	void StopCharge();
 };
