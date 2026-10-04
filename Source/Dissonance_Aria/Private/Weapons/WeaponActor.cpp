@@ -268,5 +268,10 @@ void AWeaponActor::RaiseTolerance()
 
 bool AWeaponActor::SwapTuning(int newTuning)
 {
-	return false;
+	if (newTuning == currentTuning || newTuning > weaponInfo.tunings.Num())
+	{
+		return false;
+	}
+
+	currentTuning = newTuning;
 }
