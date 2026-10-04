@@ -107,7 +107,16 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 	}
 }
 
-void  UWeaponsSystemComponent::ResetCanSwapWeapon()
+int UWeaponsSystemComponent::CanTune(int tuning)
+{
+	if (!canSwapTuning)
+	{
+		return false;
+	}
+	return currentHeldWeapon->CanTune(tuning);
+}
+
+void UWeaponsSystemComponent::ResetCanSwapWeapon()
 {
 	canSwapWeapon = true;
 }
