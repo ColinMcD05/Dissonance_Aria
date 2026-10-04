@@ -59,6 +59,8 @@ private:
 
 	bool raisingTolerance = false;
 
+	bool depleted = false;
+
 	FTimerHandle disableTimer;
 
 	FTimerHandle raiserTimer;

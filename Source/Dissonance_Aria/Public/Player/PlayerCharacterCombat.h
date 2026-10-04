@@ -189,7 +189,7 @@ public:
 #pragma
 
 #pragma region SetUp
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnPlayerSetUpDone OnPlayerSetUpDone;
 #pragma
 

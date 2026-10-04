@@ -50,7 +50,10 @@ void AWeaponActor::Activate()
 	activated = true;
 	LowerTolerance();
 	currentTuning = 0;
-	RaiseTuningTolerance();
+	if (!raisingTolerance)
+	{
+		RaiseTuningTolerance();
+	}
 }
 
 void AWeaponActor::Deactivate()
@@ -62,7 +65,10 @@ void AWeaponActor::Deactivate()
 	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
 	RaiseTolerance();
 	currentTuning = 0;
-	RaiseTuningTolerance();
+	if (!raisingTolerance)
+	{
+		RaiseTuningTolerance();
+	}
 }
 
 // Called when the game starts or when spawned
@@ -247,6 +253,9 @@ void AWeaponActor::LowerTolerance()
 		}
 		else
 		{
+			depleted = true;
+			currentTuning = 0;
+			ChangeWeaponStats();
 			stats.damage *= 0.75f;
 			stats.sidestepDistance *= 0.75f;
 		}
@@ -263,10 +272,11 @@ void AWeaponActor::RaiseTolerance()
 			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::RaiseTolerance);
 			weaponInfo.toleranceMeter = FMath::Clamp(weaponInfo.toleranceMeter, 0, 1);
 		}
-		else
+		else if (depleted)
 		{
 			stats.damage /= 0.75f;
 			stats.sidestepDistance /= 0.75f;
+			depleted = false;
 		}
 	}
 }
@@ -274,6 +284,10 @@ void AWeaponActor::RaiseTolerance()
 
 void AWeaponActor::RaiseTuningTolerance()
 {
+	if (depleted && activated)
+	{
+		return;
+	}
 	raisingTolerance = true;
 	bool checks[2] = { false, false };
 	for (int i = 1; i <= weaponInfo.tunings.Num(); i++)
@@ -308,7 +322,7 @@ void AWeaponActor::RaiseTuningTolerance()
 
 int AWeaponActor::SwapTuning(int newTuning)
 {
-	if (newTuning > weaponInfo.tunings.Num())
+	if (newTuning > weaponInfo.tunings.Num() || depleted)
 	{
 		return -1;
 	}
@@ -326,7 +340,10 @@ int AWeaponActor::SwapTuning(int newTuning)
 	}
 
 	currentTuning = newTuning;
-	RaiseTuningTolerance();
+	if (!raisingTolerance)
+	{
+		RaiseTuningTolerance();
+	}
 	ChangeWeaponStats();
 
 	return currentTuning;

@@ -34,13 +34,13 @@ public:
 	void EnemyDead(AActor* newEnemy);
 
 #pragma region Delegates
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnEnemyDeath OnEnemyDeath;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnEnemySpawned OnEnemySpawned;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnCombatEnd OnCombatEnd;
 #pragma endregion
 

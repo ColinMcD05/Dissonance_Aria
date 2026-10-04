@@ -60,13 +60,13 @@ public:
 
 #pragma region Delegates
 	//Delegate that gets broadcasted once weapons spawn
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FWeaponsSwapped OnWeaponSwapped;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FTuningSwapped OnTuningSwapped;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnChangeMusic OnChangeMusic;
 #pragma endregion
 };

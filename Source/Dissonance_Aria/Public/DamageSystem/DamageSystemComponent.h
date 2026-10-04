@@ -73,10 +73,10 @@ public:
 	void SetMaxHealthAndCurrent(int newMaxHealth);
 
 #pragma region Delegates
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnTakeDamage OnTakeDamage;
 
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnHealthChange OnHealthChange;
 #pragma endregion
 };
