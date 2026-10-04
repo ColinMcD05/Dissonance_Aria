@@ -93,3 +93,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapons")
 	bool acquired = false;
 };
+
+USTRUCT(BlueprintType)
+struct FS_LevelData
+{
+	GENERATED_BODY();
+public:
+	int requiredExp;
+};

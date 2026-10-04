@@ -29,10 +29,10 @@ void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo)
 
 bool UInventoryComponent::CheckLevelUp(FS_WeaponInfo* info)
 {
-	int* expRequired = levelsTable->FindRow<int>(FName(*FString::FromInt(info->level + 1)), "", true);
+	FS_LevelData* expRequired = levelsTable->FindRow<FS_LevelData>(FName(*FString::FromInt(info->level + 1)), "", true);
 	if (expRequired)
 	{
-		if (info->exp.currentExperience >= *expRequired)
+		if (info->exp.currentExperience >= expRequired->requiredExp)
 		{
 			return true;
 		}
