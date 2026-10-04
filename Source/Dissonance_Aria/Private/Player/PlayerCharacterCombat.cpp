@@ -313,7 +313,7 @@ bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
 		{
 			if (damageSystem->GetIsDead())
 			{
-				HandleDeath(damageInfo.damageCauser);
+				Execute_HandleDeath(damageInfo.damageCauser);
 			}
 			return true;
 		}
