@@ -21,6 +21,9 @@ class DISSONANCE_ARIA_API AWeaponActor : public AActor, public IHurtBoxInterface
 	
 private:
 
+	FVector originalLocation;
+	float speed;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* weaponMesh;
 
@@ -92,6 +95,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
 	float PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+	void StartChargeAttack();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+	void ChargeAttack();
+
 	void EnableHurtboxes();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
@@ -100,6 +109,9 @@ public:
 	int GetMaxHealth() { return stats.maxHP; }
 
 	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
+
+	UFUNCTION()
+	void CombatEnd(int gainedExp);
 
 	void ChangeWeaponStats();
 

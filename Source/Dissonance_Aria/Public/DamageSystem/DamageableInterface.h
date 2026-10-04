@@ -23,21 +23,21 @@ class DISSONANCE_ARIA_API IDamageableInterface
 
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DamageableInterface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
 	float GetCurrentHealth();
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DamageableInterface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
 	float GetMaxHealth();
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DamageableInterface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
 	bool GetIsDead();
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DamageableInterface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
 	void Heal(float HealAmount, AActor* Healer);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DamageableInterface")
-	bool TakeDamage(FS_DamageInfo& DamageInfo);
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
+	bool TakeDamage(FS_DamageInfo DamageInfo);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "DamageableInterface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
 	void HandleDeath(AActor* killer);
 };

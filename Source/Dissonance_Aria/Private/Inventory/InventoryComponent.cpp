@@ -18,6 +18,37 @@ void UInventoryComponent::SetupInventory()
 
 }
 
+void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo)
+{
+	FS_WeaponInfo* updated = GetWeaponByType(updatedInfo.weaponType);
+	if (updated)
+	{
+		LevelUp(updated);
+	}
+}
+
+bool UInventoryComponent::CheckLevelUp(FS_WeaponInfo* info)
+{
+	FS_LevelData* expRequired = levelsTable->FindRow<FS_LevelData>(FName(*FString::FromInt(info->level + 1)), "", true);
+	if (expRequired)
+	{
+		if (info->exp.currentExperience >= expRequired->requiredExp)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void UInventoryComponent::LevelUp(FS_WeaponInfo* info)
+{
+	while (CheckLevelUp(info))
+	{
+		info->level++;
+		OnWeaponLevelUp.Broadcast(*info);
+	}
+}
+
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
@@ -31,7 +62,6 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
 }
 
 void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)

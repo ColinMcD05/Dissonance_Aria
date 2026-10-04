@@ -87,10 +87,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float rotateSpeed = 10;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	AActor* lockedOnEnemy;
 
 	int enemyIndex = -1;
 #pragma endregion
+
+	FTimerHandle resetLevelTimer;
 
 #pragma region GameInfo
 	ADAGameStateCombat* gameState;
@@ -107,6 +110,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo);
+
+	void ResetCurrentLevel();
 
 #pragma region Getters
 	//Get the combat system
@@ -145,7 +152,7 @@ public:
 #pragma region Camera
 	UFUNCTION()
 	//Relook for a valid enemy when one dies
-	void CameraEnemySearch();
+	void CameraEnemySearch(AActor* newEnemy);
 
 	//Focus the camera on enemy
 	void FocusOnEnemy();
@@ -153,10 +160,31 @@ public:
 	//Rotate the player to face enemy
 	void RotatePlayer();
 #pragma endregion
+
+	//Logic specifically for heavy attacks
+#pragma region HeavyAttack
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
+	void StartChargedAttack();
+
+	void ChargeReady();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
+	void StopChargedAttack();
+#pragma endregion
+
 	//Implementation of Attack interface
 #pragma region AttackInterface
 	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;
 	virtual float HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged) override;
 	virtual float SpecialAttack_Implementation() override;
+#pragma
+
+#pragma region DamageableInterface
+	virtual float GetCurrentHealth_Implementation() override;
+	virtual float GetMaxHealth_Implementation() override;
+	virtual bool GetIsDead_Implementation() override;
+	virtual void Heal_Implementation(float HealAmount, AActor* Healer) override;
+	virtual bool TakeDamage_Implementation(FS_DamageInfo DamageInfo) override;
+	virtual void HandleDeath_Implementation(AActor* killer) override;
 #pragma
 };

@@ -8,6 +8,8 @@
 #include "GameInfo/DAGameStateCombat.h"
 #include "EnhancedInputComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -73,6 +75,11 @@ void APlayerCharacterCombat::BeginPlay()
 		weapon2 = weaponsSystem->GetStoredWeapon();
 	}
 
+	if (damageSystem)
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+
 	//Get game state
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
@@ -80,7 +87,7 @@ void APlayerCharacterCombat::BeginPlay()
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
 	}
 
-	CameraEnemySearch();
+	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
 }
 
@@ -100,6 +107,8 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	{
 		inputComponent->BindAction(lightAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadLightAttack);
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
+		inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
@@ -120,7 +129,14 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		if (combatSystem->GetPreviousActionsAmount() > 0)
+		{
+			combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		}
+		else
+		{
+			StartChargedAttack();
+		}
 	}
 }
 
@@ -175,11 +191,22 @@ void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
 
 #pragma region Camera
 //Relook for a valid enemy when one dies
-void APlayerCharacterCombat::CameraEnemySearch()
+void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
 {
 	if (gameState)
 	{
-		lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
+		if (!lockedOnEnemy)
+		{
+			lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
+		}
+	}
+}
+
+void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo)
+{
+	if (inventory)
+	{
+		inventory->UpdateWeaponInfo(updatedInfo);
 	}
 }
 
@@ -206,6 +233,27 @@ void APlayerCharacterCombat::RotatePlayer()
 }
 #pragma endregion
 
+//Logic specifically for heavy attacks
+#pragma region HeavyAttack
+void APlayerCharacterCombat::StartChargedAttack_Implementation()
+{
+	if (combatSystem->StartCharge())
+	{
+		weaponsSystem->GetCurrentHeldWeapon()->StartChargeAttack();
+	}
+}
+
+void APlayerCharacterCombat::ChargeReady()
+{
+	combatSystem->Charge();
+}
+
+void APlayerCharacterCombat::StopChargedAttack_Implementation()
+{
+	combatSystem->StopCharge();
+}
+#pragma endregion
+
 //Implementation of Attack interface
 #pragma region AttacksInterface
 float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
@@ -223,3 +271,72 @@ float APlayerCharacterCombat::SpecialAttack_Implementation()
 	return 0;
 }
 #pragma endregion
+
+#pragma region DamageableInterface
+float APlayerCharacterCombat::GetCurrentHealth_Implementation()
+{
+	if (damageSystem)
+	{
+		return damageSystem->GetCurrentHealth();
+	}
+	return 0;
+}
+
+float APlayerCharacterCombat::GetMaxHealth_Implementation()
+{
+	if (damageSystem)
+	{
+		return damageSystem->GetMaxHealth();
+	}
+	return 0;
+}
+
+bool APlayerCharacterCombat::GetIsDead_Implementation()
+{
+	if (damageSystem)
+	{
+		return damageSystem->GetIsDead();
+	}
+	return false;
+}
+
+void APlayerCharacterCombat::Heal_Implementation(float HealAmount, AActor* Healer)
+{
+
+}
+
+bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
+{
+	if (damageSystem)
+	{
+		if (damageSystem->HandleIncomingDamage(damageInfo))
+		{
+			if (damageSystem->GetIsDead())
+			{
+				HandleDeath(damageInfo.damageCauser);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+void APlayerCharacterCombat::HandleDeath_Implementation(AActor* killer)
+{
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			subsystem->ClearAllMappings();
+		}
+	}
+	GetWorld()->GetTimerManager().SetTimer(resetLevelTimer, this, &APlayerCharacterCombat::ResetCurrentLevel, 3, false);
+}
+#pragma endregion
+
+void APlayerCharacterCombat::ResetCurrentLevel()
+{
+	const FString CurrentMap = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName(*CurrentMap));
+}

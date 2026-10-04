@@ -17,10 +17,10 @@ class DISSONANCE_ARIA_API UDamageSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	float currentHealth = maxHealth;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	bool isDead = false;
 
 	UPROPERTY(EditAnywhere, Category = "Genre")
@@ -54,7 +54,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-	bool HandleIncomingDamage(FS_DamageInfo& damageInfo);
+	bool HandleIncomingDamage(FS_DamageInfo damageInfo);
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void HandleIncomingHeal(float healAmount, AActor* healer);
