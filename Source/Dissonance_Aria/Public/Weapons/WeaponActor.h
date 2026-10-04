@@ -14,6 +14,9 @@
 
 class APlayerCharacterCombat;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponToleranceGone);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTuningToleranceGone);
+
 UCLASS()
 class DISSONANCE_ARIA_API AWeaponActor : public AActor, public IHurtBoxInterface
 {
@@ -53,6 +56,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	float timeToFillTuning = 25;
+
+	bool raisingTolerance = false;
+
+	bool depleted = false;
 
 	FTimerHandle disableTimer;
 
@@ -118,4 +125,12 @@ public:
 	void LowerTolerance();
 
 	void RaiseTolerance();
+
+	void RaiseTuningTolerance();
+
+	//return -1 if failed. Else, rtuen current tuning
+	int SwapTuning(int newTuning);
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentTuning();
 };

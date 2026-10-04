@@ -12,6 +12,8 @@ class AWeaponActor;
 class PlayerCharacterCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeMusic, int, musicChannel);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
@@ -28,7 +30,8 @@ private:
 	AWeaponActor* storedWeapon;
 #pragma endregion
 
-	bool canSwap = true;
+	bool canSwapWeapon = true;
+	bool canSwapTuning = true;
 	FTimerHandle swapWeaponsTimer;
 
 protected:
@@ -42,19 +45,28 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
-
 	//Getters
 	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
 
-	//Set Weapons
+	//Set/Swap Weapons
 	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
-	void ResetCanSwap() { canSwap = true; }
+	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
+	void ResetCanSwapWeapon();
+
+	//Swap tunings
+	void SwapTunings(int tuning);
+	void ResetCanSwapTuning();
 
 #pragma region Delegates
 	//Delegate that gets broadcasted once weapons spawn
-	UPROPERTY(BlueprintAssignable)
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FWeaponsSwapped OnWeaponSwapped;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FTuningSwapped OnTuningSwapped;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnChangeMusic OnChangeMusic;
 #pragma endregion
 };

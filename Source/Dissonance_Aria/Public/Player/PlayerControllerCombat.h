@@ -20,4 +20,9 @@ protected:
 
 public:
 	virtual void BeginPlay() override;
+
+	virtual void AcknowledgePossession(APawn* InPawn) override;
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
+	void SetUpUI();
 };

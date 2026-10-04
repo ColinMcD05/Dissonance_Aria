@@ -87,6 +87,8 @@ void APlayerCharacterCombat::BeginPlay()
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
 	}
 
+	OnPlayerSetUpDone.Broadcast();
+
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
 }
@@ -111,6 +113,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
+		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
 	}
 }
@@ -170,6 +173,11 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 	}
 }
 
+void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
+{
+	StartTuning(value.Get<float>());
+}
+
 //Read the change lock on input
 void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
 {
@@ -185,6 +193,16 @@ void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
 		{
 			lockedOnEnemy = gameState->GetPreviousEnemy(enemyIndex);
 		}
+	}
+}
+#pragma endregion
+
+#pragma region Tuning
+void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
+{
+	if (successful && weaponsSystem)
+	{
+		weaponsSystem->SwapTunings(tuning);
 	}
 }
 #pragma endregion

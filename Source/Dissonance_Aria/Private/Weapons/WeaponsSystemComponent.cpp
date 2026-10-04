@@ -27,36 +27,6 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon)
-{
-	if (canSwap)
-	{
-		if (swapTo != currentHeldWeapon)
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Yes"));
-			}
-			AWeaponActor* tempWeapon = currentHeldWeapon;
-
-			currentHeldWeapon = storedWeapon;
-			currentHeldWeapon->Activate();
-
-			storedWeapon = tempWeapon;
-			storedWeapon->Deactivate();
-			canSwap = false;
-
-			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwap, 2, false);
-
-			OnWeaponSwapped.Broadcast(whichWeapon);
-
-			return true;
-		}
-		return false;
-	}
-
-	return false;
-}
 
 void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
 {
@@ -85,4 +55,64 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		storedWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		storedWeapon->Deactivate();
 	}
+}
+
+
+bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon)
+{
+	if (canSwapWeapon)
+	{
+		if (swapTo != currentHeldWeapon)
+		{
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Yes"));
+			}
+			AWeaponActor* tempWeapon = currentHeldWeapon;
+
+			currentHeldWeapon = storedWeapon;
+			currentHeldWeapon->Activate();
+
+			storedWeapon = tempWeapon;
+			storedWeapon->Deactivate();
+			canSwapWeapon = false;
+
+			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
+
+			OnWeaponSwapped.Broadcast(whichWeapon);
+			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre));
+
+			return true;
+		}
+		return false;
+	}
+
+	return false;
+}
+
+void UWeaponsSystemComponent::SwapTunings(int tuning)
+{
+	if (canSwapTuning && currentHeldWeapon)
+	{
+		int swap = currentHeldWeapon->SwapTuning(tuning);
+		if (swap != -1)
+		{
+			canSwapTuning = false;
+
+			OnTuningSwapped.Broadcast(tuning);
+			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre) + currentHeldWeapon->GetCurrentTuning());
+
+			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
+		}
+	}
+}
+
+void  UWeaponsSystemComponent::ResetCanSwapWeapon()
+{
+	canSwapWeapon = true;
+}
+
+void  UWeaponsSystemComponent::ResetCanSwapTuning()
+{
+	canSwapTuning = true;
 }
