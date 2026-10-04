@@ -274,4 +274,8 @@ bool AWeaponActor::SwapTuning(int newTuning)
 	}
 
 	currentTuning = newTuning;
+
+
+
+	return true;
 }
