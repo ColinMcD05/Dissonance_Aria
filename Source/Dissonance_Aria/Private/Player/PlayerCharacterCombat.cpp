@@ -133,7 +133,7 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 		}
 		else
 		{
-			StartHeavyAttack();
+			StartChargedAttack();
 		}
 	}
 }
