@@ -93,6 +93,8 @@ private:
 	int enemyIndex = -1;
 #pragma endregion
 
+	FTimerHandle resetLevelTimer;
+
 #pragma region GameInfo
 	ADAGameStateCombat* gameState;
 #pragma endregion
@@ -108,6 +110,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	void UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo);
+
+	void ResetCurrentLevel();
 
 #pragma region Getters
 	//Get the combat system
@@ -146,7 +152,7 @@ public:
 #pragma region Camera
 	UFUNCTION()
 	//Relook for a valid enemy when one dies
-	void CameraEnemySearch();
+	void CameraEnemySearch(AActor* newEnemy);
 
 	//Focus the camera on enemy
 	void FocusOnEnemy();
@@ -154,6 +160,18 @@ public:
 	//Rotate the player to face enemy
 	void RotatePlayer();
 #pragma endregion
+
+	//Logic specifically for heavy attacks
+#pragma region HeavyAttack
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
+	void StartChargedAttack();
+
+	void ChargeReady();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
+	void StopChargedAttack();
+#pragma endregion
+
 	//Implementation of Attack interface
 #pragma region AttackInterface
 	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;

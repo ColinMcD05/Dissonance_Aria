@@ -3,6 +3,11 @@
 
 #include "GameInfo/DAGameStateCombat.h"
 
+void ADAGameStateCombat::BeginPlay()
+{
+	OnEnemyDeath.AddDynamic(this, &ADAGameStateCombat::EnemyDead);
+}
+
 void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
 {
 	enemies.Add(newEnemy);
@@ -12,6 +17,11 @@ void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
 	{
 		OnEnemySpawned.Broadcast();
 	}
+}
+
+void ADAGameStateCombat::EnemyDead_Implementation(AActor* newEnemy)
+{
+	enemies.Remove(newEnemy);
 }
 
 AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)

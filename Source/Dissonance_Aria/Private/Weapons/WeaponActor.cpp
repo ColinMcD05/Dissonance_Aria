@@ -2,6 +2,8 @@
 
 #include "Weapons/WeaponActor.h"
 #include "Player/PlayerCharacterCombat.h"
+#include "GameInfo/DAGameStateCombat.h"
+#include "BasicFunctions/GetGameInfo.h"
 
 // Sets default values
 AWeaponActor::AWeaponActor()
@@ -42,7 +44,6 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 	}
 }
 
-
 void AWeaponActor::Activate()
 {
 	SetActorHiddenInGame(false);
@@ -65,6 +66,10 @@ void AWeaponActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (ADAGameStateCombat* gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this))
+	{
+		gameState->OnCombatEnd.AddDynamic(this, &AWeaponActor::CombatEnd);
+	}
 }
 
 // Called every frame
@@ -125,6 +130,32 @@ float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActio
 	return 1.5;
 }
 
+
+void AWeaponActor::StartChargeAttack_Implementation()
+{
+	originalLocation = weaponMesh->GetRelativeLocation();
+	speed = 100 / 0.8;
+	ChargeAttack();
+}
+
+void AWeaponActor::ChargeAttack_Implementation()
+{
+	if (originalLocation.Y - 100 <= weaponMesh->GetRelativeLocation().Y)
+	{
+		FVector addedVector = FVector(0, -speed * GetWorld()->DeltaTimeSeconds, 0);
+		weaponMesh->AddRelativeLocation(addedVector);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::ChargeAttack);
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "Yes");
+		}
+		playerOwner->ChargeReady();
+	}
+}
+
 int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction)
 {
 	int currentPosition = -1;
@@ -158,9 +189,17 @@ void AWeaponActor::ChangeWeaponStats()
 	if (currentTuning < statsTable.Num() && statsTable[currentTuning])
 	{
 		FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
-
-		stats = *newStats;
+		if (newStats)
+		{
+			stats = *newStats;
+		}
 	}
+}
+
+void AWeaponActor::CombatEnd(int gainedExp)
+{
+	weaponInfo.exp.currentExperience += gainedExp;
+	playerOwner->UpdateInventoryWeaponInfo(weaponInfo);
 }
 
 void AWeaponActor::EnableHurtboxes()
