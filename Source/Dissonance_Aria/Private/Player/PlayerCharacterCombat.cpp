@@ -213,7 +213,7 @@ void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
 {
 	if (gameState)
 	{
-		if (!lockedOnEnemy)
+		if (lockedOnEnemy == newEnemy)
 		{
 			lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
 		}
