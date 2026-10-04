@@ -11,6 +11,7 @@
 #include "Weapons/WeaponsSystemComponent.h"
 #include "Inventory/InventoryComponent.h"
 #include "DamageSystem/DamageableInterface.h"
+#include "DamageSystem/DamageSystemComponent.h"
 #include "PlayerCharacterCombat.generated.h"
 
 class UInputAction;
@@ -34,6 +35,12 @@ private:
 	UWeaponsSystemComponent* weaponsSystem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UDamageSystemComponent* damageSystem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	USceneComponent* weaponSpot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	AWeaponActor* weapon1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -49,6 +56,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* sideStep;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* swapWeapon;
 #pragma endregion
 protected:
 	// Called when the game starts or when spawned
@@ -73,6 +83,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	AWeaponActor* GetWeaponActor(int weapon) { return (weapon == 0) ? weapon1 : weapon2; }
 
+	USceneComponent* GetWeaponSpot() { return weaponSpot; }
+
 	//Read the light attack input
 	void ReadLightAttack();
 
@@ -82,8 +94,11 @@ public:
 	//Read the side step input
 	void ReadSidestep();
 
-	//Implementation of Damageable interface
-#pragma region DamageableInterface
+	//Read Swap Weapon input
+	void ReadSwapWeapon();
+
+	//Implementation of Attack interface
+#pragma region AttackInterface
 	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;
 	virtual float HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged) override;
 	virtual float SpecialAttack_Implementation() override;

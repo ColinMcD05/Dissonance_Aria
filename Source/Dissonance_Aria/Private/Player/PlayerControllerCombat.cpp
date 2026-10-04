@@ -7,6 +7,8 @@
 
 void APlayerControllerCombat::BeginPlay()
 {
+	Super::BeginPlay();
+
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		subsystem->AddMappingContext(combatMapping, 1);

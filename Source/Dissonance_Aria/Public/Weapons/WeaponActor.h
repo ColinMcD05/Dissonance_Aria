@@ -8,7 +8,8 @@
 #include "Components/CapsuleComponent.h"
 #include "DamageSystem/DamageableInterface.h"
 #include "CombatSystem/HurtBoxInterface.h"
-#include "Input/InputActions/CombatActionBase.cpp"
+#include "Input/InputActions/CombatActionBase.h"
+#include "Components/WeaponHitbox.h"
 #include "WeaponActor.generated.h"
 
 class APlayerCharacterCombat;
@@ -19,29 +20,43 @@ class DISSONANCE_ARIA_API AWeaponActor : public AActor, public IHurtBoxInterface
 	GENERATED_BODY()
 	
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	USkeletalMeshComponent* weaponMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* weaponMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	UCapsuleComponent* capsuleComponent;
+	TArray<UWeaponHitbox*> hurtboxes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
-	int currentTuning;
+	int currentTuning = 0;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
+	FS_Stats stats;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true"))
+	TArray<UDataTable*> statsTable;
 
 	UPROPERTY(VisibleAnywhere, Category = "Player")
 	APlayerCharacterCombat* playerOwner;
+
+	FTimerHandle disableTimer;
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	FS_WeaponInfo* weaponInfo;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "WeaponData", meta = (AllowPrivateAccess = "true"))
+	FS_WeaponInfo weaponInfo;
 
 public:
 
 	AWeaponActor();
 
-	void InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo* newWeaponInfo);
+	void Activate();
+
+	void Deactivate();
+
+	void InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo);
 
 	//Interface Functions
 	virtual bool OverlappedActor_Implementation(AActor* hitEnemy) override;
@@ -50,16 +65,25 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable, Category = "WeaponData")
-	FS_WeaponInfo& GetWeaponInfo() { return *weaponInfo; }
+	FS_WeaponInfo& GetWeaponInfo() { return weaponInfo; }
 
 	UFUNCTION(BlueprintCallable, Category = "WeaponData")
 	void SetWeaponInfo(FS_WeaponInfo& newWeaponInfo);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void PerformLightAttack(const TArray<E_CombatActionType>& previousActions);
+	float PerformLightAttack(const TArray<E_CombatActionType>& previousActions);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
+	float PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
+
+	void EnableHurtboxes();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+	void DisableHurtboxes();
+
+	int GetMaxHealth() { return stats.maxHP; }
 
 	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
+
+	void ChangeWeaponStats();
 };

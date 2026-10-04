@@ -11,17 +11,16 @@ AWeaponActor::AWeaponActor()
 
 	//Setup basic components
 	//Setup Mesh
-	weaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
+	weaponMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("WeaponMesh"));
 
 	weaponMesh->SetupAttachment(RootComponent);
+	weaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	weaponMesh->SetSimulatePhysics(false);
 
-	//Setup Capsule
-	capsuleComponent = CreateDefaultSubobject<UCapsuleComponent>(TEXT("HitBox"));
-	capsuleComponent->SetupAttachment(weaponMesh);
-	capsuleComponent->SetGenerateOverlapEvents(true);
+	SetActorEnableCollision(false);
 }
 
-void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo* newWeaponInfo)
+void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo)
 {
 	PrimaryActorTick.bCanEverTick = true;
 	PrimaryActorTick.bTickEvenWhenPaused = false;
@@ -29,6 +28,29 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 	playerOwner = player;
 
 	weaponInfo = newWeaponInfo;
+	ChangeWeaponStats();
+
+	for (UActorComponent* component : GetComponents())
+	{
+		UWeaponHitbox* newHurtbox = Cast<UWeaponHitbox>(component);
+		if (newHurtbox)
+		{
+			hurtboxes.Add(newHurtbox);
+		}
+	}
+}
+
+
+void AWeaponActor::Activate()
+{
+	SetActorHiddenInGame(false);
+}
+
+void AWeaponActor::Deactivate()
+{
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	DisableHurtboxes();
 }
 
 // Called when the game starts or when spawned
@@ -56,14 +78,14 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 
 	FS_DamageInfo* damageInfo = new FS_DamageInfo();
 	damageInfo->damageCauser = GetOwner();
-	damageInfo->genreAttack = weaponInfo->genre;
+	damageInfo->genreAttack = weaponInfo.genre;
 	if (currentTuning != 0)
 	{
-		damageInfo->damageAmount = weaponInfo->tunings[currentTuning - 1].damage;
+		damageInfo->damageAmount = stats.damage;
 	}
 	else
 	{
-		damageInfo->damageAmount = weaponInfo->damage;
+		damageInfo->damageAmount = stats.damage;
 	}
 	
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
@@ -75,21 +97,25 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 
 void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 {
-	*weaponInfo = newWeaponInfo;
+	weaponInfo = newWeaponInfo;
 }
 
-void AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
-
+	EnableHurtboxes();
+	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 1.2f, false);
 	//Animation logic will go here, but I need animations first
+	return 1.5;
 }
 
-void AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
-
+	EnableHurtboxes();
+	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 1.2f, false);
 	//Animation logic will go here, but I need animations first
+	return 1.5;
 }
 
 int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction)
@@ -118,4 +144,30 @@ int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& p
 	}
 	
 	return currentPosition;
+}
+
+void AWeaponActor::ChangeWeaponStats()
+{
+	if (currentTuning < statsTable.Num() && statsTable[currentTuning])
+	{
+		FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
+
+		stats = *newStats;
+	}
+}
+
+void AWeaponActor::EnableHurtboxes()
+{
+	for (UWeaponHitbox* hurtbox : hurtboxes)
+	{
+		hurtbox->SetGenerateOverlapEvents(true);
+	}
+}
+
+void AWeaponActor::DisableHurtboxes_Implementation()
+{
+	for (UWeaponHitbox* hurtbox : hurtboxes)
+	{
+		hurtbox->SetGenerateOverlapEvents(false);
+	}
 }

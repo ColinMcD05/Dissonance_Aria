@@ -19,6 +19,12 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 
 	//Setup Weapons and weapons system
 	weaponsSystem = CreateDefaultSubobject<UWeaponsSystemComponent>(TEXT("WeaponsSystem"));
+
+	weaponSpot = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponsSpot"));
+	weaponSpot->SetupAttachment(GetMesh());
+
+	//Setup Damage System
+	damageSystem = CreateDefaultSubobject <UDamageSystemComponent>(TEXT("DamageSystem"));
 }
 
 // Called when the game starts or when spawned
@@ -33,6 +39,9 @@ void APlayerCharacterCombat::BeginPlay()
 	if (weaponsSystem && inventory)
 	{
 		weaponsSystem->SpawnWeapons(inventory, this);
+
+		weapon1 = weaponsSystem->GetCurrentHeldWeapon();
+		weapon2 = weaponsSystem->GetStoredWeapon();
 	}
 }
 
@@ -53,6 +62,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(lightAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadLightAttack);
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
+		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 	}
 }
 
@@ -74,16 +84,25 @@ void APlayerCharacterCombat::ReadSidestep()
 
 }
 
-//Implementation of Damageable interface
+//Read Swap Input
+void APlayerCharacterCombat::ReadSwapWeapon()
+{
+	if (weaponsSystem->SwapWeapons())
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+}
+
+//Implementation of Attack interface
 #pragma region DamageableInterface
 float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
 {
-	return 3;
+	return weaponsSystem->GetCurrentHeldWeapon()->PerformLightAttack(previousActions);
 }
 
 float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
 {
-	return 3;
+	return weaponsSystem->GetCurrentHeldWeapon()->PerformHeavyAttack(previousActions);
 }
 
 float APlayerCharacterCombat::SpecialAttack_Implementation()

@@ -39,7 +39,7 @@ private:
 	float timeBetweenInput;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	float maxTimeBetweenInput;
+	float maxTimeBetweenInput = 2;
 
 #pragma region Timer
 	FTimerHandle combatTimer;
@@ -75,4 +75,6 @@ public:
 
 	//Resets ability to read inputs
 	void ResetReadInputs();
+
+	void QueueCountUp();
 };

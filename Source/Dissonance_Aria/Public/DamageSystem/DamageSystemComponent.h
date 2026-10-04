@@ -66,4 +66,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Health")
 	bool GetIsDead() const { return isDead; }
+
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void SetMaxHealthAndCurrent(int newMaxHealth);
 };
