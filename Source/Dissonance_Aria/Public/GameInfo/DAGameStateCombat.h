@@ -6,8 +6,9 @@
 #include "GameFramework/GameStateBase.h"
 #include "DAGameStateCombat.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemyDeath);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeath, AActor*, enemy);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemySpawned);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatEnd, int, gainedExp);
 
 UCLASS()
 class DISSONANCE_ARIA_API ADAGameStateCombat : public AGameStateBase
@@ -21,11 +22,16 @@ private:
 	TArray<AActor*> enemies;
 
 public:
+	virtual void BeginPlay() override;
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Enemies")
 	void AddEnemies(AActor* newEnemy);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Enemies")
 	void IncreaseTotalExp(AActor* newEnemy);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Enemies")
+	void EnemyDead(AActor* newEnemy);
 
 #pragma region Delegates
 	UPROPERTY(BlueprintAssignable)
@@ -33,6 +39,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnEnemySpawned OnEnemySpawned;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnCombatEnd OnCombatEnd;
 #pragma endregion
 
 #pragma region Getters

@@ -8,6 +8,8 @@
 #include "GameInfo/DAGameStateCombat.h"
 #include "EnhancedInputComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -85,7 +87,7 @@ void APlayerCharacterCombat::BeginPlay()
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
 	}
 
-	CameraEnemySearch();
+	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
 }
 
@@ -180,11 +182,22 @@ void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
 
 #pragma region Camera
 //Relook for a valid enemy when one dies
-void APlayerCharacterCombat::CameraEnemySearch()
+void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
 {
 	if (gameState)
 	{
-		lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
+		if (!lockedOnEnemy)
+		{
+			lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
+		}
+	}
+}
+
+void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo)
+{
+	if (inventory)
+	{
+		inventory->UpdateWeaponInfo(updatedInfo);
 	}
 }
 
@@ -280,6 +293,20 @@ bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
 
 void APlayerCharacterCombat::HandleDeath_Implementation(AActor* killer)
 {
-
+	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		{
+			subsystem->ClearAllMappings();
+		}
+	}
+	GetWorld()->GetTimerManager().SetTimer(resetLevelTimer, this, &APlayerCharacterCombat::ResetCurrentLevel, 3, false);
 }
 #pragma endregion
+
+void APlayerCharacterCombat::ResetCurrentLevel()
+{
+	const FString CurrentMap = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+
+	UGameplayStatics::OpenLevel(GetWorld(), FName(*CurrentMap));
+}

@@ -2,6 +2,8 @@
 
 #include "Weapons/WeaponActor.h"
 #include "Player/PlayerCharacterCombat.h"
+#include "GameInfo/DAGameStateCombat.h"
+#include "BasicFunctions/GetGameInfo.h"
 
 // Sets default values
 AWeaponActor::AWeaponActor()
@@ -42,7 +44,6 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 	}
 }
 
-
 void AWeaponActor::Activate()
 {
 	SetActorHiddenInGame(false);
@@ -65,6 +66,7 @@ void AWeaponActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this)->OnCombatEnd.AddDynamic(this, &AWeaponActor::CombatEnd);
 }
 
 // Called every frame
@@ -158,9 +160,17 @@ void AWeaponActor::ChangeWeaponStats()
 	if (currentTuning < statsTable.Num() && statsTable[currentTuning])
 	{
 		FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
-
-		stats = *newStats;
+		if (newStats)
+		{
+			stats = *newStats;
+		}
 	}
+}
+
+void AWeaponActor::CombatEnd(int gainedExp)
+{
+	weaponInfo.exp.currentExperience += gainedExp;
+	playerOwner->UpdateInventoryWeaponInfo(weaponInfo);
 }
 
 void AWeaponActor::EnableHurtboxes()

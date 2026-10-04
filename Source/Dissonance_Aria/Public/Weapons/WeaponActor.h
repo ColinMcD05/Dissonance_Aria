@@ -101,6 +101,8 @@ public:
 
 	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
 
+	void CombatEnd(int gainedExp);
+
 	void ChangeWeaponStats();
 
 	void LowerTolerance();

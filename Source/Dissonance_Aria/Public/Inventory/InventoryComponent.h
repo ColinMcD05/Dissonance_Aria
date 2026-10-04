@@ -10,10 +10,16 @@
 
 #define MAX_WEAPONS_AMOUNT 4
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponLevelUp, FS_WeaponInfo, weapon);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UDataTable* levelsTable;
 
 public:	
 	// Sets default values for this component's properties
@@ -37,6 +43,12 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetupInventory();
+
+	void UpdateWeaponInfo(FS_WeaponInfo updatedInfo);
+
+	bool CheckLevelUp(FS_WeaponInfo* info);
+
+	void LevelUp(FS_WeaponInfo* info);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void AddNewWeapon(const FS_WeaponInfo newWeapon);
@@ -93,4 +105,7 @@ public:
 	//Takes an InventorySace struct for loading
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void LoadInventory(const FS_InventorySave& loadedInventory);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponLevelUp OnWeaponLevelUp;
 };
