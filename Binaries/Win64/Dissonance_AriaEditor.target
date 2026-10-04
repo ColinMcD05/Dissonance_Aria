@@ -3720,58 +3720,6 @@
 			"Type": "RequiredResource"
 		},
 		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-Rive.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-Rive.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveEditor.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveEditor.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveEditorNodes.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveEditorNodes.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveRenderer.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveRenderer.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveShaders.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveShaders.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveStats.dll",
-			"Type": "DynamicLibrary"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor-RiveStats.pdb",
-			"Type": "SymbolFile"
-		},
-		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Binaries/Win64/UnrealEditor.modules",
-			"Type": "RequiredResource"
-		},
-		{
 			"Path": "$(EngineDir)/Plugins/MassInsights/Binaries/Win64/UnrealEditor-MassInsightsAnalysis.dll",
 			"Type": "DynamicLibrary"
 		},
@@ -29418,10 +29366,6 @@
 			"Type": "UFS"
 		},
 		{
-			"Path": "$(EngineDir)/Plugins/Marketplace/Rive9d10da804e7bV7/Rive.uplugin",
-			"Type": "UFS"
-		},
-		{
 			"Path": "$(EngineDir)/Plugins/MassInsights/MassInsights.uplugin",
 			"Type": "UFS"
 		},
@@ -29996,7 +29940,6 @@
 		"RiderSourceCodeAccess",
 		"RigLogic",
 		"RigVM",
-		"Rive",
 		"RuntimeTelemetry",
 		"SQLiteCore",
 		"Scribble",
