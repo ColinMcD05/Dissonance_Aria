@@ -175,7 +175,15 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 
 void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
-	StartTuning(value.Get<float>());
+	float tuning = weaponsSystem->CanTune(value.Get<float>());
+	if (tuning == 1)
+	{
+		StartTuning(value.Get<float>());
+	}
+	else if (tuning == 0)
+	{
+		weaponsSystem->SwapTunings(value.Get<float>());
+	}
 }
 
 //Read the change lock on input

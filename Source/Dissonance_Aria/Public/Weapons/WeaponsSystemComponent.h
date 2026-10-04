@@ -57,6 +57,7 @@ public:
 	//Swap tunings
 	void SwapTunings(int tuning);
 	void ResetCanSwapTuning();
+	int CanTune(int tuning);
 
 #pragma region Delegates
 	//Delegate that gets broadcasted once weapons spawn
