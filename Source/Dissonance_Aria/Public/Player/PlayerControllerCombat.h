@@ -23,6 +23,6 @@ public:
 
 	virtual void AcknowledgePossession(APawn* InPawn) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "", meta = (AllowPrivateAccess))
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
 	void SetUpUI();
 };
