@@ -38,6 +38,8 @@ private:
 
 	bool isCharging = false;
 
+	bool didCharge = false;
+
 	float powerMult;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
@@ -87,7 +89,7 @@ public:
 
 	int GetPreviousActionsAmount() { return previousActions.Num(); }
 
-	void StartCharge(bool first);
+	bool StartCharge();
 
 	void Charge();
 

@@ -107,6 +107,8 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	{
 		inputComponent->BindAction(lightAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadLightAttack);
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
+		inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
@@ -235,10 +237,18 @@ void APlayerCharacterCombat::RotatePlayer()
 #pragma region HeavyAttack
 void APlayerCharacterCombat::StartChargedAttack_Implementation()
 {
-	combatSystem->StartCharge(true);
+	if (combatSystem->StartCharge())
+	{
+		weaponsSystem->GetCurrentHeldWeapon()->StartChargeAttack();
+	}
 }
 
-void APlayerCharacterCombat::StopChargedAttack()
+void APlayerCharacterCombat::ChargeReady()
+{
+	combatSystem->Charge();
+}
+
+void APlayerCharacterCombat::StopChargedAttack_Implementation()
 {
 	combatSystem->StopCharge();
 }

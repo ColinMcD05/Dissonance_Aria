@@ -130,6 +130,32 @@ float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActio
 	return 1.5;
 }
 
+
+void AWeaponActor::StartChargeAttack_Implementation()
+{
+	originalLocation = weaponMesh->GetRelativeLocation();
+	speed = 100 / 0.8;
+	ChargeAttack();
+}
+
+void AWeaponActor::ChargeAttack_Implementation()
+{
+	if (originalLocation.Y - 100 <= weaponMesh->GetRelativeLocation().Y)
+	{
+		FVector addedVector = FVector(0, -speed * GetWorld()->DeltaTimeSeconds, 0);
+		weaponMesh->AddRelativeLocation(addedVector);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::ChargeAttack);
+	}
+	else
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "Yes");
+		}
+		playerOwner->ChargeReady();
+	}
+}
+
 int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction)
 {
 	int currentPosition = -1;

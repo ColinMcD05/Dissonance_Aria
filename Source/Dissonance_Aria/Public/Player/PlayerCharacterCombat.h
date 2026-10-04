@@ -165,6 +165,10 @@ public:
 #pragma region HeavyAttack
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
 	void StartChargedAttack();
+
+	void ChargeReady();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
 	void StopChargedAttack();
 #pragma endregion
 

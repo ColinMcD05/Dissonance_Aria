@@ -95,9 +95,10 @@ public:
 };
 
 USTRUCT(BlueprintType)
-struct FS_LevelData
+struct FS_LevelData : public FTableRowBase
 {
 	GENERATED_BODY();
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exp")
 	int requiredExp;
 };

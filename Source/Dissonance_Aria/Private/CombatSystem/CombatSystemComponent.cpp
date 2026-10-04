@@ -111,9 +111,10 @@ void UCombatSystemComponent::ReadCombatQueue()
 	//Ensures players can no longer attack
 	canAttack = false;
 
-	if (previousActions.Num() >= MAX_COMBO_LENGTH)
+	if (previousActions.Num() >= MAX_COMBO_LENGTH || didCharge)
 	{
 		canReadInput = false;
+		didCharge = false;
 		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime + 1, false);
 	}
 	else
@@ -123,31 +124,32 @@ void UCombatSystemComponent::ReadCombatQueue()
 	}
 }
 
-void UCombatSystemComponent::StartCharge(bool first)
+bool UCombatSystemComponent::StartCharge()
 {
-	if(first)
+	if(canReadInput && canAttack)
 	{
+		powerMult = 1;
 		canReadInput = false;
 		canAttack = false;
 		isCharging = true;
+		didCharge = true;
+		return true;
 	}
-	else
-	{
-
-	}
+	return false;
 }
 
 void UCombatSystemComponent::Charge()
 {
 	if (isCharging && maxMult > powerMult)
 	{
-		powerMult += GetWorld()->DeltaTimeSeconds;
+		powerMult += GetWorld()->DeltaTimeSeconds / 2;
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombatSystemComponent::Charge);
 	}
 	else if (!isCharging)
 	{
+		canAttack = true;
+		canReadInput = true;
 		AddToCombatQueue(E_CombatActionType::HeavyAttack);
-		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, 2, false);
 	}
 }
 
@@ -164,7 +166,9 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 {
 	//Gets damage actor and execute TakeDamage
 	IDamageableInterface* damageActor = Cast<IDamageableInterface>(actorHit);
-	damageActor->Execute_TakeDamage(Cast<UObject>(this), damageInfo);
+	FS_DamageInfo changedDamage = damageInfo;
+	changedDamage.damageAmount *= powerMult;
+	damageActor->Execute_TakeDamage(Cast<UObject>(this), changedDamage);
 }
 
 //Resets the can attack variable to true
@@ -191,6 +195,7 @@ void UCombatSystemComponent::ResetQueue(float waitTime)
 	combatQueue.Empty();
 	queueCount = 0;
 	previousActions.Empty();
+	powerMult = 1;
 
 	//Sets timer
 	world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime, false);
@@ -202,11 +207,13 @@ void UCombatSystemComponent::ResetReadInputs()
 	//Allows player to attack
 	canReadInput = true;
 	canAttack = true;
+	didCharge = false;
 
 	//Empty queue
 	combatQueue.Empty();
 	queueCount = 0;
 	previousActions.Empty();
+	powerMult = 1;
 }
 
 void UCombatSystemComponent::QueueCountUp()
