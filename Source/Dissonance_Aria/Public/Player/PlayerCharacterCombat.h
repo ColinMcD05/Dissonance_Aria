@@ -20,6 +20,8 @@
 class UInputAction;
 class UCombatActionBase;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
+
 UCLASS()
 class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, public IAttacksInterface, public IDamageableInterface
 {
@@ -63,6 +65,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* swapWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* swapTuning;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* changeLockon;
@@ -145,6 +150,9 @@ public:
 	//Read Swap Weapon input
 	void ReadSwapWeapon(const FInputActionValue& value);
 
+	//Read Swap Tuning input
+	void ReadSwapTuning(const FInputActionValue& value);
+
 	//Read the change lock on input
 	void ReadChangeLockOn(const FInputActionValue& value);
 #pragma endregion
@@ -171,6 +179,11 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
 	void StopChargedAttack();
 #pragma endregion
+
+#pragma region SetUp
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerSetUpDone OnPlayerSetUpDone;
+#pragma
 
 	//Implementation of Attack interface
 #pragma region AttackInterface

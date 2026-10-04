@@ -11,6 +11,8 @@ UDamageSystemComponent::UDamageSystemComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	hatedBonus += 1;
+
+	currentHealth = maxHealth;
 }
 
 

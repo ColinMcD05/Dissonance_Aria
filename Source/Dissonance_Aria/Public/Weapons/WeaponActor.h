@@ -14,6 +14,9 @@
 
 class APlayerCharacterCombat;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponToleranceGone);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnTuningToleranceGone);
+
 UCLASS()
 class DISSONANCE_ARIA_API AWeaponActor : public AActor, public IHurtBoxInterface
 {
@@ -118,4 +121,6 @@ public:
 	void LowerTolerance();
 
 	void RaiseTolerance();
+
+	bool SwapTuning(int newTuning);
 };

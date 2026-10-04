@@ -265,3 +265,8 @@ void AWeaponActor::RaiseTolerance()
 		}
 	}
 }
+
+bool AWeaponActor::SwapTuning(int newTuning)
+{
+	return false;
+}

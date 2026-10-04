@@ -87,6 +87,8 @@ void APlayerCharacterCombat::BeginPlay()
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
 	}
 
+	OnPlayerSetUpDone.Broadcast();
+
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
 }
@@ -111,6 +113,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
+		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
 	}
 }
@@ -168,6 +171,11 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 	{
 		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
 	}
+}
+
+void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
+{
+
 }
 
 //Read the change lock on input
@@ -313,7 +321,7 @@ bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
 		{
 			if (damageSystem->GetIsDead())
 			{
-				HandleDeath(damageInfo.damageCauser);
+				Execute_HandleDeath(this, damageInfo.damageCauser);
 			}
 			return true;
 		}
