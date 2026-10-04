@@ -80,6 +80,7 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
 
 			OnWeaponSwapped.Broadcast(whichWeapon);
+			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre));
 
 			return true;
 		}
@@ -93,11 +94,13 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 {
 	if (canSwapTuning && currentHeldWeapon)
 	{
-		if (currentHeldWeapon->SwapTuning(tuning))
+		int swap = currentHeldWeapon->SwapTuning(tuning);
+		if (swap != -1)
 		{
 			canSwapTuning = false;
 
 			OnTuningSwapped.Broadcast(tuning);
+			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre) + currentHeldWeapon->GetCurrentTuning());
 
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
 		}

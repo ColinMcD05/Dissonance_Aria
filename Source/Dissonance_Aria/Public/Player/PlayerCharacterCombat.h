@@ -180,6 +180,14 @@ public:
 	void StopChargedAttack();
 #pragma endregion
 
+#pragma region Tuning
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Tunings")
+	void StartTuning(float value);
+
+	UFUNCTION(BlueprintCallable, Category = "Tunings")
+	void ReadSuccess(bool successful, int tuning);
+#pragma
+
 #pragma region SetUp
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerSetUpDone OnPlayerSetUpDone;

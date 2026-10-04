@@ -57,6 +57,8 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	float timeToFillTuning = 25;
 
+	bool raisingTolerance = false;
+
 	FTimerHandle disableTimer;
 
 	FTimerHandle raiserTimer;
@@ -122,5 +124,11 @@ public:
 
 	void RaiseTolerance();
 
-	bool SwapTuning(int newTuning);
+	void RaiseTuningTolerance();
+
+	//return -1 if failed. Else, rtuen current tuning
+	int SwapTuning(int newTuning);
+
+	UFUNCTION(BlueprintCallable)
+	int GetCurrentTuning();
 };

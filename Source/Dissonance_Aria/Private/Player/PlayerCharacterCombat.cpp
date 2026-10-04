@@ -175,7 +175,7 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 
 void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
-
+	StartTuning(value.Get<float>());
 }
 
 //Read the change lock on input
@@ -193,6 +193,16 @@ void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
 		{
 			lockedOnEnemy = gameState->GetPreviousEnemy(enemyIndex);
 		}
+	}
+}
+#pragma endregion
+
+#pragma region Tuning
+void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
+{
+	if (successful && weaponsSystem)
+	{
+		weaponsSystem->SwapTunings(tuning);
 	}
 }
 #pragma endregion

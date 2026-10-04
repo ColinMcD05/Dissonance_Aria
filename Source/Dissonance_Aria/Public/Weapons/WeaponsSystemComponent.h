@@ -13,6 +13,7 @@ class PlayerCharacterCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeMusic, int, musicChannel);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
@@ -64,5 +65,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FTuningSwapped OnTuningSwapped;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnChangeMusic OnChangeMusic;
 #pragma endregion
 };

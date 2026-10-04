@@ -49,6 +49,8 @@ void AWeaponActor::Activate()
 	SetActorHiddenInGame(false);
 	activated = true;
 	LowerTolerance();
+	currentTuning = 0;
+	RaiseTuningTolerance();
 }
 
 void AWeaponActor::Deactivate()
@@ -59,6 +61,8 @@ void AWeaponActor::Deactivate()
 	activated = false;
 	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
 	RaiseTolerance();
+	currentTuning = 0;
+	RaiseTuningTolerance();
 }
 
 // Called when the game starts or when spawned
@@ -225,11 +229,18 @@ void AWeaponActor::LowerTolerance()
 		if (weaponInfo.toleranceMeter > 0)
 		{
 			weaponInfo.toleranceMeter -= GetWorld()->DeltaTimeSeconds / timeToDrainTolerance;
+			weaponInfo.toleranceMeter = FMath::Clamp(weaponInfo.toleranceMeter, 0, 1);
 			if (currentTuning > 0)
 			{
-				if (weaponInfo.tunings.Num() == currentTuning + 1)
+				if (weaponInfo.tunings.Num() == currentTuning)
 				{
-					weaponInfo.tunings[currentTuning].toleranceMeter -= GetWorld()->DeltaTimeSeconds / timeToDrainTuning;
+					weaponInfo.tunings[currentTuning - 1].toleranceMeter -= GetWorld()->DeltaTimeSeconds / timeToDrainTuning;
+					weaponInfo.tunings[currentTuning - 1].toleranceMeter = FMath::Clamp(weaponInfo.tunings[currentTuning - 1].toleranceMeter, 0, 1);
+					if (weaponInfo.tunings[currentTuning - 1].toleranceMeter <= 0)
+					{
+						currentTuning = 0;
+						ChangeWeaponStats();
+					}
 				}
 			}
 			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::LowerTolerance);
@@ -249,14 +260,8 @@ void AWeaponActor::RaiseTolerance()
 		if (weaponInfo.toleranceMeter < 1)
 		{
 			weaponInfo.toleranceMeter += GetWorld()->DeltaTimeSeconds / timeToFillTolerance;
-			if (currentTuning > 0)
-			{
-				if (weaponInfo.tunings.Num() == currentTuning + 1)
-				{
-					weaponInfo.tunings[currentTuning].toleranceMeter += GetWorld()->DeltaTimeSeconds / timeToFillTuning;
-				}
-			}
 			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::RaiseTolerance);
+			weaponInfo.toleranceMeter = FMath::Clamp(weaponInfo.toleranceMeter, 0, 1);
 		}
 		else
 		{
@@ -266,16 +271,68 @@ void AWeaponActor::RaiseTolerance()
 	}
 }
 
-bool AWeaponActor::SwapTuning(int newTuning)
+
+void AWeaponActor::RaiseTuningTolerance()
 {
-	if (newTuning == currentTuning || newTuning > weaponInfo.tunings.Num())
+	raisingTolerance = true;
+	bool checks[2] = { false, false };
+	for (int i = 1; i <= weaponInfo.tunings.Num(); i++)
 	{
-		return false;
+		if (checks[i])
+		{
+			continue;
+		}
+		if(i == currentTuning)
+		{
+			checks[i] = true;
+			continue;
+		}
+		if (weaponInfo.tunings[i - 1].toleranceMeter < 1)
+		{
+			weaponInfo.tunings[i - 1].toleranceMeter += GetWorld()->DeltaTimeSeconds / timeToDrainTolerance;
+			weaponInfo.tunings[i - 1].toleranceMeter = FMath::Clamp(weaponInfo.tunings[i - 1].toleranceMeter, 0, 1);
+		}
+		else
+		{
+			checks[i] = true;
+		}
+	}
+	if (checks[0])
+	{
+		raisingTolerance = false;
+		return;
+	}
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::RaiseTuningTolerance);
+}
+
+int AWeaponActor::SwapTuning(int newTuning)
+{
+	if (newTuning > weaponInfo.tunings.Num())
+	{
+		return -1;
+	}
+
+	if (newTuning == currentTuning)
+	{
+		currentTuning = 0;
+		ChangeWeaponStats();
+		return 0;
+	}
+
+	if (weaponInfo.tunings[newTuning - 1].toleranceMeter < 1)
+	{
+		return -1;
 	}
 
 	currentTuning = newTuning;
+	RaiseTuningTolerance();
+	ChangeWeaponStats();
 
+	return currentTuning;
+}
 
-
-	return true;
+int AWeaponActor::GetCurrentTuning()
+{
+	return currentTuning;
 }
