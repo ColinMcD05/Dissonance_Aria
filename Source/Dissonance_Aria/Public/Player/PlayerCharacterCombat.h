@@ -160,6 +160,13 @@ public:
 	//Rotate the player to face enemy
 	void RotatePlayer();
 #pragma endregion
+
+	//Logic specifically for heavy attacks
+#pragma region HeavyAttack
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
+	void StartHeavyAttack();
+#pragma endregion
+
 	//Implementation of Attack interface
 #pragma region AttackInterface
 	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;

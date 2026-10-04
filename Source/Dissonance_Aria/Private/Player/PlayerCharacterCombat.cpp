@@ -127,7 +127,14 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		if (combatSystem->GetPreviousActionsAmount() > 0)
+		{
+			combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		}
+		else
+		{
+			StartHeavyAttack();
+		}
 	}
 }
 
@@ -222,6 +229,15 @@ void APlayerCharacterCombat::RotatePlayer()
 		Controller->SetControlRotation(FRotator(GetActorRotation().Pitch, newRotation.Yaw, GetActorRotation().Roll));
 	}
 }
+#pragma endregion
+
+//Logic specifically for heavy attacks
+#pragma region HeavyAttack
+void APlayerCharacterCombat::StartHeavyAttack_Implementation()
+{
+
+}
+
 #pragma endregion
 
 //Implementation of Attack interface

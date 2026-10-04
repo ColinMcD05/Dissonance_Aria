@@ -77,4 +77,6 @@ public:
 	void ResetReadInputs();
 
 	void QueueCountUp();
+
+	int GetPreviousActionsAmount() { return previousActions.Num(); }
 };
