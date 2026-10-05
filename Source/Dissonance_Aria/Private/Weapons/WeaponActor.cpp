@@ -144,7 +144,7 @@ float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActio
 void AWeaponActor::StartChargeAttack_Implementation()
 {
 	originalLocation = weaponMesh->GetRelativeLocation();
-	speed = 100 / 0.8;
+	speed = 200 / 0.8;
 	ChargeAttack();
 }
 
@@ -347,6 +347,26 @@ int AWeaponActor::SwapTuning(int newTuning)
 	ChangeWeaponStats();
 
 	return currentTuning;
+}
+
+
+int AWeaponActor::CanTune(int tuning)
+{
+	if (tuning > weaponInfo.tunings.Num() || depleted)
+	{
+		return -1;
+	}
+
+	if (weaponInfo.tunings[tuning - 1].toleranceMeter < 1)
+	{
+		return -1;
+	}
+
+	if (tuning == currentTuning)
+	{
+		return 0;
+	}
+	return 1;
 }
 
 int AWeaponActor::GetCurrentTuning()

@@ -130,6 +130,7 @@ public:
 
 	//return -1 if failed. Else, rtuen current tuning
 	int SwapTuning(int newTuning);
+	int CanTune(int tuning);
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentTuning();
