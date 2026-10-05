@@ -37,10 +37,13 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		spawnParams.Owner = player;
 		spawnParams.Instigator = player->GetInstigator();
 
-		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
-		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
-		currentHeldWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		currentHeldWeapon->Activate();
+		if (weaponOne->weaponActor)
+		{
+			currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
+			currentHeldWeapon->InitializeWeapon(player, *weaponOne);
+			currentHeldWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			currentHeldWeapon->Activate();
+		}
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();
@@ -90,6 +93,11 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 	return false;
 }
 
+float UWeaponsSystemComponent::GetCurrentWeaponTolerance()
+{
+	return currentHeldWeapon->GetCurrentWeaponTolerance();
+}
+
 void UWeaponsSystemComponent::SwapTunings(int tuning)
 {
 	if (canSwapTuning && currentHeldWeapon)
@@ -105,6 +113,12 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
 		}
 	}
+}
+
+//When returning -1, there is no active tuning
+float UWeaponsSystemComponent::GetCurrentTuningTolerance()
+{
+	return currentHeldWeapon->GetCurrentTuningTolerance();
 }
 
 int UWeaponsSystemComponent::CanTune(int tuning)

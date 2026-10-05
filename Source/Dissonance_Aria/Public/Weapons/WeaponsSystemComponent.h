@@ -53,11 +53,16 @@ public:
 	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
 	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
 	void ResetCanSwapWeapon();
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentWeaponTolerance();
 
 	//Swap tunings
 	void SwapTunings(int tuning);
 	void ResetCanSwapTuning();
 	int CanTune(int tuning);
+	//When returning -1, there is no active tuning
+	UFUNCTION(BlueprintCallable)
+	float GetCurrentTuningTolerance();
 
 #pragma region Delegates
 	//Delegate that gets broadcasted once weapons spawn

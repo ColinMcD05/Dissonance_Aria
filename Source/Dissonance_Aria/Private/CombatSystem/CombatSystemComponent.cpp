@@ -115,12 +115,12 @@ void UCombatSystemComponent::ReadCombatQueue()
 	{
 		canReadInput = false;
 		didCharge = false;
-		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime + 1, false);
+		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime + 0.5f, false);
 	}
 	else
 	{
 		//Start the timer
-		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, waitTime, false);
+		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, waitTime + 0.1f, false);
 	}
 }
 

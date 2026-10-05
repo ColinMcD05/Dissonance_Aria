@@ -9,6 +9,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeath, AActor*, enemy);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemySpawned);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatEnd, int, gainedExp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatStart);
 
 UCLASS()
 class DISSONANCE_ARIA_API ADAGameStateCombat : public AGameStateBase
@@ -42,6 +43,9 @@ public:
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnCombatEnd OnCombatEnd;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnCombatStart OnCombatStart;
 #pragma endregion
 
 #pragma region Getters

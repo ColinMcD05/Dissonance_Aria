@@ -41,6 +41,7 @@ void AWeaponActor::Activate()
 	activated = true;
 	LowerTolerance();
 	currentTuning = 0;
+	ChangeWeaponStats();
 	if (!raisingTolerance)
 	{
 		RaiseTuningTolerance();
@@ -189,6 +190,12 @@ void AWeaponActor::ChangeWeaponStats()
 		{
 			stats = *newStats;
 		}
+		if (newStats && depleted)
+		{
+			stats.damage *= depletionAmount;
+			stats.sidestepDistance *= depletionAmount;
+			stats.speed *= depletionAmount;
+		}
 	}
 }
 
@@ -226,8 +233,10 @@ void AWeaponActor::LowerTolerance()
 			depleted = true;
 			currentTuning = 0;
 			ChangeWeaponStats();
-			stats.damage *= 0.75f;
-			stats.sidestepDistance *= 0.75f;
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Depleted"));
+			}
 		}
 	}
 }
@@ -247,6 +256,11 @@ void AWeaponActor::RaiseTolerance()
 			stats.damage /= 0.75f;
 			stats.sidestepDistance /= 0.75f;
 			depleted = false;
+			ChangeWeaponStats();
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Regained"));
+			}
 		}
 	}
 }
@@ -337,6 +351,22 @@ int AWeaponActor::CanTune(int tuning)
 		return 0;
 	}
 	return 1;
+}
+
+float AWeaponActor::GetCurrentWeaponTolerance()
+{
+	return weaponInfo.toleranceMeter;
+}
+
+//When returning -1, there is no active tuning
+float AWeaponActor::GetCurrentTuningTolerance()
+{
+	if (currentTuning == 0 || currentTuning > weaponInfo.tunings.Num())
+	{
+		return -1;
+	}
+
+	return weaponInfo.tunings[currentTuning].toleranceMeter;
 }
 
 int AWeaponActor::GetCurrentTuning()

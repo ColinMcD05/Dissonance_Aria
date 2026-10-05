@@ -58,6 +58,9 @@ private:
 
 	bool depleted = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float depletionAmount = 0.75;
+
 	FTimerHandle disableTimer;
 
 	FTimerHandle raiserTimer;
@@ -126,4 +129,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentTuning();
+
+	float GetCurrentWeaponTolerance();
+	//When returning -1, there is no active tuning
+	float GetCurrentTuningTolerance();
 };

@@ -5,6 +5,7 @@
 
 void ADAGameStateCombat::BeginPlay()
 {
+	Super::BeginPlay();
 	OnEnemyDeath.AddDynamic(this, &ADAGameStateCombat::EnemyDead);
 }
 
