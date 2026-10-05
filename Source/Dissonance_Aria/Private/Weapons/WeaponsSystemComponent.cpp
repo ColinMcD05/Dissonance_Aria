@@ -83,6 +83,7 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
 
 			OnWeaponSwapped.Broadcast(whichWeapon);
+			OnTuningSwapped.Broadcast(0);
 			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre));
 
 			return true;
