@@ -33,15 +33,6 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 
 	weaponInfo = newWeaponInfo;
 	ChangeWeaponStats();
-
-	for (UActorComponent* component : GetComponents())
-	{
-		UWeaponHitbox* newHurtbox = Cast<UWeaponHitbox>(component);
-		if (newHurtbox)
-		{
-			hurtboxes.Add(newHurtbox);
-		}
-	}
 }
 
 void AWeaponActor::Activate()
@@ -60,7 +51,6 @@ void AWeaponActor::Deactivate()
 {
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
-	DisableHurtboxes();
 	activated = false;
 	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
 	RaiseTolerance();
@@ -125,8 +115,6 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
-	EnableHurtboxes();
-	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 0.17f, false);
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
@@ -134,8 +122,6 @@ float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActio
 float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
-	EnableHurtboxes();
-	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 0.17f, false);
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
@@ -210,22 +196,6 @@ void AWeaponActor::CombatEnd(int gainedExp)
 {
 	weaponInfo.exp.currentExperience += gainedExp;
 	playerOwner->UpdateInventoryWeaponInfo(weaponInfo);
-}
-
-void AWeaponActor::EnableHurtboxes()
-{
-	for (UWeaponHitbox* hurtbox : hurtboxes)
-	{
-		hurtbox->SetGenerateOverlapEvents(true);
-	}
-}
-
-void AWeaponActor::DisableHurtboxes_Implementation()
-{
-	for (UWeaponHitbox* hurtbox : hurtboxes)
-	{
-		hurtbox->SetGenerateOverlapEvents(false);
-	}
 }
 
 void AWeaponActor::LowerTolerance()
