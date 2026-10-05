@@ -37,10 +37,13 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		spawnParams.Owner = player;
 		spawnParams.Instigator = player->GetInstigator();
 
-		currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
-		currentHeldWeapon->InitializeWeapon(player, *weaponOne);
-		currentHeldWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
-		currentHeldWeapon->Activate();
+		if (weaponOne->weaponActor)
+		{
+			currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
+			currentHeldWeapon->InitializeWeapon(player, *weaponOne);
+			currentHeldWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+			currentHeldWeapon->Activate();
+		}
 	}
 
 	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();
@@ -80,6 +83,7 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
 
 			OnWeaponSwapped.Broadcast(whichWeapon);
+			OnTuningSwapped.Broadcast(0);
 			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre));
 
 			return true;
@@ -88,6 +92,14 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 	}
 
 	return false;
+}
+
+void UWeaponsSystemComponent::SendCurrentWeaponTolerance()
+{
+	float weaponTolerance = currentHeldWeapon->GetCurrentWeaponTolerance();
+
+	OnWeaponToleranceChange.Broadcast(weaponTolerance);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentWeaponTolerance);
 }
 
 void UWeaponsSystemComponent::SwapTunings(int tuning)
@@ -99,10 +111,36 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 		{
 			canSwapTuning = false;
 
-			OnTuningSwapped.Broadcast(tuning);
+			OnTuningSwapped.Broadcast(swap);
 			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre) + currentHeldWeapon->GetCurrentTuning());
 
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
+		}
+	}
+}
+
+//When returning -1, there is no active tuning
+void UWeaponsSystemComponent::SendCurrentTuningTolerance()
+{
+	if (canBroadcastTolerance)
+	{
+		OnTuningToleranceChange.Broadcast(currentHeldWeapon->GetCurrentTuningTolerance());
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentTuningTolerance);
+	}
+}
+
+void UWeaponsSystemComponent::BroadCastTuningTolerance(int whichTuning)
+{
+	if (whichTuning <= 0 )
+	{
+		canBroadcastTolerance = false;
+	}
+	else
+	{
+		if (!canBroadcastTolerance)
+		{
+			canBroadcastTolerance = true;
+			SendCurrentTuningTolerance();
 		}
 	}
 }

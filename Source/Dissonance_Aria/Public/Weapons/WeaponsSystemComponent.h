@@ -14,6 +14,8 @@ class PlayerCharacterCombat;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeMusic, int, musicChannel);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponToleranceChange, int, newWeaponTolerance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTuningToleranceChange, int, newTuningTolerance);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
@@ -32,6 +34,7 @@ private:
 
 	bool canSwapWeapon = true;
 	bool canSwapTuning = true;
+	bool canBroadcastTolerance = false;
 	FTimerHandle swapWeaponsTimer;
 
 protected:
@@ -53,11 +56,17 @@ public:
 	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
 	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
 	void ResetCanSwapWeapon();
+	UFUNCTION(BlueprintCallable)
+	void SendCurrentWeaponTolerance();
 
 	//Swap tunings
 	void SwapTunings(int tuning);
 	void ResetCanSwapTuning();
 	int CanTune(int tuning);
+	//When returning -1, there is no active tuning
+	UFUNCTION(BlueprintCallable)
+	void SendCurrentTuningTolerance();
+	void BroadCastTuningTolerance(int whichTuning);
 
 #pragma region Delegates
 	//Delegate that gets broadcasted once weapons spawn
@@ -69,5 +78,11 @@ public:
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnChangeMusic OnChangeMusic;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnWeaponToleranceChange OnWeaponToleranceChange;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnTuningToleranceChange OnTuningToleranceChange;
 #pragma endregion
 };

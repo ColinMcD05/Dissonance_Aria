@@ -30,9 +30,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* weaponMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	TArray<UWeaponHitbox*> hurtboxes;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
 	int currentTuning = 0;
 
@@ -60,6 +57,9 @@ private:
 	bool raisingTolerance = false;
 
 	bool depleted = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float depletionAmount = 0.75;
 
 	FTimerHandle disableTimer;
 
@@ -108,11 +108,6 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
 	void ChargeAttack();
 
-	void EnableHurtboxes();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void DisableHurtboxes();
-
 	int GetMaxHealth() { return stats.maxHP; }
 
 	int CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction);
@@ -134,4 +129,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetCurrentTuning();
+
+	float GetCurrentWeaponTolerance();
+	//When returning -1, there is no active tuning
+	float GetCurrentTuningTolerance();
 };

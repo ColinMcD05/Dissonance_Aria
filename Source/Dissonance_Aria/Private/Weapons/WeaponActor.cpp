@@ -33,15 +33,6 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 
 	weaponInfo = newWeaponInfo;
 	ChangeWeaponStats();
-
-	for (UActorComponent* component : GetComponents())
-	{
-		UWeaponHitbox* newHurtbox = Cast<UWeaponHitbox>(component);
-		if (newHurtbox)
-		{
-			hurtboxes.Add(newHurtbox);
-		}
-	}
 }
 
 void AWeaponActor::Activate()
@@ -50,6 +41,7 @@ void AWeaponActor::Activate()
 	activated = true;
 	LowerTolerance();
 	currentTuning = 0;
+	ChangeWeaponStats();
 	if (!raisingTolerance)
 	{
 		RaiseTuningTolerance();
@@ -60,7 +52,6 @@ void AWeaponActor::Deactivate()
 {
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
-	DisableHurtboxes();
 	activated = false;
 	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
 	RaiseTolerance();
@@ -125,8 +116,6 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
-	EnableHurtboxes();
-	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 0.17f, false);
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
@@ -134,8 +123,6 @@ float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActio
 float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
-	EnableHurtboxes();
-	GetWorld()->GetTimerManager().SetTimer(disableTimer, this, &AWeaponActor::DisableHurtboxes, 0.17f, false);
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
@@ -203,6 +190,12 @@ void AWeaponActor::ChangeWeaponStats()
 		{
 			stats = *newStats;
 		}
+		if (newStats && depleted)
+		{
+			stats.damage *= depletionAmount;
+			stats.sidestepDistance *= depletionAmount;
+			stats.speed *= depletionAmount;
+		}
 	}
 }
 
@@ -210,22 +203,6 @@ void AWeaponActor::CombatEnd(int gainedExp)
 {
 	weaponInfo.exp.currentExperience += gainedExp;
 	playerOwner->UpdateInventoryWeaponInfo(weaponInfo);
-}
-
-void AWeaponActor::EnableHurtboxes()
-{
-	for (UWeaponHitbox* hurtbox : hurtboxes)
-	{
-		hurtbox->SetGenerateOverlapEvents(true);
-	}
-}
-
-void AWeaponActor::DisableHurtboxes_Implementation()
-{
-	for (UWeaponHitbox* hurtbox : hurtboxes)
-	{
-		hurtbox->SetGenerateOverlapEvents(false);
-	}
 }
 
 void AWeaponActor::LowerTolerance()
@@ -246,6 +223,14 @@ void AWeaponActor::LowerTolerance()
 					{
 						currentTuning = 0;
 						ChangeWeaponStats();
+						if (playerOwner)
+						{
+							if (playerOwner->GetWeaponsSystem())
+							{
+								playerOwner->GetWeaponsSystem()->OnTuningSwapped.Broadcast(0);
+								playerOwner->GetWeaponsSystem()->OnChangeMusic.Broadcast(static_cast<int32>(weaponInfo.genre));
+							}
+						}
 					}
 				}
 			}
@@ -256,8 +241,10 @@ void AWeaponActor::LowerTolerance()
 			depleted = true;
 			currentTuning = 0;
 			ChangeWeaponStats();
-			stats.damage *= 0.75f;
-			stats.sidestepDistance *= 0.75f;
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Depleted"));
+			}
 		}
 	}
 }
@@ -277,6 +264,11 @@ void AWeaponActor::RaiseTolerance()
 			stats.damage /= 0.75f;
 			stats.sidestepDistance /= 0.75f;
 			depleted = false;
+			ChangeWeaponStats();
+			if (GEngine)
+			{
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Regained"));
+			}
 		}
 	}
 }
@@ -367,6 +359,22 @@ int AWeaponActor::CanTune(int tuning)
 		return 0;
 	}
 	return 1;
+}
+
+float AWeaponActor::GetCurrentWeaponTolerance()
+{
+	return weaponInfo.toleranceMeter;
+}
+
+//When returning -1, there is no active tuning
+float AWeaponActor::GetCurrentTuningTolerance()
+{
+	if (currentTuning == 0 || currentTuning > weaponInfo.tunings.Num())
+	{
+		return -1;
+	}
+
+	return weaponInfo.tunings[currentTuning].toleranceMeter;
 }
 
 int AWeaponActor::GetCurrentTuning()
