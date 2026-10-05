@@ -223,6 +223,14 @@ void AWeaponActor::LowerTolerance()
 					{
 						currentTuning = 0;
 						ChangeWeaponStats();
+						if (playerOwner)
+						{
+							if (playerOwner->GetWeaponsSystem())
+							{
+								playerOwner->GetWeaponsSystem()->OnTuningSwapped.Broadcast(0);
+								playerOwner->GetWeaponsSystem()->OnChangeMusic.Broadcast(static_cast<int32>(weaponInfo.genre));
+							}
+						}
 					}
 				}
 			}

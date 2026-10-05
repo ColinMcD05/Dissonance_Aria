@@ -93,9 +93,12 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 	return false;
 }
 
-float UWeaponsSystemComponent::GetCurrentWeaponTolerance()
+void UWeaponsSystemComponent::SendCurrentWeaponTolerance()
 {
-	return currentHeldWeapon->GetCurrentWeaponTolerance();
+	float weaponTolerance = currentHeldWeapon->GetCurrentWeaponTolerance();
+
+	OnWeaponToleranceChange.Broadcast(weaponTolerance);
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentWeaponTolerance);
 }
 
 void UWeaponsSystemComponent::SwapTunings(int tuning)
@@ -107,7 +110,7 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 		{
 			canSwapTuning = false;
 
-			OnTuningSwapped.Broadcast(tuning);
+			OnTuningSwapped.Broadcast(swap);
 			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre) + currentHeldWeapon->GetCurrentTuning());
 
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
@@ -116,9 +119,29 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 }
 
 //When returning -1, there is no active tuning
-float UWeaponsSystemComponent::GetCurrentTuningTolerance()
+void UWeaponsSystemComponent::SendCurrentTuningTolerance()
 {
-	return currentHeldWeapon->GetCurrentTuningTolerance();
+	if (canBroadcastTolerance)
+	{
+		OnTuningToleranceChange.Broadcast(currentHeldWeapon->GetCurrentTuningTolerance());
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentTuningTolerance);
+	}
+}
+
+void UWeaponsSystemComponent::BroadCastTuningTolerance(int whichTuning)
+{
+	if (whichTuning <= 0 )
+	{
+		canBroadcastTolerance = false;
+	}
+	else
+	{
+		if (!canBroadcastTolerance)
+		{
+			canBroadcastTolerance = true;
+			SendCurrentTuningTolerance();
+		}
+	}
 }
 
 int UWeaponsSystemComponent::CanTune(int tuning)
