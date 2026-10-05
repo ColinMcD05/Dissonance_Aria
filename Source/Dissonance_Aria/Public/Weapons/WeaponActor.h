@@ -30,9 +30,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* weaponMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
-	TArray<UWeaponHitbox*> hurtboxes;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
 	int currentTuning = 0;
 
@@ -107,11 +104,6 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
 	void ChargeAttack();
-
-	void EnableHurtboxes();
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void DisableHurtboxes();
 
 	int GetMaxHealth() { return stats.maxHP; }
 
