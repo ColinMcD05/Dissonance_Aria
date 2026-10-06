@@ -14,8 +14,8 @@ class PlayerCharacterCombat;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeMusic, int, musicChannel);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponToleranceChange, int, newWeaponTolerance);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTuningToleranceChange, int, newTuningTolerance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponToleranceChange, float, newWeaponTolerance);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTuningToleranceChange, float, newTuningTolerance);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
