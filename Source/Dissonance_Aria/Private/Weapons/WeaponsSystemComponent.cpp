@@ -17,7 +17,7 @@ void UWeaponsSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	OnTuningSwapped.AddDynamic(this, &UWeaponsSystemComponent::BroadCastTuningTolerance);
 }
 
 
@@ -58,6 +58,8 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		storedWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 		storedWeapon->Deactivate();
 	}
+
+	SendCurrentWeaponTolerance();
 }
 
 
