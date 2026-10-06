@@ -228,11 +228,11 @@ void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
 	}
 }
 
-void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo)
+void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
 {
 	if (inventory)
 	{
-		inventory->UpdateWeaponInfo(updatedInfo);
+		inventory->UpdateWeaponInfo(updatedInfo, maxLevel);
 	}
 }
 

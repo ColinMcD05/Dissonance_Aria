@@ -116,7 +116,7 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo);
+	void UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel);
 
 	void ResetCurrentLevel();
 
