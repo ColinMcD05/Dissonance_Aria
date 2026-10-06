@@ -22,6 +22,8 @@ private:
 
 	TArray<AActor*> enemies;
 
+	bool finished;
+
 public:
 	virtual void BeginPlay() override;
 

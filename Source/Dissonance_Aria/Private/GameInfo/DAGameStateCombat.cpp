@@ -23,6 +23,12 @@ void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
 void ADAGameStateCombat::EnemyDead_Implementation(AActor* newEnemy)
 {
 	enemies.Remove(newEnemy);
+
+	if (enemies.Num() <= 0 && !finished)
+	{
+		finished = true;
+		OnCombatEnd.Broadcast(totalEnemyExp);
+	}
 }
 
 AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)

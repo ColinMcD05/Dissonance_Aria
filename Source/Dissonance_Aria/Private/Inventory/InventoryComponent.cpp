@@ -21,8 +21,13 @@ void UInventoryComponent::SetupInventory()
 void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo)
 {
 	FS_WeaponInfo* updated = GetWeaponByType(updatedInfo.weaponType);
+	*updated = updatedInfo;
 	if (updated)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::FromInt(updated->exp.currentExperience));
+		}
 		LevelUp(updated);
 	}
 }
@@ -46,6 +51,10 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info)
 	{
 		info->level++;
 		OnWeaponLevelUp.Broadcast(*info);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Level UP"));
+		}
 	}
 }
 
