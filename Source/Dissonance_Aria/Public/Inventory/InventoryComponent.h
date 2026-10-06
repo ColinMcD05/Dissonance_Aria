@@ -9,6 +9,7 @@
 #include "InventoryComponent.generated.h"
 
 #define MAX_WEAPONS_AMOUNT 4
+#define MAX_LEVEL 4
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponLevelUp, FS_WeaponInfo, weapon);
 
@@ -44,11 +45,11 @@ public:
 
 	void SetupInventory();
 
-	void UpdateWeaponInfo(FS_WeaponInfo updatedInfo);
+	void UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel);
 
-	bool CheckLevelUp(FS_WeaponInfo* info);
+	bool CheckLevelUp(FS_WeaponInfo* info, int maxLevel);
 
-	void LevelUp(FS_WeaponInfo* info);
+	void LevelUp(FS_WeaponInfo* info, int maxLevel);
 
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void AddNewWeapon(const FS_WeaponInfo newWeapon);
