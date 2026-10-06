@@ -32,6 +32,12 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 	playerOwner = player;
 
 	weaponInfo = newWeaponInfo;
+
+	if (statsTable.Num() > 0 && statsTable[0])
+	{
+		weaponInfo.level = FMath::Clamp(weaponInfo.level, 1, statsTable[0]->GetRowNames().Num());
+	}
+
 	ChangeWeaponStats();
 }
 
@@ -185,7 +191,10 @@ void AWeaponActor::ChangeWeaponStats()
 {
 	if (currentTuning < statsTable.Num() && statsTable[currentTuning])
 	{
+		int nextLevel = FMath::Clamp(weaponInfo.level, 1, statsTable[currentTuning]->GetRowNames().Num());
+
 		FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
+
 		if (newStats)
 		{
 			stats = *newStats;
@@ -202,7 +211,7 @@ void AWeaponActor::ChangeWeaponStats()
 void AWeaponActor::CombatEnd(int gainedExp)
 {
 	weaponInfo.exp.currentExperience += gainedExp;
-	playerOwner->UpdateInventoryWeaponInfo(weaponInfo);
+	playerOwner->UpdateInventoryWeaponInfo(weaponInfo, statsTable[0]->GetRowNames().Num());
 }
 
 void AWeaponActor::LowerTolerance()

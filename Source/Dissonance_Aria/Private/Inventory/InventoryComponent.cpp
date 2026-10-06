@@ -13,22 +13,27 @@ UInventoryComponent::UInventoryComponent()
 	weapons.Reserve(MAX_WEAPONS_AMOUNT);
 }
 
-void UInventoryComponent::SetupInventory()
-{
-
-}
-
-void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo)
+void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
 {
 	FS_WeaponInfo* updated = GetWeaponByType(updatedInfo.weaponType);
+	*updated = updatedInfo;
 	if (updated)
 	{
-		LevelUp(updated);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::FromInt(updated->exp.currentExperience));
+		}
+		LevelUp(updated, maxLevel);
 	}
 }
 
-bool UInventoryComponent::CheckLevelUp(FS_WeaponInfo* info)
+bool UInventoryComponent::CheckLevelUp(FS_WeaponInfo* info, int maxLevel)
 {
+	if (info->level == MAX_LEVEL || info->level >= levelsTable->GetRowNames().Num() || info->level >= maxLevel)
+	{
+		return false;
+	}
+
 	FS_LevelData* expRequired = levelsTable->FindRow<FS_LevelData>(FName(*FString::FromInt(info->level + 1)), "", true);
 	if (expRequired)
 	{
@@ -40,12 +45,16 @@ bool UInventoryComponent::CheckLevelUp(FS_WeaponInfo* info)
 	return false;
 }
 
-void UInventoryComponent::LevelUp(FS_WeaponInfo* info)
+void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 {
-	while (CheckLevelUp(info))
+	while (CheckLevelUp(info, maxLevel))
 	{
 		info->level++;
 		OnWeaponLevelUp.Broadcast(*info);
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Level UP"));
+		}
 	}
 }
 
@@ -236,7 +245,7 @@ void UInventoryComponent::LoadInventory(const FS_InventorySave& loadedInventory)
 		{
 			if (currentWeapon.weaponType == currentInfo.weaponType)
 			{
-				currentWeapon.level = currentInfo.level;
+				currentWeapon.level = FMath::Clamp(currentInfo.level, 1, levelsTable->GetRowNames().Num());
 				currentWeapon.exp = currentInfo.experience;
 				currentWeapon.acquired = currentInfo.isAcquired;
 				currentWeapon.toleranceMeter = currentInfo.toleranceMeter;
