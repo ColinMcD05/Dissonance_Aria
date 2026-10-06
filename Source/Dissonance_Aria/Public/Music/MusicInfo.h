@@ -10,7 +10,7 @@ enum class E_Genre : uint8
 {
 	None = 0 UMETA(DisplayName = "None"),
 	Classical = 1 UMETA(DisplayName = "Orchestral"),
-	Folk = 4 UMETA(DisplayName = "Folk"), 
+	Folk = 3 UMETA(DisplayName = "Folk"), 
 	Jazz = 7 UMETA(DisplayName = "Jazz"),
 	Metal = 10 UMETA(DisplayName = "Metal")
 };
