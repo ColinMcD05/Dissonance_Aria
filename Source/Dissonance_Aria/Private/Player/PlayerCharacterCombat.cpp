@@ -115,6 +115,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
+		PlayerInputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &APlayerCharacterCombat::ReadEndCombat);
 	}
 }
 
@@ -201,6 +202,14 @@ void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
 		{
 			lockedOnEnemy = gameState->GetPreviousEnemy(enemyIndex);
 		}
+	}
+}
+
+void APlayerCharacterCombat::ReadEndCombat_Implementation()
+{
+	if (!combatEnd)
+	{
+		return;
 	}
 }
 #pragma endregion

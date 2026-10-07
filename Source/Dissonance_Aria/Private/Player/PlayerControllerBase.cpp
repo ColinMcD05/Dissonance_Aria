@@ -20,5 +20,8 @@ void APlayerControllerBase::BeginPlay()
 		{
 			subsystem->AddMappingContext(freeLookMapping, 1);
 		}
+
+		FInputModeGameOnly gameOnly;
+		SetInputMode(gameOnly);
 	}
 }
