@@ -158,12 +158,12 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 	{
 		switch (swapValue)
 		{
-		case 1:
-			weaponsSystem->SwapWeapons(weapon1, 1);
-			break;
-		case 2:
-			weaponsSystem->SwapWeapons(weapon2, 2);
-			break;
+			case 1:
+				didSwap = weaponsSystem->SwapWeapons(weapon1, 1);
+				break;
+			case 2:
+				didSwap = weaponsSystem->SwapWeapons(weapon2, 2);
+				break;
 		}
 	}
 
