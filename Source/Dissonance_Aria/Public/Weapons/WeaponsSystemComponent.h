@@ -66,6 +66,7 @@ public:
 	//When returning -1, there is no active tuning
 	UFUNCTION(BlueprintCallable)
 	void SendCurrentTuningTolerance();
+	UFUNCTION()
 	void BroadCastTuningTolerance(int whichTuning);
 
 #pragma region Delegates

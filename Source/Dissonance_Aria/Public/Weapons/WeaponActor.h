@@ -24,6 +24,11 @@ class DISSONANCE_ARIA_API AWeaponActor : public AActor, public IHurtBoxInterface
 	
 private:
 
+	E_CombatActionType lastAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	bool attackCharged = false;
+
 	FVector originalLocation;
 	float speed;
 

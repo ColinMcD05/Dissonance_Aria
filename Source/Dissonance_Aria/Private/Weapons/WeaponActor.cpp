@@ -98,15 +98,14 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 	FS_DamageInfo* damageInfo = new FS_DamageInfo();
 	damageInfo->damageCauser = GetOwner();
 	damageInfo->genreAttack = weaponInfo.genre;
-	if (currentTuning != 0)
-	{
-		damageInfo->damageAmount = stats.damage;
-	}
-	else
-	{
-		damageInfo->damageAmount = stats.damage;
-	}
+
+	damageInfo->damageAmount = stats.damage;
 	
+	if (lastAttack == E_CombatActionType::HeavyAttack)
+	{
+		damageInfo->damageAmount *= 1.25;
+	}
+
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
 
 	free(damageInfo);
@@ -122,6 +121,7 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
+	lastAttack = E_CombatActionType::LightAttack;
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
@@ -129,6 +129,7 @@ float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActio
 float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
 	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
+	lastAttack = E_CombatActionType::HeavyAttack;
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
@@ -143,6 +144,12 @@ void AWeaponActor::StartChargeAttack_Implementation()
 
 void AWeaponActor::ChargeAttack_Implementation()
 {
+	if (attackCharged)
+	{
+		playerOwner->ChargeReady();
+		attackCharged = false;
+	}
+
 	if (originalLocation.Y - 100 <= weaponMesh->GetRelativeLocation().Y)
 	{
 		FVector addedVector = FVector(0, -speed * GetWorld()->DeltaTimeSeconds, 0);
