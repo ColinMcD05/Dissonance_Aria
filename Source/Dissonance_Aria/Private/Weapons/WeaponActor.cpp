@@ -386,7 +386,6 @@ int AWeaponActor::SwapTuning(int newTuning)
 	return currentTuning;
 }
 
-
 int AWeaponActor::CanTune(int tuning)
 {
 	if (tuning > weaponInfo.tunings.Num() || depleted)

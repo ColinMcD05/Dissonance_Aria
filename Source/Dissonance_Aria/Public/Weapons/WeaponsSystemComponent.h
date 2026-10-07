@@ -33,9 +33,10 @@ private:
 #pragma endregion
 
 	bool canSwapWeapon = true;
-	bool canSwapTuning = true;
+	bool canSwapTuning = false;
 	bool canBroadcastTolerance = false;
 	FTimerHandle swapWeaponsTimer;
+	FTimerHandle swapTuningTimer;
 
 protected:
 	// Called when the game starts
