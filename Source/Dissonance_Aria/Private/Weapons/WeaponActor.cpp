@@ -31,6 +31,19 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 
 	playerOwner = player;
 
+	if (!playerOwner)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, GetName());
+		}
+	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, GetName());
+	}
+
 	weaponInfo = newWeaponInfo;
 
 	if (statsTable.Num() > 0 && statsTable[0])
@@ -218,6 +231,22 @@ void AWeaponActor::ChangeWeaponStats()
 void AWeaponActor::CombatEnd(int gainedExp)
 {
 	weaponInfo.exp.currentExperience += gainedExp;
+	if (statsTable.Num() == 0 && statsTable[0] == nullptr)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, TEXT("Tables"));
+		}
+		return;
+	}
+	if (!playerOwner)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, GetName());
+		}
+		return;
+	}
 	playerOwner->UpdateInventoryWeaponInfo(weaponInfo, statsTable[0]->GetRowNames().Num());
 }
 
