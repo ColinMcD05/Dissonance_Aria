@@ -35,6 +35,8 @@ private:
 
 	E_SpeedTypes currentSpeedType;
 
+	FTimerHandle resetSpeed;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -70,4 +72,6 @@ public:
 	void SetSpeedByType(E_SpeedTypes speedType);
 
 	void UpdateWalkSpeeds(FS_PlayerWalkSpeeds newSpeeds);
+
+	void ResetSpeed();
 };
