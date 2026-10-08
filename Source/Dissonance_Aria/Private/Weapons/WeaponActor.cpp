@@ -102,28 +102,11 @@ void AWeaponActor::Tick(float DeltaTime)
 bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 {
 	/*
-	if (enemyHit)
+	if (!enemyHit || !enemyHit->GetClass()->ImplementsInterface(
+		UDamageableInterface::StaticClass()))
 	{
-		if (enemyHit->Implements<IDamageableInterface>())
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, TEXT("Can hit!"));
-			}
-		}
-	}
-	*/
-
-	IDamageableInterface* enemy = Cast<IDamageableInterface>(enemyHit);
-
-	if (!enemy)
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, TEXT("Can't hit!"));
-		}
 		return false;
-	}
+	}*/
 
 	FS_DamageInfo* damageInfo = new FS_DamageInfo();
 	damageInfo->damageCauser = GetOwner();
