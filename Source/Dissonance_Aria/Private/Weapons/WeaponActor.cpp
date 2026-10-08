@@ -416,7 +416,7 @@ float AWeaponActor::GetCurrentTuningTolerance()
 		return -1;
 	}
 
-	return weaponInfo.tunings[currentTuning].toleranceMeter;
+	return weaponInfo.tunings[currentTuning-1].toleranceMeter;
 }
 
 int AWeaponActor::GetCurrentTuning()
