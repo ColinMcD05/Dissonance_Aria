@@ -86,12 +86,13 @@ void APlayerCharacterBase::SetSpeedByType(E_SpeedTypes speedType)
 	switch (speedType)
 	{
 		case E_SpeedTypes::Walking:
-			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.walkSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.walkSpeed * 100;
 			break;
 		case E_SpeedTypes::Running:
 			break;
 		case E_SpeedTypes::Slowed:
-			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.slowed;
+			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.slowed * 100;
+			GetWorld()->GetTimerManager().SetTimer(resetSpeed, this, &APlayerCharacterBase::ResetSpeed, 5);
 			break;
 	}
 	currentSpeedType = speedType;
@@ -101,4 +102,9 @@ void APlayerCharacterBase::UpdateWalkSpeeds(FS_PlayerWalkSpeeds newSpeeds)
 {
 	walkSpeeds = newSpeeds;
 	SetSpeedByType(currentSpeedType);
+}
+
+void APlayerCharacterBase::ResetSpeed()
+{
+
 }
