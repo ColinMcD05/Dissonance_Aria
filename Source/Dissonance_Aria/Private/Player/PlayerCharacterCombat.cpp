@@ -117,7 +117,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
-		PlayerInputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &APlayerCharacterCombat::ReadEndCombat);
+		PlayerInputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &APlayerCharacterCombat::ReadAnyKey);
 	}
 }
 
@@ -207,18 +207,42 @@ void APlayerCharacterCombat::ReadChangeLockOn(const FInputActionValue& value)
 	}
 }
 
-void APlayerCharacterCombat::ReadEndCombat_Implementation()
+void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 {
-	if (!combatEnd)
-	{
-		return;
-	}
-	if (ADAGameModeBase* gameModeBase = GameInfoUtilities::GetDAGameMode<ADAGameModeBase>(this))
+	ADAGameModeBase* gameModeBase = GameInfoUtilities::GetDAGameMode<ADAGameModeBase>(this);
+
+	if (combatEnd && gameModeBase)
 	{
 		gameModeBase->TransitionToLevel("None");
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Cant"));
+		}
+	}
+
+	if (KeyboardOrGamepad(pressedKey) != controllerType)
+	{
+		controllerType = KeyboardOrGamepad(pressedKey);
+		OnSwapController.Broadcast(controllerType);
 	}
 }
 #pragma endregion
+
+E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
+{
+	if (pressedKey.IsGamepadKey())
+	{
+		return E_ControllerType::Controller;
+	}
+	if (pressedKey.IsTouch())
+	{
+		return E_ControllerType::Other;
+	}
+	else
+	{
+		return E_ControllerType::Keyboard;
+	}
+}
 
 #pragma region Tuning
 void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
