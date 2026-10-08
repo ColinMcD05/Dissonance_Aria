@@ -92,6 +92,7 @@ void APlayerCharacterBase::SetSpeedByType(E_SpeedTypes speedType)
 			break;
 		case E_SpeedTypes::Slowed:
 			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.slowed * 100;
+			GetWorld()->GetTimerManager().SetTimer(resetSpeed, this, &APlayerCharacterBase::ResetSpeed, 5);
 			break;
 	}
 	currentSpeedType = speedType;
@@ -101,4 +102,9 @@ void APlayerCharacterBase::UpdateWalkSpeeds(FS_PlayerWalkSpeeds newSpeeds)
 {
 	walkSpeeds = newSpeeds;
 	SetSpeedByType(currentSpeedType);
+}
+
+void APlayerCharacterBase::ResetSpeed()
+{
+
 }
