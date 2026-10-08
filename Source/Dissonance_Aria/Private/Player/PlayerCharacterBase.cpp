@@ -106,5 +106,5 @@ void APlayerCharacterBase::UpdateWalkSpeeds(FS_PlayerWalkSpeeds newSpeeds)
 
 void APlayerCharacterBase::ResetSpeed()
 {
-
+	SetSpeedByType(E_SpeedTypes::Walking);
 }
