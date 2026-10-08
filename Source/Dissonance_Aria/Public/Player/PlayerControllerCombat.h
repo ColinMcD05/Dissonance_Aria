@@ -25,4 +25,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
 	void SetUpUI();
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void DisconnentPlayerInput(int exp);
 };

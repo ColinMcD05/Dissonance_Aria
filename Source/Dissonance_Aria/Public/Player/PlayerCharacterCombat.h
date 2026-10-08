@@ -28,6 +28,8 @@ class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, 
 	GENERATED_BODY()
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameStateInfo", meta = (AllowPrivateAccess = "true"))
+	bool combatEnd = false;
 
 	//Needed components and actors
 #pragma region Components
@@ -155,6 +157,10 @@ public:
 
 	//Read the change lock on input
 	void ReadChangeLockOn(const FInputActionValue& value);
+
+	//Read end combat
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Input")
+	void ReadEndCombat();
 #pragma endregion
 
 #pragma region Camera

@@ -4,6 +4,7 @@
 #include "Player/PlayerCharacterBase.h"
 #include "Player/PlayerControllerBase.h"
 #include "EnhancedInputComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayerCharacterBase::APlayerCharacterBase()
@@ -78,4 +79,26 @@ void APlayerCharacterBase::Look_Implementation(const FInputActionValue& value)
 void APlayerCharacterBase::PauseGame_Implementation()
 {
 	Cast<APlayerControllerBase>(GetController())->PausedGame();
+}
+
+void APlayerCharacterBase::SetSpeedByType(E_SpeedTypes speedType)
+{
+	switch (speedType)
+	{
+		case E_SpeedTypes::Walking:
+			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.walkSpeed;
+			break;
+		case E_SpeedTypes::Running:
+			break;
+		case E_SpeedTypes::Slowed:
+			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.slowed;
+			break;
+	}
+	currentSpeedType = speedType;
+}
+
+void APlayerCharacterBase::UpdateWalkSpeeds(FS_PlayerWalkSpeeds newSpeeds)
+{
+	walkSpeeds = newSpeeds;
+	SetSpeedByType(currentSpeedType);
 }

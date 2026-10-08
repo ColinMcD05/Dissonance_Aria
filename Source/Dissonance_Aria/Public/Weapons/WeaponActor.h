@@ -138,4 +138,6 @@ public:
 	float GetCurrentWeaponTolerance();
 	//When returning -1, there is no active tuning
 	float GetCurrentTuningTolerance();
+
+	FS_Stats GetStats() { return stats; }
 };
