@@ -223,7 +223,7 @@ void AWeaponActor::ChangeWeaponStats()
 		{
 			stats.damage *= depletionAmount;
 			stats.sidestepDistance *= depletionAmount;
-			stats.speed *= depletionAmount;
+
 		}
 	}
 }

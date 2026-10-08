@@ -4,6 +4,14 @@
 
 #include "PlayerWalkSpeeds.generated.h"
 
+UENUM(BlueprintType)
+enum class E_SpeedTypes : uint8 
+{
+	Walking UMETA(DisplayName = "Walking"),
+	Running UMETA(DisplayName = "Running"),
+	Slowed UMETA(DisplayName = "Slowed")
+};
+
 USTRUCT(BlueprintType)
 struct FS_PlayerWalkSpeeds
 {
@@ -11,7 +19,7 @@ struct FS_PlayerWalkSpeeds
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk")
-	float walkSpeed;
+	float walkSpeed ;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk")
 	float runSpeed;

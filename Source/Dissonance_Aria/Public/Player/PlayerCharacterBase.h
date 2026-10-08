@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputAction.h"
+#include "Player/PlayerWalkSpeeds.h"
 #include "PlayerCharacterBase.generated.h"
 
 UCLASS()
@@ -12,9 +13,7 @@ class DISSONANCE_ARIA_API APlayerCharacterBase : public ACharacter
 {
 	GENERATED_BODY()
 
-public:
-	// Sets default values for this character's properties
-	APlayerCharacterBase();
+private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* move;
@@ -31,11 +30,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	bool useFreeCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	FS_PlayerWalkSpeeds walkSpeeds;
+
+	E_SpeedTypes currentSpeedType;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
+	// Sets default values for this character's properties
+	APlayerCharacterBase();
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -58,4 +65,9 @@ public:
 	void PauseGame();
 
 	bool GetUseFreeCamera() { return useFreeCamera; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetSpeedByType(E_SpeedTypes speedType);
+
+	void UpdateWalkSpeeds(FS_PlayerWalkSpeeds newSpeeds);
 };

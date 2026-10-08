@@ -43,6 +43,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 			currentHeldWeapon->InitializeWeapon(player, *weaponOne);
 			currentHeldWeapon->AttachToComponent(player->GetWeaponSpot(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
 			currentHeldWeapon->Activate();
+			player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
 		}
 	}
 
@@ -78,6 +79,10 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 
 			currentHeldWeapon = storedWeapon;
 			currentHeldWeapon->Activate();
+			if (APlayerCharacterCombat* player = Cast<APlayerCharacterCombat>(GetOwner()))
+			{
+				player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
+			}
 
 			storedWeapon = tempWeapon;
 			storedWeapon->Deactivate();
@@ -116,6 +121,10 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 
 			OnTuningSwapped.Broadcast(swap);
 			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre) + currentHeldWeapon->GetCurrentTuning());
+			if (APlayerCharacterCombat* player = Cast<APlayerCharacterCombat>(GetOwner()))
+			{
+				player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
+			}
 		}
 
 		GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 2, false);

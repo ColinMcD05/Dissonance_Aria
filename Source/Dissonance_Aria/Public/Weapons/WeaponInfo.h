@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Music/MusicInfo.h"
+#include "Player/PlayerWalkSpeeds.h"
 #include "WeaponInfo.generated.h"
 
 class AWeaponActor;
@@ -44,7 +45,7 @@ public:
 	float damage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
-	float speed;
+	FS_PlayerWalkSpeeds speeds;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	float sidestepDistance;
