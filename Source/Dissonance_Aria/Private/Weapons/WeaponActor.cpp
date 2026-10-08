@@ -101,27 +101,24 @@ void AWeaponActor::Tick(float DeltaTime)
 
 bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 {
-	/*
-	if (!enemyHit || !enemyHit->GetClass()->ImplementsInterface(
+	if(!enemyHit || !enemyHit->GetClass()->ImplementsInterface(
 		UDamageableInterface::StaticClass()))
 	{
 		return false;
-	}*/
+	}
 
-	FS_DamageInfo* damageInfo = new FS_DamageInfo();
-	damageInfo->damageCauser = GetOwner();
-	damageInfo->genreAttack = weaponInfo.genre;
+	FS_DamageInfo damageInfo;
+	damageInfo.damageCauser = GetOwner();
+	damageInfo.genreAttack = weaponInfo.genre;
 
-	damageInfo->damageAmount = stats.damage;
+	damageInfo.damageAmount = stats.damage;
 	
 	if (lastAttack == E_CombatActionType::HeavyAttack)
 	{
-		damageInfo->damageAmount *= 1.25;
+		damageInfo.damageAmount *= 1.25;
 	}
 
-	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
-
-	free(damageInfo);
+	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
 
 	return true;
 }

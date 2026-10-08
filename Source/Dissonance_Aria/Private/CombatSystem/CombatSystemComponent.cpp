@@ -164,7 +164,6 @@ void UCombatSystemComponent::StopCharge()
 //Deals damage to hit actor
 void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damageInfo)
 {
-	/*
 	//Gets damage actor and execute TakeDamage
 	if (!actorHit || !actorHit->Implements<UDamageableInterface>())
 	{
@@ -178,7 +177,6 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 	FS_DamageInfo changedDamage = damageInfo;
 	changedDamage.damageAmount *= powerMult;
 	IDamageableInterface::Execute_TakeDamage(actorHit, damageInfo);
-	*/
 }
 
 //Resets the can attack variable to true
