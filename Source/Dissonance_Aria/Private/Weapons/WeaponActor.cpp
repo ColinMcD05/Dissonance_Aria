@@ -101,44 +101,24 @@ void AWeaponActor::Tick(float DeltaTime)
 
 bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 {
-	/*
-	if (enemyHit)
+	if(!enemyHit || !enemyHit->GetClass()->ImplementsInterface(
+		UDamageableInterface::StaticClass()))
 	{
-		if (enemyHit->Implements<IDamageableInterface>())
-		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, TEXT("Can hit!"));
-			}
-		}
-	}
-	*/
-
-	IDamageableInterface* enemy = Cast<IDamageableInterface>(enemyHit);
-
-	if (!enemy)
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, TEXT("Can't hit!"));
-		}
 		return false;
 	}
 
-	FS_DamageInfo* damageInfo = new FS_DamageInfo();
-	damageInfo->damageCauser = GetOwner();
-	damageInfo->genreAttack = weaponInfo.genre;
+	FS_DamageInfo damageInfo;
+	damageInfo.damageCauser = GetOwner();
+	damageInfo.genreAttack = weaponInfo.genre;
 
-	damageInfo->damageAmount = stats.damage;
+	damageInfo.damageAmount = stats.damage;
 	
 	if (lastAttack == E_CombatActionType::HeavyAttack)
 	{
-		damageInfo->damageAmount *= 1.25;
+		damageInfo.damageAmount *= 1.25;
 	}
 
-	playerOwner->GetCombatSystem()->DealDamage(enemyHit, *damageInfo);
-
-	free(damageInfo);
+	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
 
 	return true;
 }

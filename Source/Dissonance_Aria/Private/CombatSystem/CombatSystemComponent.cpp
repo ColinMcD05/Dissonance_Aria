@@ -165,10 +165,18 @@ void UCombatSystemComponent::StopCharge()
 void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damageInfo)
 {
 	//Gets damage actor and execute TakeDamage
-	IDamageableInterface* damageActor = Cast<IDamageableInterface>(actorHit);
+	if (!actorHit || !actorHit->Implements<UDamageableInterface>())
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Can't damage"));
+		}
+		return;
+	}
+
 	FS_DamageInfo changedDamage = damageInfo;
 	changedDamage.damageAmount *= powerMult;
-	damageActor->Execute_TakeDamage(Cast<UObject>(this), changedDamage);
+	IDamageableInterface::Execute_TakeDamage(actorHit, damageInfo);
 }
 
 //Resets the can attack variable to true
