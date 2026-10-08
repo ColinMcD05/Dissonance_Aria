@@ -8,6 +8,7 @@
 class AActor;
 class UDAGameInstance;
 class AGameStateBase;
+class AGameModeBase;
 /**
  * 
  */
@@ -27,5 +28,16 @@ namespace GameInfoUtilities
 	T* GetDAGameState(AActor * actor)
 	{
 		return Cast<T>(actor->GetWorld()->GetGameState());
+	}
+
+	template <typename T>
+	concept GameModeType = std::derived_from<T, AGameModeBase>;
+
+	//Returns the current game state
+	UFUNCTION(BlueprintCallable)
+	template<GameModeType T>
+	T* GetDAGameMode(AActor* actor)
+	{
+		return Cast<T>(actor->GetWorld()->GetAuthGameMode());
 	}
 }
