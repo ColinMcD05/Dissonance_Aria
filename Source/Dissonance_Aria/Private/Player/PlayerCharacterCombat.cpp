@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameInfo/DAGameModeBase.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -85,6 +86,7 @@ void APlayerCharacterCombat::BeginPlay()
 	if (gameState)
 	{
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
+		gameState->OnCombatEnd.AddDynamic(this, &APlayerCharacterCombat::CombatEnded);
 	}
 
 	OnPlayerSetUpDone.Broadcast();
@@ -210,6 +212,10 @@ void APlayerCharacterCombat::ReadEndCombat_Implementation()
 	if (!combatEnd)
 	{
 		return;
+	}
+	if (ADAGameModeBase* gameModeBase = GameInfoUtilities::GetDAGameMode<ADAGameModeBase>(this))
+	{
+		gameModeBase->TransitionToLevel("None");
 	}
 }
 #pragma endregion
@@ -374,4 +380,9 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 	const FString CurrentMap = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 
 	UGameplayStatics::OpenLevel(GetWorld(), FName(*CurrentMap));
+}
+
+void APlayerCharacterCombat::CombatEnded(int exp)
+{
+	combatEnd = true;
 }

@@ -122,6 +122,9 @@ public:
 
 	void ResetCurrentLevel();
 
+	UFUNCTION()
+	void CombatEnded(int exp);
+
 #pragma region Getters
 	//Get the combat system
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
