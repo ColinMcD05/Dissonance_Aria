@@ -18,5 +18,5 @@ public:
 	void TransitionToLevel(FName levelName);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Transitions")
-	void OpenLevel();
+	void LevelOpened();
 };
