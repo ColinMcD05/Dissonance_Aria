@@ -86,12 +86,12 @@ void APlayerCharacterBase::SetSpeedByType(E_SpeedTypes speedType)
 	switch (speedType)
 	{
 		case E_SpeedTypes::Walking:
-			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.walkSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.walkSpeed * 100;
 			break;
 		case E_SpeedTypes::Running:
 			break;
 		case E_SpeedTypes::Slowed:
-			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.slowed;
+			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.slowed * 100;
 			break;
 	}
 	currentSpeedType = speedType;
