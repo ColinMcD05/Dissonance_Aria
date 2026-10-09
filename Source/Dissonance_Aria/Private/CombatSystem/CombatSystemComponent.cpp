@@ -56,7 +56,7 @@ void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 			}
 
 			canReadInput = false;
-			world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputsOnly, 0.1f, false);
+			world->GetTimerManager().SetTimer(readInputOnlyTimer, this, &UCombatSystemComponent::ResetReadInputsOnly, 0.1f, false);
 		}
 	}
 }
@@ -96,11 +96,11 @@ void UCombatSystemComponent::ReadCombatQueue()
 			
 			if (attacker)
 			{
+
 				//waitTime = attacker->Execute_HeavyAttack(Cast<UObject>(attacker), previousActions, false);
-				if (previousActions.IsEmpty())
+				if (previousActions.Num() == 0)
 				{
-					didCharge = true;
-					return;
+					downSwing = true;
 				}
 				else
 				{
@@ -108,9 +108,15 @@ void UCombatSystemComponent::ReadCombatQueue()
 					switch (prev)
 					{
 						case E_CombatActionType::HeavyAttack:
+							if (GEngine)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("UpAttack"));
+							}
 							upSwing = true;
+							break;
 						case E_CombatActionType::LightAttack:
 							downSwing = true;
+							break;
 					}
 				}
 				previousActions.Add(E_CombatActionType::HeavyAttack);
@@ -133,6 +139,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 					{
 						case E_CombatActionType::HeavyAttack:
 							rightSwing = true;
+							break;
 						case E_CombatActionType::LightAttack:
 							if (previousActions.Num() == 1)
 							{
@@ -142,6 +149,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 							{
 								leftSwing = true;
 							}
+							break;
 					}
 				}
 
@@ -255,13 +263,16 @@ void UCombatSystemComponent::AttackFinished()
 	leftSwing = false;
 	rightSwing = false;
 
-	if (previousActions.Num() >= MAX_COMBO_LENGTH || didCharge)
+	if (previousActions.Num() >= MAX_COMBO_LENGTH)
 	{
 		//Prevents player from attack of inpit reading
+		
+
 		canReadInput = false;
 		canAttack = false;
 
 		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
+		world->GetTimerManager().ClearTimer(queueTimer);
 		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, .5f, false);
 	}
 	else

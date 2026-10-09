@@ -73,6 +73,8 @@ private:
 	FTimerHandle queueTimer;
 
 	FTimerHandle readInputOnlyTimer;
+
+	FTimerHandle resetInputs;
 #pragma endregion
 
 protected:
