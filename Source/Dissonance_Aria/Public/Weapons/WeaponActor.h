@@ -25,6 +25,8 @@ class DISSONANCE_ARIA_API AWeaponActor : public AActor, public IHurtBoxInterface
 private:
 
 	E_CombatActionType lastAttack;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	bool attacking;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	bool attackCharged = false;
@@ -140,4 +142,10 @@ public:
 	float GetCurrentTuningTolerance();
 
 	FS_Stats GetStats() { return stats; }
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void StartSphereTrace();
+
+	UFUNCTION(BlueprintCallable)
+	void StopSphereTrace() { attacking = false;}
 };
