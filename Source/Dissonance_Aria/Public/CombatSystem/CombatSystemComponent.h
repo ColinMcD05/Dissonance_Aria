@@ -89,6 +89,9 @@ public:
 	//Emptys the queue and waits to let players attack
 	void ResetQueue(float waitTime);
 
+	UFUNCTION(BlueprintCallable)
+	void AttackFinished();
+
 	//Resets ability to read inputs
 	void ResetReadInputs();
 
