@@ -20,7 +20,7 @@ void UCombatSystemComponent::BeginPlay()
 	Super::BeginPlay();
 
 	//Assigns owner for easier access
-	owner = GetOwner();
+	owner = Cast<APlayerCharacterCombat>(GetOwner());
 
 	//Gets world for easier access
 	if (owner)
@@ -48,9 +48,15 @@ void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 			combatQueue.Enqueue(action);
 			queueCount++;
 
-
 			//Read input
 			ReadCombatQueue();
+			if (owner)
+			{
+				musicMults.Add(owner->MusicalMultiplier());
+			}
+
+			canReadInput = false;
+			world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputsOnly, 0.2f, false);
 		}
 	}
 }
@@ -115,6 +121,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 	{
 		canReadInput = false;
 		didCharge = false;
+		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
 		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime + 0.5f, false);
 	}
 	else
@@ -175,7 +182,17 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 	}
 
 	FS_DamageInfo changedDamage = damageInfo;
+
 	changedDamage.damageAmount *= powerMult;
+	if (musicMults.Num() >= queueCount)
+	{
+		changedDamage.damageAmount *= musicMults[queueCount - 1];
+	}
+	if (damageMults.Num() >= queueCount)
+	{
+		changedDamage.damageAmount *= damageMults[queueCount - 1];
+	}
+
 	IDamageableInterface::Execute_TakeDamage(actorHit, damageInfo);
 }
 
@@ -205,6 +222,8 @@ void UCombatSystemComponent::ResetQueue(float waitTime)
 	previousActions.Empty();
 	powerMult = 1;
 
+	musicMults.Empty();
+
 	//Sets timer
 	world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime, false);
 }
@@ -222,6 +241,7 @@ void UCombatSystemComponent::ResetReadInputs()
 	queueCount = 0;
 	previousActions.Empty();
 	powerMult = 1;
+	musicMults.Empty();
 }
 
 void UCombatSystemComponent::QueueCountUp()

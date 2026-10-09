@@ -230,4 +230,7 @@ public:
 	virtual bool TakeDamage_Implementation(FS_DamageInfo DamageInfo) override;
 	virtual void HandleDeath_Implementation(AActor* killer) override;
 #pragma
+
+	UFUNCTION(BlueprintImplementableEvent)
+	float MusicalMultiplier();
 };
