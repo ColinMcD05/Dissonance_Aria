@@ -17,14 +17,20 @@ class DISSONANCE_ARIA_API APlayerCharacterExploration : public APlayerCharacterB
 	
 private:
 
+	bool currentlyMoving;
+
 #pragma region Camera
 	UCameraComponent* currentCamera;
 
 
 #pragma endregion
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
-	APlayerCharacterExploration();
 
 	virtual void Move_Implementation(const FInputActionValue& value) override;
+
+	void SetCurrentCamera(UCameraComponent* newCamera);
 };
