@@ -34,7 +34,7 @@ void UDamageSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
-bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo)
+bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo, int& damageAmount)
 {
 	if (isDead)
 	{
@@ -55,6 +55,8 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo)
 			damageTaken *= hatedBonus;
 		}
 	}
+
+	damageAmount = damageTaken;
 
 	currentHealth = FMath::Clamp(currentHealth - damageTaken, 0.0f, maxHealth);
 
