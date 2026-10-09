@@ -108,8 +108,8 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	{
 		inputComponent->BindAction(lightAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadLightAttack);
 		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
-		inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
-		inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
+		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
+		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
@@ -132,14 +132,17 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 {
 	if (combatSystem)
 	{
+		combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		/*
 		if (combatSystem->GetPreviousActionsAmount() > 0)
 		{
-			combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+
 		}
 		else
 		{
 			StartChargedAttack();
 		}
+		*/
 	}
 }
 

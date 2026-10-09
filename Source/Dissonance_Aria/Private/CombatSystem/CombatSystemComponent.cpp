@@ -56,7 +56,7 @@ void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 			}
 
 			canReadInput = false;
-			world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputsOnly, 0.2f, false);
+			world->GetTimerManager().SetTimer(readInputOnlyTimer, this, &UCombatSystemComponent::ResetReadInputsOnly, 0.1f, false);
 		}
 	}
 }
@@ -68,11 +68,12 @@ void UCombatSystemComponent::ReadCombatQueue()
 	if (!canAttack)
 	{
 		//Ensures that the timer has started or not. If it hasn't, start the timer.
-		if (world->GetTimerManager().IsTimerActive(combatTimer))
+		/*if (world->GetTimerManager().IsTimerActive(combatTimer))
 		{
 			return;
 		}
 		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, 0.1f, false);
+		*/
 
 		return;
 	}
@@ -85,7 +86,6 @@ void UCombatSystemComponent::ReadCombatQueue()
 
 	//Inizialize some variables
 	IAttacksInterface* attacker = Cast<IAttacksInterface>(owner);
-	float waitTime;
 	E_CombatActionType nextAction;
 	combatQueue.Dequeue(nextAction);
 
@@ -96,20 +96,65 @@ void UCombatSystemComponent::ReadCombatQueue()
 			
 			if (attacker)
 			{
-				waitTime = attacker->Execute_HeavyAttack(Cast<UObject>(attacker), previousActions, false);
-				if (previousActions.IsEmpty())
+
+				//waitTime = attacker->Execute_HeavyAttack(Cast<UObject>(attacker), previousActions, false);
+				if (previousActions.Num() == 0)
 				{
-					ResetQueue(waitTime+0.5f);
-					return;
+					downSwing = true;
+				}
+				else
+				{
+					E_CombatActionType prev = previousActions[previousActions.Num() - 1];
+					switch (prev)
+					{
+						case E_CombatActionType::HeavyAttack:
+							if (GEngine)
+							{
+								GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("UpAttack"));
+							}
+							upSwing = true;
+							break;
+						case E_CombatActionType::LightAttack:
+							downSwing = true;
+							break;
+					}
 				}
 				previousActions.Add(E_CombatActionType::HeavyAttack);
+
 			}
 			break;
 		case E_CombatActionType::LightAttack:
 			if (attacker)
 			{
-				waitTime = attacker->Execute_LightAttack(Cast<UObject>(attacker), previousActions);
+				//waitTime = attacker->Execute_LightAttack(Cast<UObject>(attacker), previousActions);
+
+				if (previousActions.Num() == 0)
+				{
+					leftSwing = true;
+				}
+				else
+				{
+					E_CombatActionType prev = previousActions[previousActions.Num() - 1];
+					switch (prev)
+					{
+						case E_CombatActionType::HeavyAttack:
+							rightSwing = true;
+							break;
+						case E_CombatActionType::LightAttack:
+							if (previousActions.Num() == 1)
+							{
+								rightSwing = true;
+							}
+							else 
+							{
+								leftSwing = true;
+							}
+							break;
+					}
+				}
+
 				previousActions.Add(E_CombatActionType::LightAttack);	
+
 			}
 			break;
 	}
@@ -161,26 +206,27 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 	//Gets damage actor and execute TakeDamage
 	if (!actorHit || !actorHit->Implements<UDamageableInterface>())
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Can't damage"));
-		}
 		return;
 	}
 
 	FS_DamageInfo changedDamage = damageInfo;
 
-	changedDamage.damageAmount *= powerMult;
-	if (musicMults.Num() >= queueCount)
+	//changedDamage.damageAmount *= powerMult;
+	if (musicMults.Num() >= previousActions.Num())
 	{
 		changedDamage.damageAmount *= musicMults[queueCount - 1];
 	}
-	if (damageMults.Num() >= queueCount)
+	if (damageMults.Num() >= previousActions.Num())
 	{
 		changedDamage.damageAmount *= damageMults[queueCount - 1];
 	}
+	if (previousActions.Num() && previousActions[previousActions.Num() -1] == E_CombatActionType::HeavyAttack)
+	{
+		changedDamage.damageAmount *= 1.2f;
+	}
 
-	IDamageableInterface::Execute_TakeDamage(actorHit, damageInfo);
+
+	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
 }
 
 //Resets the can attack variable to true
@@ -217,20 +263,29 @@ void UCombatSystemComponent::ResetQueue(float waitTime)
 
 void UCombatSystemComponent::AttackFinished()
 {
-	if (previousActions.Num() >= MAX_COMBO_LENGTH || didCharge)
+	upSwing = false;
+	downSwing = false;
+	leftSwing = false;
+	rightSwing = false;
+
+	if (previousActions.Num() >= MAX_COMBO_LENGTH)
 	{
 		//Prevents player from attack of inpit reading
+		
+
 		canReadInput = false;
 		canAttack = false;
 
 		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
-		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, 1.5f, false);
+		world->GetTimerManager().ClearTimer(queueTimer);
+		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, .5f, false);
 	}
 	else
 	{
 		canAttack = true;
 		ReadCombatQueue();
 	}
+	didCharge = false;
 }
 
 //Resets ability to read inputs

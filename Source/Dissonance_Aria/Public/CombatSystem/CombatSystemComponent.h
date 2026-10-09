@@ -47,6 +47,18 @@ private:
 
 	float powerMult;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool upSwing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool downSwing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool rightSwing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool leftSwing;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float maxMult = 2;
 
@@ -61,6 +73,8 @@ private:
 	FTimerHandle queueTimer;
 
 	FTimerHandle readInputOnlyTimer;
+
+	FTimerHandle resetInputs;
 #pragma endregion
 
 protected:
@@ -68,6 +82,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+
 	UCombatSystemComponent();
 
 	// Called every frame
