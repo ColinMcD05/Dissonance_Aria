@@ -30,6 +30,8 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
 {
+	const UEnum* Enum = StaticEnum<E_WeaponType>();
+
 	FS_WeaponInfo* weaponOne = inventory->GetWeaponOne();
 	if (weaponOne)
 	{
@@ -41,7 +43,11 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 		{
 			currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
 			currentHeldWeapon->InitializeWeapon(player, *weaponOne);
-			currentHeldWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Weapons");
+
+
+			FString enumName = Enum->GetDisplayNameTextByValue(static_cast<int64>(currentHeldWeapon->GetWeaponInfo().weaponType)).ToString();
+
+			currentHeldWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(*enumName));
 			currentHeldWeapon->Activate();
 			player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
 		}
@@ -56,7 +62,10 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		storedWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponTwo->weaponActor, player->GetActorTransform(), spawnParams);
 		storedWeapon->InitializeWeapon(player, *weaponTwo);
-		storedWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+
+		FString enumName = Enum->GetDisplayNameTextByValue(static_cast<int64>(storedWeapon->GetWeaponInfo().weaponType)).ToString();
+
+		storedWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(*enumName));
 		storedWeapon->Deactivate();
 	}
 
@@ -195,4 +204,16 @@ void  UWeaponsSystemComponent::ResetCanSwapTuning()
 		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Reset"));
 	}
 	canSwapTuning = true;
+}
+
+E_WeaponType UWeaponsSystemComponent::GetCurrentWeaponType()
+{ 
+	if (currentHeldWeapon)
+	{
+		return currentHeldWeapon->GetWeaponInfo().weaponType;
+	}
+	else
+	{
+		return E_WeaponType::Greatsword;
+	}
 }
