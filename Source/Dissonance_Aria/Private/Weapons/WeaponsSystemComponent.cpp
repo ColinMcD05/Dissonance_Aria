@@ -61,7 +61,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 	}
 
 	SendCurrentWeaponTolerance();
-	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 2, false);
+	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 3, false);
 }
 
 
@@ -126,10 +126,35 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 				player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
 			}
 		}
-
 		GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 2, false);
 	}
+	else 
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("WTF!!"));
+		}
+	}
 }
+
+
+int UWeaponsSystemComponent::CanTune(int tuning)
+{
+	if (!canSwapTuning)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("No"));
+		}
+		return -1;
+	}
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Yes"));
+	}
+	return currentHeldWeapon->CanTune(tuning);
+}
+
 
 //When returning -1, there is no active tuning
 void UWeaponsSystemComponent::SendCurrentTuningTolerance()
@@ -157,23 +182,6 @@ void UWeaponsSystemComponent::BroadCastTuningTolerance(int whichTuning)
 	}
 }
 
-int UWeaponsSystemComponent::CanTune(int tuning)
-{
-	if (!canSwapTuning)
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("No"));
-		}
-		return -1;
-	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Yes"));
-	}
-	return currentHeldWeapon->CanTune(tuning);
-}
-
 void UWeaponsSystemComponent::ResetCanSwapWeapon()
 {
 	canSwapWeapon = true;
@@ -181,5 +189,10 @@ void UWeaponsSystemComponent::ResetCanSwapWeapon()
 
 void  UWeaponsSystemComponent::ResetCanSwapTuning()
 {
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Reset"));
+	}
 	canSwapTuning = true;
 }
