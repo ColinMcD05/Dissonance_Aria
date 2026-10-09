@@ -220,6 +220,11 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 	{
 		changedDamage.damageAmount *= damageMults[queueCount - 1];
 	}
+	if (previousActions.Num() && previousActions[previousActions.Num() -1] == E_CombatActionType::HeavyAttack)
+	{
+		changedDamage.damageAmount *= 1.2;
+	}
+
 
 	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
 }

@@ -65,7 +65,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 
 		FString enumName = Enum->GetDisplayNameTextByValue(static_cast<int64>(storedWeapon->GetWeaponInfo().weaponType)).ToString();
 
-		storedWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, FName(*enumName));
+		storedWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(*enumName));
 		storedWeapon->Deactivate();
 	}
 
