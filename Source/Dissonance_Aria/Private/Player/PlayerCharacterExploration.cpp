@@ -11,7 +11,7 @@
 void APlayerCharacterExploration::BeginPlay()
 {
 	Super::BeginPlay();
-	AActor* actor = UGameplayStatics::GetActorOfClass(this, AFixedCamera::StaticClass());
+
 
 	bUseControllerRotationYaw = false;
 
@@ -21,7 +21,7 @@ void APlayerCharacterExploration::BeginPlay()
 	if (rotationSpeed < 100)
 		rotationSpeed *= 100;
 
-	if (AFixedCamera* fixedCamera = Cast<AFixedCamera>(actor))
+	if (AFixedCamera* fixedCamera = FindNearestActor(GetWorld(), GetActorLocation()))
 	{
 		SetCurrentCamera(fixedCamera->GetCamera());
 		SetNewForward();
@@ -80,4 +80,40 @@ void APlayerCharacterExploration::SetRotation(FVector2D moveVector)
 
 		SetActorRotation(newRotation);
 	}
+}
+
+AFixedCamera* APlayerCharacterExploration::FindNearestActor(UWorld* World,const FVector& FromLocation)
+{
+	if (!World)
+	{
+		return nullptr;
+	}
+
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(World, AFixedCamera::StaticClass(), actors);
+
+	AFixedCamera* nearest = nullptr;
+	float bestDistSquared = TNumericLimits<float>::Max();
+
+	for (AActor* actor : actors)
+	{
+		if (!IsValid(actor))
+		{
+			continue;
+		}
+		AFixedCamera* camera = Cast< AFixedCamera>(actor);
+		if (camera)
+		{
+			const float distSquared =
+				FVector::DistSquared(FromLocation, camera->GetActorLocation());
+
+			if (distSquared < bestDistSquared)
+			{
+				bestDistSquared = distSquared;
+				nearest = camera;
+			}
+		}
+	}
+
+	return nearest; // nullptr if no valid matching actor
 }

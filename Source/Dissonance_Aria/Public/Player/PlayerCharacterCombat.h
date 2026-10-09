@@ -51,9 +51,6 @@ private:
 	UDamageSystemComponent* damageSystem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	USceneComponent* weaponSpot;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	AWeaponActor* weapon1;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -142,9 +139,6 @@ public:
 	//Get weapon actor based on index. 0 for weapon 1, 1 for weapon 2
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	AWeaponActor* GetWeaponActor(int weapon) { return (weapon == 0) ? weapon1 : weapon2; }
-
-	//Get where weapons should spawn
-	USceneComponent* GetWeaponSpot() { return weaponSpot; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	E_ControllerType GetControllerType() { return controllerType; }
