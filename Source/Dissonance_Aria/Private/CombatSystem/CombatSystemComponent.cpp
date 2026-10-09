@@ -211,17 +211,17 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 
 	FS_DamageInfo changedDamage = damageInfo;
 
-	changedDamage.damageAmount *= powerMult;
-	if (musicMults.Num() >= queueCount)
+	//changedDamage.damageAmount *= powerMult;
+	if (musicMults.Num() >= previousActions.Num())
 	{
 		changedDamage.damageAmount *= musicMults[queueCount - 1];
 	}
-	if (damageMults.Num() >= queueCount)
+	if (damageMults.Num() >= previousActions.Num())
 	{
 		changedDamage.damageAmount *= damageMults[queueCount - 1];
 	}
 
-	IDamageableInterface::Execute_TakeDamage(actorHit, damageInfo);
+	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
 }
 
 //Resets the can attack variable to true
