@@ -37,7 +37,7 @@ public:
 	UFUNCTION()
 	void CheckNearestCamera();
 
-	AFixedCamera* FindNearestActor(UWorld* World, const FVector& FromLocation)
+	AFixedCamera* FindNearestActor(UWorld* World, const FVector& FromLocation);
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnCameraChange OnCameraChange;
