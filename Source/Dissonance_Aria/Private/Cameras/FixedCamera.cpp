@@ -11,7 +11,6 @@ AFixedCamera::AFixedCamera()
 
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	camera->Activate(false);
-	camera->
 	
 	RootComponent = camera;
 

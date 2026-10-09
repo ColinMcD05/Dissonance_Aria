@@ -19,5 +19,12 @@ void ACameraManager::BeginPlay()
 	TArray<AActor*> foundCamera;
 		
 	UGameplayStatics::GetAllActorsOfClass(this, AFixedCamera::StaticClass(), foundCamera);
-}
 
+	for (AActor* cam : foundCamera)
+	{
+		if (AFixedCamera* fixCamera = Cast<AFixedCamera>(cam))
+		{
+			
+		}
+	}
+}
