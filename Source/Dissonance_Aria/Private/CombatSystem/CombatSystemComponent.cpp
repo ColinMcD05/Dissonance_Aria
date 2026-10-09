@@ -222,7 +222,7 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 	}
 	if (previousActions.Num() && previousActions[previousActions.Num() -1] == E_CombatActionType::HeavyAttack)
 	{
-		changedDamage.damageAmount *= 1.2;
+		changedDamage.damageAmount *= 1.2f;
 	}
 
 
