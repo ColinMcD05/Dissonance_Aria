@@ -45,6 +45,7 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 	}
 
 	weaponInfo = newWeaponInfo;
+	weaponInfo.toleranceMeter = 1;
 
 	if (statsTable.Num() > 0 && statsTable[0])
 	{
@@ -415,7 +416,7 @@ float AWeaponActor::GetCurrentTuningTolerance()
 		return -1;
 	}
 
-	return weaponInfo.tunings[currentTuning].toleranceMeter;
+	return weaponInfo.tunings[currentTuning-1].toleranceMeter;
 }
 
 int AWeaponActor::GetCurrentTuning()
