@@ -10,10 +10,8 @@ AFixedCamera::AFixedCamera()
 	PrimaryActorTick.bCanEverTick = true;
 
 	camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	camera->Activate(false);
-	
-	RootComponent = camera;
 
+	RootComponent = camera;
 }
 
 // Called when the game starts or when spawned

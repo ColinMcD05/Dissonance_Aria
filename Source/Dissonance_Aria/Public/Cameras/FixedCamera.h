@@ -7,6 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "FixedCamera.generated.h"
 
+
+
 UCLASS()
 class DISSONANCE_ARIA_API AFixedCamera : public AActor
 {
@@ -23,6 +25,5 @@ public:
 	// Sets default values for this actor's properties
 	AFixedCamera();
 
-	void ActivateCamera();
-
+	UCameraComponent* GetCamera() { return camera; }
 };
