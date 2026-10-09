@@ -43,3 +43,40 @@ void ACameraManager::SwitchCamera(AFixedCamera* newCamera)
 		explorer->SetCurrentCamera(newCamera->GetCamera());
 	}
 }
+
+
+AFixedCamera* APlayerCharacterExploration::FindNearestActor(UWorld* World, const FVector& FromLocation)
+{
+	if (!World)
+	{
+		return nullptr;
+	}
+
+	TArray<AActor*> actors;
+	UGameplayStatics::GetAllActorsOfClass(World, AFixedCamera::StaticClass(), actors);
+
+	AFixedCamera* nearest = nullptr;
+	float bestDistSquared = TNumericLimits<float>::Max();
+
+	for (AActor* actor : actors)
+	{
+		if (!IsValid(actor))
+		{
+			continue;
+		}
+		AFixedCamera* camera = Cast< AFixedCamera>(actor);
+		if (camera)
+		{
+			const float distSquared =
+				FVector::DistSquared(FromLocation, camera->GetActorLocation());
+
+			if (distSquared < bestDistSquared)
+			{
+				bestDistSquared = distSquared;
+				nearest = camera;
+			}
+		}
+	}
+
+	return nearest; // nullptr if no valid matching actor
+}
