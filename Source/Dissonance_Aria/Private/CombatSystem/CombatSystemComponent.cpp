@@ -228,8 +228,8 @@ void UCombatSystemComponent::AttackFinished()
 	}
 	else
 	{
-		canReadInput = true;
 		canAttack = true;
+		ReadCombatQueue();
 	}
 }
 

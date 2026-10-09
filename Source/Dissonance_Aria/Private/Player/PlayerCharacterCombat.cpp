@@ -25,9 +25,6 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 	//Setup Weapons and weapons system
 	weaponsSystem = CreateDefaultSubobject<UWeaponsSystemComponent>(TEXT("WeaponsSystem"));
 
-	weaponSpot = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponsSpot"));
-	weaponSpot->SetupAttachment(GetMesh());
-
 	//Setup Damage System
 	damageSystem = CreateDefaultSubobject <UDamageSystemComponent>(TEXT("DamageSystem"));
 
