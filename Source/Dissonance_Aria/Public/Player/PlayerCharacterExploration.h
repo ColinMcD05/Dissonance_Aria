@@ -17,12 +17,10 @@ class DISSONANCE_ARIA_API APlayerCharacterExploration : public APlayerCharacterB
 	
 private:
 
-	bool currentlyMoving;
-
+	FVector forward;
+	FVector right;
 #pragma region Camera
 	UCameraComponent* currentCamera;
-
-
 #pragma endregion
 
 protected:
@@ -32,5 +30,9 @@ public:
 
 	virtual void Move_Implementation(const FInputActionValue& value) override;
 
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
 	void SetCurrentCamera(UCameraComponent* newCamera);
+
+	void SetNewForward();
 };

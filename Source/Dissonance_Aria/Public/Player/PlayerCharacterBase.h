@@ -77,4 +77,6 @@ public:
 	void UpdateWalkSpeeds(FS_PlayerWalkSpeeds newSpeeds);
 
 	void ResetSpeed();
+
+	UInputAction* GetMove() { return move; }
 };
