@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Weapons/WeaponActor.h"
 #include "Inventory/InventoryComponent.h"
+#include "Weapons/WeaponInfo.h"
 #include "WeaponsSystemComponent.generated.h"
 
 class AWeaponActor;
@@ -59,6 +60,9 @@ public:
 	void ResetCanSwapWeapon();
 	UFUNCTION(BlueprintCallable)
 	void SendCurrentWeaponTolerance();
+
+	UFUNCTION(BlueprintCallable)
+	E_WeaponType GetCurrentWeaponType();
 
 	//Swap tunings
 	void SwapTunings(int tuning);
