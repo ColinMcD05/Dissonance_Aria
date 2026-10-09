@@ -116,23 +116,6 @@ void UCombatSystemComponent::ReadCombatQueue()
 
 	//Ensures players can no longer attack
 	canAttack = false;
-
-	if (previousActions.Num() >= MAX_COMBO_LENGTH || didCharge)
-	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, TEXT("Resseting"));
-		}
-		canReadInput = false;
-		didCharge = false;
-		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
-		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime + 0.5f, false);
-	}
-	else
-	{
-		//Start the timer
-		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, waitTime + 0.1f, false);
-	}
 }
 
 bool UCombatSystemComponent::StartCharge()
@@ -230,6 +213,24 @@ void UCombatSystemComponent::ResetQueue(float waitTime)
 
 	//Sets timer
 	world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, waitTime, false);
+}
+
+void UCombatSystemComponent::AttackFinished()
+{
+	if (previousActions.Num() >= MAX_COMBO_LENGTH || didCharge)
+	{
+		//Prevents player from attack of inpit reading
+		canReadInput = false;
+		canAttack = false;
+
+		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
+		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, 1.5f, false);
+	}
+	else
+	{
+		canAttack = true;
+		ReadCombatQueue();
+	}
 }
 
 //Resets ability to read inputs

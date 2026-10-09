@@ -7,6 +7,8 @@
 #include "Camera/CameraComponent.h"
 #include "PlayerCharacterExploration.generated.h"
 
+class AFixedCamera;
+
 /**
  * 
  */
@@ -35,9 +37,12 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable)
 	void SetCurrentCamera(UCameraComponent* newCamera);
 
 	void SetNewForward();
 
 	void SetRotation(FVector2D moveVector);
+
+	AFixedCamera* FindNearestActor(UWorld* World, const FVector& FromLocation);
 };
