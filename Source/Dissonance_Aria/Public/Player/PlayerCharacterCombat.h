@@ -15,12 +15,14 @@
 #include "DamageSystem/DamageableInterface.h"
 #include "DamageSystem/DamageSystemComponent.h"
 #include "GameInfo/DAGameStateCombat.h"
+#include "Input/ControllerTypeInfo.h"
 #include "PlayerCharacterCombat.generated.h"
 
 class UInputAction;
 class UCombatActionBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwapController, E_ControllerType, newController);
 
 UCLASS()
 class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, public IAttacksInterface, public IDamageableInterface
@@ -30,6 +32,9 @@ class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameStateInfo", meta = (AllowPrivateAccess = "true"))
 	bool combatEnd = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameStateInfo", meta = (AllowPrivateAccess = "true"))
+	E_ControllerType controllerType = E_ControllerType::Keyboard;
 
 	//Needed components and actors
 #pragma region Components
@@ -140,6 +145,9 @@ public:
 
 	//Get where weapons should spawn
 	USceneComponent* GetWeaponSpot() { return weaponSpot; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
+	E_ControllerType GetControllerType() { return controllerType; }
 #pragma endregion
 
 #pragma region Input
@@ -163,8 +171,10 @@ public:
 
 	//Read end combat
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Input")
-	void ReadEndCombat();
+	void ReadAnyKey(FKey pressedKey);
 #pragma endregion
+
+	E_ControllerType KeyboardOrGamepad(FKey pressedKey);
 
 #pragma region Camera
 	UFUNCTION()
@@ -200,6 +210,9 @@ public:
 #pragma region SetUp
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnPlayerSetUpDone OnPlayerSetUpDone;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnSwapController OnSwapController;
 #pragma
 
 	//Implementation of Attack interface
