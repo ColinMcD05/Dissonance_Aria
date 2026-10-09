@@ -17,6 +17,9 @@ class DISSONANCE_ARIA_API APlayerCharacterExploration : public APlayerCharacterB
 	
 private:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float rotationSpeed = 6;
+
 	FVector forward;
 	FVector right;
 #pragma region Camera
@@ -35,4 +38,6 @@ public:
 	void SetCurrentCamera(UCameraComponent* newCamera);
 
 	void SetNewForward();
+
+	void SetRotation(FVector2D moveVector);
 };
