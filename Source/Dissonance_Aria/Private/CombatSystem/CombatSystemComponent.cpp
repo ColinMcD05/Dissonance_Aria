@@ -119,6 +119,10 @@ void UCombatSystemComponent::ReadCombatQueue()
 
 	if (previousActions.Num() >= MAX_COMBO_LENGTH || didCharge)
 	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, TEXT("Resseting"));
+		}
 		canReadInput = false;
 		didCharge = false;
 		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
