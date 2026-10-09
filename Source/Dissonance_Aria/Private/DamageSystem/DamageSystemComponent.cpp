@@ -70,14 +70,18 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo, int&
 	return true;
 }
 
-void UDamageSystemComponent::HandleIncomingHeal(float healAmount, AActor* healer)
+void UDamageSystemComponent::HandleIncomingHeal(float healPercent, AActor* healer)
 {
 	if (isDead) 
 	{ 
 		return; 
 	}
 
-	currentHealth = FMath::Clamp(currentHealth + healAmount, 0.0f, maxHealth);
+	float newHealth = maxHealth * healPercent;
+
+	currentHealth = FMath::Clamp(currentHealth + newHealth, 0.0f, maxHealth);
+
+	OnHealthChange.Broadcast(maxHealth, currentHealth);
 }
 
 void UDamageSystemComponent::SetMaxHealthAndCurrent(int newMaxHealth)

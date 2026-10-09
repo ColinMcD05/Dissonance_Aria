@@ -254,6 +254,7 @@ void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
 	if (successful && weaponsSystem)
 	{
 		weaponsSystem->SwapTunings(tuning);
+		Execute_Heal(this, .15f, this);
 	}
 }
 #pragma endregion
@@ -369,9 +370,12 @@ bool APlayerCharacterCombat::GetIsDead_Implementation()
 	return false;
 }
 
-void APlayerCharacterCombat::Heal_Implementation(float HealAmount, AActor* Healer)
+void APlayerCharacterCombat::Heal_Implementation(float healAmount, AActor* healer)
 {
-
+	if (damageSystem)
+	{
+		damageSystem->HandleIncomingHeal(healAmount, healer);
+	}
 }
 
 bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
