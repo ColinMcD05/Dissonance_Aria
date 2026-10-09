@@ -44,8 +44,12 @@ void ACameraManager::SwitchCamera(AFixedCamera* newCamera)
 	}
 }
 
+void ACameraManager::CheckNearestCamera()
+{
+	
+}
 
-AFixedCamera* APlayerCharacterExploration::FindNearestActor(UWorld* World, const FVector& FromLocation)
+AFixedCamera* ACameraManager::FindNearestActor(UWorld* World, const FVector& FromLocation)
 {
 	if (!World)
 	{

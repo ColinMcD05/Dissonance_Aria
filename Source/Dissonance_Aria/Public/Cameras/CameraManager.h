@@ -34,6 +34,11 @@ public:
 	UFUNCTION()
 	void SwitchCamera(AFixedCamera* newCamera);
 
+	UFUNCTION()
+	void CheckNearestCamera();
+
+	AFixedCamera* FindNearestActor(UWorld* World, const FVector& FromLocation)
+
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnCameraChange OnCameraChange;
 };
