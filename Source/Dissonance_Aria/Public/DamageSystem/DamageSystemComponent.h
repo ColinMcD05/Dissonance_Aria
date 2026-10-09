@@ -54,7 +54,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
-	bool HandleIncomingDamage(FS_DamageInfo damageInfo);
+	bool HandleIncomingDamage(FS_DamageInfo damageInfo, int& damageAmount);
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void HandleIncomingHeal(float healAmount, AActor* healer);

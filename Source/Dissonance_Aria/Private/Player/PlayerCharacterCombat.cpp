@@ -376,9 +376,10 @@ void APlayerCharacterCombat::Heal_Implementation(float HealAmount, AActor* Heale
 
 bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
 {
+	int num = 0;
 	if (damageSystem)
 	{
-		if (damageSystem->HandleIncomingDamage(damageInfo))
+		if (damageSystem->HandleIncomingDamage(damageInfo, num))
 		{
 			if (damageSystem->GetIsDead())
 			{
