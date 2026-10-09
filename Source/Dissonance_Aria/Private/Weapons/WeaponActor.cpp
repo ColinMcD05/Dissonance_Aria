@@ -357,6 +357,10 @@ void AWeaponActor::RaiseTuningTolerance()
 
 int AWeaponActor::SwapTuning(int newTuning)
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 4, FColor::Yellow, FString::FromInt(newTuning));
+	}
 	if (newTuning > weaponInfo.tunings.Num() || depleted)
 	{
 		return -1;
@@ -388,11 +392,10 @@ int AWeaponActor::CanTune(int tuning)
 {
 	if (tuning > weaponInfo.tunings.Num() || depleted)
 	{
-		return -1;
-	}
-
-	if (weaponInfo.tunings[tuning - 1].toleranceMeter < 1)
-	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("One"));
+		}
 		return -1;
 	}
 
@@ -400,6 +403,12 @@ int AWeaponActor::CanTune(int tuning)
 	{
 		return 0;
 	}
+
+	if (weaponInfo.tunings[tuning - 1].toleranceMeter < 1)
+	{
+		return -1;
+	}
+
 	return 1;
 }
 
