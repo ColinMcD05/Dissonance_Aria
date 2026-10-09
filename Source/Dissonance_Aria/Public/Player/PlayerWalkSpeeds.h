@@ -26,4 +26,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk")
 	float slowed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	float AttackSpeed;
 };

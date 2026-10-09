@@ -19,6 +19,11 @@ class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TArray<float> damageMults = {1, 1.2f, 1.8f};
+
+	TArray<float> musicMults;
+
 #pragma region Input
 	TQueue<E_CombatActionType> combatQueue;
 
@@ -28,7 +33,7 @@ private:
 #pragma endregion
 
 #pragma region References
-	AActor* owner;
+	APlayerCharacterCombat* owner;
 
 	UWorld* world;
 #pragma endregion
@@ -54,6 +59,8 @@ private:
 	FTimerHandle combatTimer;
 
 	FTimerHandle queueTimer;
+
+	FTimerHandle readInputOnlyTimer;
 #pragma endregion
 
 protected:
@@ -84,6 +91,8 @@ public:
 
 	//Resets ability to read inputs
 	void ResetReadInputs();
+
+	void ResetReadInputsOnly() { canReadInput = true; }
 
 	void QueueCountUp();
 
