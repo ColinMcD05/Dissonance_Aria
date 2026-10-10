@@ -108,10 +108,6 @@ void UCombatSystemComponent::ReadCombatQueue()
 					switch (prev)
 					{
 						case E_CombatActionType::HeavyAttack:
-							if (GEngine)
-							{
-								GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("UpAttack"));
-							}
 							upSwing = true;
 							break;
 						case E_CombatActionType::LightAttack:

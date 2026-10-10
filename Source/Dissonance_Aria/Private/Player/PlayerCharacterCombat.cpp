@@ -179,10 +179,6 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
 	float tuning = weaponsSystem->CanTune(value.Get<float>());
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(tuning));
-	}
 	if (tuning == 1)
 	{
 		StartTuning(value.Get<float>());
@@ -218,10 +214,6 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 	if (combatEnd && gameModeBase)
 	{
 		gameModeBase->TransitionToLevel("None");
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Cant"));
-		}
 	}
 
 	if (KeyboardOrGamepad(pressedKey) != controllerType)
