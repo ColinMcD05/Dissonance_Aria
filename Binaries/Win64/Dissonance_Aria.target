@@ -13,8 +13,8 @@
 	{
 		"MajorVersion": 5,
 		"MinorVersion": 8,
-		"PatchVersion": 1,
-		"Changelist": 56057345,
+		"PatchVersion": 3,
+		"Changelist": 58210709,
 		"CompatibleChangelist": 55116800,
 		"IsLicenseeVersion": 0,
 		"IsPromotedBuild": 0,
@@ -3693,10 +3693,6 @@
 			"Type": "UFS"
 		},
 		{
-			"Path": "$(EngineDir)/Plugins/Fab/Fab.uplugin",
-			"Type": "UFS"
-		},
-		{
 			"Path": "$(EngineDir)/Plugins/Importers/AlembicImporter/AlembicImporter.uplugin",
 			"Type": "UFS"
 		},
@@ -4144,7 +4140,6 @@
 		"ExampleDeviceProfileSelector",
 		"FMODStudio",
 		"FMODStudioNiagara",
-		"Fab",
 		"FacialAnimation",
 		"FileSandbox",
 		"Fracture",

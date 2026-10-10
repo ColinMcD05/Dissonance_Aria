@@ -160,10 +160,6 @@ void AWeaponActor::ChargeAttack_Implementation()
 	}
 	else
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, "Yes");
-		}
 		playerOwner->ChargeReady();
 	}
 }
@@ -181,6 +177,7 @@ int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& p
 				break;
 			case E_CombatActionType::LightAttack:
 				currentPosition += 1;
+				break;
 		}
 	}
 
@@ -336,10 +333,6 @@ void AWeaponActor::RaiseTuningTolerance()
 
 int AWeaponActor::SwapTuning(int newTuning)
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 4, FColor::Yellow, FString::FromInt(newTuning));
-	}
 	if (newTuning > weaponInfo.tunings.Num() || depleted)
 	{
 		return -1;
@@ -371,10 +364,6 @@ int AWeaponActor::CanTune(int tuning)
 {
 	if (tuning > weaponInfo.tunings.Num() || depleted)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("One"));
-		}
 		return -1;
 	}
 
