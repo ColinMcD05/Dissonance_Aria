@@ -19,10 +19,6 @@ void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLev
 	*updated = updatedInfo;
 	if (updated)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::FromInt(updated->exp.currentExperience));
-		}
 		LevelUp(updated, maxLevel);
 	}
 }
@@ -51,10 +47,6 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 	{
 		info->level++;
 		OnWeaponLevelUp.Broadcast(*info);
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Level UP"));
-		}
 	}
 }
 
@@ -93,10 +85,6 @@ FS_WeaponInfo* UInventoryComponent::GetWeaponAtIndex(int index)
 	}
 	if (!weapons[index].acquired)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::White, TEXT("Not acquired"));
-		}
 		return NULL;
 	}
 	return &weapons[index];
