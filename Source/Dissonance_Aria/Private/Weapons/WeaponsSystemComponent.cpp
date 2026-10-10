@@ -80,10 +80,7 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 	{
 		if (swapTo != currentHeldWeapon)
 		{
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Yes"));
-			}
+
 			AWeaponActor* tempWeapon = currentHeldWeapon;
 
 			currentHeldWeapon = storedWeapon;
@@ -139,10 +136,6 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 	}
 	else 
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("WTF!!"));
-		}
 	}
 }
 
@@ -151,15 +144,7 @@ int UWeaponsSystemComponent::CanTune(int tuning)
 {
 	if (!canSwapTuning)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("No"));
-		}
 		return -1;
-	}
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Yes"));
 	}
 	return currentHeldWeapon->CanTune(tuning);
 }
@@ -198,11 +183,6 @@ void UWeaponsSystemComponent::ResetCanSwapWeapon()
 
 void  UWeaponsSystemComponent::ResetCanSwapTuning()
 {
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Reset"));
-	}
 	canSwapTuning = true;
 }
 

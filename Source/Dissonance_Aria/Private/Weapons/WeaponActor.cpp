@@ -33,15 +33,6 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 
 	if (!playerOwner)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, GetName());
-		}
-	}
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, GetName());
 	}
 
 	weaponInfo = newWeaponInfo;
@@ -231,18 +222,12 @@ void AWeaponActor::CombatEnd(int gainedExp)
 	weaponInfo.exp.currentExperience += gainedExp;
 	if (statsTable.Num() == 0 && statsTable[0] == nullptr)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, TEXT("Tables"));
-		}
+
 		return;
 	}
 	if (!playerOwner)
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 20, FColor::Yellow, GetName());
-		}
+
 		return;
 	}
 	playerOwner->UpdateInventoryWeaponInfo(weaponInfo, statsTable[0]->GetRowNames().Num());
@@ -284,10 +269,7 @@ void AWeaponActor::LowerTolerance()
 			depleted = true;
 			currentTuning = 0;
 			ChangeWeaponStats();
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Depleted"));
-			}
+
 		}
 	}
 }
@@ -308,10 +290,7 @@ void AWeaponActor::RaiseTolerance()
 			stats.sidestepDistance /= 0.75f;
 			depleted = false;
 			ChangeWeaponStats();
-			if (GEngine)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Regained"));
-			}
+
 		}
 	}
 }
