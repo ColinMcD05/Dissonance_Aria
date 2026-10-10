@@ -19,6 +19,9 @@ private:
 	UInputAction* move;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* sprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* jumpAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
@@ -56,6 +59,12 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Move(const FInputActionValue& value);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void Sprint();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void SprintCancel();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void PlayerJump();

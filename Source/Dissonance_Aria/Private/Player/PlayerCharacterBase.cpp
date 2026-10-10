@@ -40,6 +40,9 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 		inputComponent->BindAction(move, ETriggerEvent::Triggered, this, &APlayerCharacterBase::Move);
 		inputComponent->BindAction(jumpAction, ETriggerEvent::Started, this, &APlayerCharacterBase::PlayerJump);
 		inputComponent->BindAction(jumpAction, ETriggerEvent::Completed, this, &APlayerCharacterBase::StopPlayerJump);
+		inputComponent->BindAction(sprint, ETriggerEvent::Started, this, &APlayerCharacterBase::Sprint);
+		inputComponent->BindAction(sprint, ETriggerEvent::Canceled, this, &APlayerCharacterBase::SprintCancel);
+		inputComponent->BindAction(sprint, ETriggerEvent::Completed, this, &APlayerCharacterBase::SprintCancel);
 		inputComponent->BindAction(pause, ETriggerEvent::Triggered, this, &APlayerCharacterBase::PauseGame);
 
 		if (useFreeCamera)
@@ -55,6 +58,16 @@ void APlayerCharacterBase::Move_Implementation(const FInputActionValue& value)
 	
 	AddMovementInput(GetActorRightVector(), moveVector.X);
 	AddMovementInput(GetActorForwardVector(), moveVector.Y);
+}
+
+void APlayerCharacterBase::Sprint_Implementation()
+{
+	SetSpeedByType(E_SpeedTypes::Running);
+}
+
+void APlayerCharacterBase::SprintCancel_Implementation()
+{
+	SetSpeedByType(E_SpeedTypes::Walking);
 }
 
 void APlayerCharacterBase::PlayerJump_Implementation()
@@ -91,6 +104,7 @@ void APlayerCharacterBase::SetSpeedByType(E_SpeedTypes speedType)
 			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.walkSpeed * 100;
 			break;
 		case E_SpeedTypes::Running:
+			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.runSpeed * 100;
 			break;
 		case E_SpeedTypes::Slowed:
 			GetCharacterMovement()->MaxWalkSpeed = walkSpeeds.slowed * 100;
