@@ -10,7 +10,6 @@
 #include "WeaponsSystemComponent.generated.h"
 
 class AWeaponActor;
-class PlayerCharacterCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
@@ -66,17 +65,19 @@ public:
 	//Swap held weapon and stored weapon
 	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
 
-	//Get which weapon is held
-	UFUNCTION(BlueprintCallable)
-	E_WeaponType GetCurrentWeaponType();
-
 	//Send the tolerance of the current equipped weapon
 	UFUNCTION(BlueprintCallable)
 	void SendCurrentWeaponTolerance();
 
 	//Getters
+	//Get the held weapon
 	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
 
+	//Get which weapon is held
+	UFUNCTION(BlueprintCallable)
+	E_WeaponType GetCurrentWeaponType();
+
+	//Get the current stored weapon
 	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
 #pragma endregion 
 
@@ -98,8 +99,10 @@ public:
 
 
 #pragma region Resetters
+	//Resets if player can swap weapon
 	void ResetCanSwapWeapon();
 
+	//Resets if player can swap tuning
 	void ResetCanSwapTuning();
 #pragma endregion
 

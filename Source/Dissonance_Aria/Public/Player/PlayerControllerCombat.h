@@ -23,9 +23,11 @@ public:
 
 	virtual void AcknowledgePossession(APawn* InPawn) override;
 
+#pragma region Setup and down
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
 	void SetUpUI();
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DisconnentPlayerInput(int exp);
+#pragma endregion
 };

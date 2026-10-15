@@ -299,10 +299,12 @@ void APlayerCharacterCombat::RotatePlayer()
 #pragma region HeavyAttack
 void APlayerCharacterCombat::StartChargedAttack_Implementation()
 {
+	/*
 	if (combatSystem->StartCharge())
 	{
 		weaponsSystem->GetCurrentHeldWeapon()->StartChargeAttack();
 	}
+	*/
 }
 
 void APlayerCharacterCombat::ChargeReady()

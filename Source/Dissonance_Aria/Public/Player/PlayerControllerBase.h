@@ -31,6 +31,7 @@ protected:
 public:
 	virtual void BeginPlay() override;
 
+	//Pause the game
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void PausedGame();
 };
