@@ -108,7 +108,14 @@ void UCombatSystemComponent::ReadCombatQueue()
 					switch (prev)
 					{
 						case E_CombatActionType::HeavyAttack:
-							upSwing = true;
+							if(previousActions.Num() == 2)
+							{
+								downSwing = true;
+							}
+							else
+							{
+								upSwing = true;
+							}
 							break;
 						case E_CombatActionType::LightAttack:
 							downSwing = true;
