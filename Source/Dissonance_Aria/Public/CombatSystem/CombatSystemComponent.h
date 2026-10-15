@@ -65,7 +65,7 @@ private:
 	float timeBetweenInput;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
-	float maxTimeBetweenInput = 10;
+	float maxTimeBetweenInput = 2.5;
 
 #pragma region Timer
 	FTimerHandle combatTimer;

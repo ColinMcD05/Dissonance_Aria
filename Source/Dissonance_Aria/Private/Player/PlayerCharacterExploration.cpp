@@ -21,7 +21,7 @@ void APlayerCharacterExploration::BeginPlay()
 	if (rotationSpeed < 100)
 		rotationSpeed *= 100;
 
-	if (AFixedCamera* fixedCamera = FindNearestActor(GetWorld(), GetActorLocation()))
+	if (AFixedCamera* fixedCamera = FindNearestActor())
 	{
 		SetCurrentCamera(fixedCamera->GetCamera());
 		SetNewForward();
@@ -38,6 +38,7 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 	}
 }
 
+#pragma region Movement
 void APlayerCharacterExploration::Move_Implementation(const FInputActionValue& value)
 {
 	if (currentCamera)
@@ -48,15 +49,6 @@ void APlayerCharacterExploration::Move_Implementation(const FInputActionValue& v
 		AddMovementInput(forward, moveVector.Y);
 
 		SetRotation(moveVector);
-	}
-}
-
-void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
-{
-	currentCamera = newCamera;
-	if (APlayerControllerExploration* controller = Cast<APlayerControllerExploration>(GetController()))
-	{
-		controller->SetCurrentCamera(newCamera);
 	}
 }
 
@@ -81,17 +73,26 @@ void APlayerCharacterExploration::SetRotation(FVector2D moveVector)
 		SetActorRotation(newRotation);
 	}
 }
+#pragma endregion
 
-AFixedCamera* APlayerCharacterExploration::FindNearestActor(UWorld* World,const FVector& FromLocation)
+void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 {
-	if (!World)
+	currentCamera = newCamera;
+	if (APlayerControllerExploration* controller = Cast<APlayerControllerExploration>(GetController()))
 	{
-		return nullptr;
+		controller->SetCurrentCamera(newCamera);
 	}
+}
+
+AFixedCamera* APlayerCharacterExploration::FindNearestActor()
+{
+	//Initialize actor
+	FVector location = GetActorLocation();
 
 	TArray<AActor*> actors;
-	UGameplayStatics::GetAllActorsOfClass(World, AFixedCamera::StaticClass(), actors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AFixedCamera::StaticClass(), actors);
 
+	//Nearest camera distance
 	AFixedCamera* nearest = nullptr;
 	float bestDistSquared = TNumericLimits<float>::Max();
 
@@ -105,7 +106,7 @@ AFixedCamera* APlayerCharacterExploration::FindNearestActor(UWorld* World,const 
 		if (camera)
 		{
 			const float distSquared =
-				FVector::DistSquared(FromLocation, camera->GetActorLocation());
+				FVector::DistSquared(location, camera->GetActorLocation());
 
 			if (distSquared < bestDistSquared)
 			{

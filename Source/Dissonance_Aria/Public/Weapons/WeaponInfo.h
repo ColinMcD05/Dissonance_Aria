@@ -33,6 +33,7 @@ public:
 	int storedExperience;
 };
 
+//Struct holding the important stats for weapons
 USTRUCT(BlueprintType)
 struct FS_Stats : public FTableRowBase
 {
@@ -51,6 +52,7 @@ public:
 	float sidestepDistance;
 };
 
+//Struct holding the tuning information
 USTRUCT(BlueprintType)
 struct FS_Tuning
 {
@@ -95,6 +97,7 @@ public:
 	bool acquired = false;
 };
 
+//Struct for levels
 USTRUCT(BlueprintType)
 struct FS_LevelData : public FTableRowBase
 {

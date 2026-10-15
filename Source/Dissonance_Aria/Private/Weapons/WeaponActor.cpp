@@ -24,60 +24,11 @@ AWeaponActor::AWeaponActor()
 	SetActorEnableCollision(false);
 }
 
-void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo)
-{
-	PrimaryActorTick.bCanEverTick = true;
-	PrimaryActorTick.bTickEvenWhenPaused = false;
-
-	playerOwner = player;
-
-	if (!playerOwner)
-	{
-	}
-
-	weaponInfo = newWeaponInfo;
-	weaponInfo.toleranceMeter = 1;
-
-	if (statsTable.Num() > 0 && statsTable[0])
-	{
-		weaponInfo.level = FMath::Clamp(weaponInfo.level, 1, statsTable[0]->GetRowNames().Num());
-	}
-
-	ChangeWeaponStats();
-}
-
-void AWeaponActor::Activate()
-{
-	SetActorHiddenInGame(false);
-	activated = true;
-	LowerTolerance();
-	currentTuning = 0;
-	ChangeWeaponStats();
-	if (!raisingTolerance)
-	{
-		RaiseTuningTolerance();
-	}
-}
-
-void AWeaponActor::Deactivate()
-{
-	SetActorHiddenInGame(true);
-	SetActorEnableCollision(false);
-	activated = false;
-	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
-	RaiseTolerance();
-	currentTuning = 0;
-	if (!raisingTolerance)
-	{
-		RaiseTuningTolerance();
-	}
-}
-
 // Called when the game starts or when spawned
 void AWeaponActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (ADAGameStateCombat* gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this))
 	{
 		gameState->OnCombatEnd.AddDynamic(this, &AWeaponActor::CombatEnd);
@@ -88,55 +39,96 @@ void AWeaponActor::BeginPlay()
 void AWeaponActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
-bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
+#pragma region Weapon Creation
+//Activates the weapon
+void AWeaponActor::Activate()
 {
-	if(!enemyHit || !enemyHit->GetClass()->ImplementsInterface(
-		UDamageableInterface::StaticClass()))
+	//Shows weapon
+	SetActorHiddenInGame(false);
+
+	//Set up weapon
+	currentTuning = 0;
+	ChangeWeaponStats();
+	activated = true;
+
+	//Lowers tolerance
+	LowerTolerance();
+	if (!raisingTolerance)
 	{
-		return false;
+		RaiseTuningTolerance();
 	}
-
-	FS_DamageInfo damageInfo;
-	damageInfo.damageCauser = GetOwner();
-	damageInfo.genreAttack = weaponInfo.genre;
-
-	damageInfo.damageAmount = stats.damage;
-	
-	if (lastAttack == E_CombatActionType::HeavyAttack)
-	{
-		damageInfo.damageAmount *= 1.25;
-	}
-
-	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
-
-	return true;
 }
 
-void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
+//Deactivate weapon
+void AWeaponActor::Deactivate()
 {
+	//Hides weapon and disables collision
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+
+	//Deactivates weapon
+	activated = false;
+	RaiseTolerance();
+	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
+	currentTuning = 0;
+
+	if (!raisingTolerance)
+	{
+		RaiseTuningTolerance();
+	}
+}
+
+//Initializes the weapon
+void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInfo& newWeaponInfo)
+{
+	//Setup ticking
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = false;
+
+	//Set plater owner
+	playerOwner = player;
+
+	//Assign weapon info
 	weaponInfo = newWeaponInfo;
-}
+	//Reset tolerance meter for tunings and weapons
+	weaponInfo.toleranceMeter = 1;
 
+	for (FS_Tuning tolerance : weaponInfo.tunings)
+	{
+		tolerance.toleranceMeter = 1;
+	}
+
+	//Get level
+	if (statsTable.Num() > 0 && statsTable[0])
+	{
+		weaponInfo.level = FMath::Clamp(weaponInfo.level, 1, statsTable[0]->GetRowNames().Num());
+	}
+
+	//Change stats
+	ChangeWeaponStats();
+}
+#pragma endregion
+
+#pragma region Attacking
+//Light attacks
 float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
-	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::LightAttack);
 	lastAttack = E_CombatActionType::LightAttack;
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
 
+//Heavy attacks
 float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
 {
-	int animationPosition = CalculateAnimationPosition(previousActions, E_CombatActionType::HeavyAttack);
 	lastAttack = E_CombatActionType::HeavyAttack;
 	//Animation logic will go here, but I need animations first
 	return 1.5;
 }
 
-
+/*
 void AWeaponActor::StartChargeAttack_Implementation()
 {
 	originalLocation = weaponMesh->GetRelativeLocation();
@@ -163,73 +155,10 @@ void AWeaponActor::ChargeAttack_Implementation()
 		playerOwner->ChargeReady();
 	}
 }
+*/
+#pragma endregion
 
-int AWeaponActor::CalculateAnimationPosition(const TArray<E_CombatActionType>& previousActions, E_CombatActionType currentAction)
-{
-	int currentPosition = -1;
-
-	for (E_CombatActionType action : previousActions)
-	{
-		switch (action)
-		{
-			case E_CombatActionType::HeavyAttack:
-				currentPosition += 2;
-				break;
-			case E_CombatActionType::LightAttack:
-				currentPosition += 1;
-				break;
-		}
-	}
-
-	switch (currentAction)
-	{
-		case E_CombatActionType::HeavyAttack:
-			currentPosition += 2;
-			break;
-		case E_CombatActionType::LightAttack:
-			currentPosition += 1;
-	}
-	
-	return currentPosition;
-}
-
-void AWeaponActor::ChangeWeaponStats()
-{
-	if (currentTuning < statsTable.Num() && statsTable[currentTuning])
-	{
-		int nextLevel = FMath::Clamp(weaponInfo.level, 1, statsTable[currentTuning]->GetRowNames().Num());
-
-		FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
-
-		if (newStats)
-		{
-			stats = *newStats;
-		}
-		if (newStats && depleted)
-		{
-			stats.damage *= depletionAmount;
-			stats.sidestepDistance *= depletionAmount;
-
-		}
-	}
-}
-
-void AWeaponActor::CombatEnd(int gainedExp)
-{
-	weaponInfo.exp.currentExperience += gainedExp;
-	if (statsTable.Num() == 0 && statsTable[0] == nullptr)
-	{
-
-		return;
-	}
-	if (!playerOwner)
-	{
-
-		return;
-	}
-	playerOwner->UpdateInventoryWeaponInfo(weaponInfo, statsTable[0]->GetRowNames().Num());
-}
-
+#pragma region Tolerance
 void AWeaponActor::LowerTolerance()
 {
 	if (activated)
@@ -307,7 +236,7 @@ void AWeaponActor::RaiseTuningTolerance()
 		{
 			continue;
 		}
-		if(i == currentTuning)
+		if (i == currentTuning)
 		{
 			checks[i] = true;
 			continue;
@@ -331,55 +260,6 @@ void AWeaponActor::RaiseTuningTolerance()
 	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::RaiseTuningTolerance);
 }
 
-int AWeaponActor::SwapTuning(int newTuning)
-{
-	if (newTuning > weaponInfo.tunings.Num() || depleted)
-	{
-		return -1;
-	}
-
-	if (newTuning == currentTuning)
-	{
-		currentTuning = 0;
-		ChangeWeaponStats();
-		return 0;
-	}
-
-	if (weaponInfo.tunings[newTuning - 1].toleranceMeter < 1)
-	{
-		return -1;
-	}
-
-	currentTuning = newTuning;
-	if (!raisingTolerance)
-	{
-		RaiseTuningTolerance();
-	}
-	ChangeWeaponStats();
-
-	return currentTuning;
-}
-
-int AWeaponActor::CanTune(int tuning)
-{
-	if (tuning > weaponInfo.tunings.Num() || depleted)
-	{
-		return -1;
-	}
-
-	if (tuning == currentTuning)
-	{
-		return 0;
-	}
-
-	if (weaponInfo.tunings[tuning - 1].toleranceMeter < 1)
-	{
-		return -1;
-	}
-
-	return 1;
-}
-
 float AWeaponActor::GetCurrentWeaponTolerance()
 {
 	return weaponInfo.toleranceMeter;
@@ -393,10 +273,134 @@ float AWeaponActor::GetCurrentTuningTolerance()
 		return -1;
 	}
 
-	return weaponInfo.tunings[currentTuning-1].toleranceMeter;
+	return weaponInfo.tunings[currentTuning - 1].toleranceMeter;
 }
+#pragma endregion
 
-int AWeaponActor::GetCurrentTuning()
+#pragma region Weapon Info
+	void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
+	{
+		weaponInfo = newWeaponInfo;
+	}
+
+	void AWeaponActor::ChangeWeaponStats()
+	{
+		if (currentTuning < statsTable.Num() && statsTable[currentTuning])
+		{
+			int nextLevel = FMath::Clamp(weaponInfo.level, 1, statsTable[currentTuning]->GetRowNames().Num());
+
+			FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
+
+			if (newStats)
+			{
+				stats = *newStats;
+			}
+			if (newStats && depleted)
+			{
+				stats.damage *= depletionAmount;
+				stats.sidestepDistance *= depletionAmount;
+
+			}
+		}
+	}
+#pragma endregion
+
+#pragma region Tunings
+	int AWeaponActor::SwapTuning(int newTuning)
+	{
+		if (newTuning > weaponInfo.tunings.Num() || depleted)
+		{
+			return -1;
+		}
+
+		if (newTuning == currentTuning)
+		{
+			currentTuning = 0;
+			ChangeWeaponStats();
+			return 0;
+		}
+
+		if (weaponInfo.tunings[newTuning - 1].toleranceMeter < 1)
+		{
+			return -1;
+		}
+
+		currentTuning = newTuning;
+		if (!raisingTolerance)
+		{
+			RaiseTuningTolerance();
+		}
+		ChangeWeaponStats();
+
+		return currentTuning;
+	}
+
+	int AWeaponActor::CanTune(int tuning)
+	{
+		if (tuning > weaponInfo.tunings.Num() || depleted)
+		{
+			return -1;
+		}
+
+		if (tuning == currentTuning)
+		{
+			return 0;
+		}
+
+		if (weaponInfo.tunings[tuning - 1].toleranceMeter < 1)
+		{
+			return -1;
+		}
+
+		return 1;
+	}
+
+	int AWeaponActor::GetCurrentTuning()
+	{
+		return currentTuning;
+	}
+#pragma endregion
+
+#pragma region EndCombat
+void AWeaponActor::CombatEnd(int gainedExp)
 {
-	return currentTuning;
+	weaponInfo.exp.currentExperience += gainedExp;
+	if (statsTable.Num() == 0 && statsTable[0] == nullptr)
+	{
+
+		return;
+	}
+	if (!playerOwner)
+	{
+
+		return;
+	}
+	playerOwner->UpdateInventoryWeaponInfo(weaponInfo, statsTable[0]->GetRowNames().Num());
 }
+#pragma endregion
+
+#pragma region AttackInterface
+bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
+{
+	if (!enemyHit || !enemyHit->GetClass()->ImplementsInterface(
+		UDamageableInterface::StaticClass()))
+	{
+		return false;
+	}
+
+	FS_DamageInfo damageInfo;
+	damageInfo.damageCauser = GetOwner();
+	damageInfo.genreAttack = weaponInfo.genre;
+
+	damageInfo.damageAmount = stats.damage;
+
+	if (lastAttack == E_CombatActionType::HeavyAttack)
+	{
+		damageInfo.damageAmount *= 1.25;
+	}
+
+	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
+
+	return true;
+}
+#pragma endregion
