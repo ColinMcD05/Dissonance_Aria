@@ -55,6 +55,7 @@ void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 				musicMults.Add(owner->MusicalMultiplier());
 			}
 
+			timeBetweenInput = 0;
 			canReadInput = false;
 			world->GetTimerManager().SetTimer(readInputOnlyTimer, this, &UCombatSystemComponent::ResetReadInputsOnly, 0.1f, false);
 		}
@@ -287,6 +288,8 @@ void UCombatSystemComponent::AttackFinished()
 	{
 		canAttack = true;
 		ReadCombatQueue();
+		timeBetweenInput = 0; 
+		QueueCountUp();
 	}
 	didCharge = false;
 }
@@ -309,7 +312,7 @@ void UCombatSystemComponent::ResetReadInputs()
 
 void UCombatSystemComponent::QueueCountUp()
 {
-	if (timeBetweenInput < maxTimeBetweenInput)
+	if (timeBetweenInput < maxTimeBetweenInput && canReadInput)
 	{
 		timeBetweenInput += world->DeltaTimeSeconds;
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombatSystemComponent::QueueCountUp);
