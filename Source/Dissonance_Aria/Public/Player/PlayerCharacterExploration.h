@@ -46,11 +46,11 @@ public:
 #pragma endregion
 
 #pragma region Camera
-	//Get the nearest camera
-	AFixedCamera* FindNearestActor();
-
 	//Set current camera
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentCamera(UCameraComponent* newCamera);
+
+	//Get the nearest camera
+	AFixedCamera* FindNearestCamera();
 #pragma endregion
 };
