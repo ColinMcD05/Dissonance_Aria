@@ -19,6 +19,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintGetter = GetInventory, BlueprintSetter = SetInventory, meta = (AllowPrivateAccess = "true"))
 	UInventoryComponent* inventory;
 
+	FString lastCamera;
 public:
 	UDAGameInstance();
 
@@ -27,4 +28,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintSetter, Category = "Inventory")
 	void SetInventory(UInventoryComponent* newInventory);
+
+	UFUNCTION(BlueprintCallable)
+	FString GetLastCamera() {return lastCamera;}
+
+	UFUNCTION(BlueprintCallable)
+	void SetLastCamera(FString newCamera) { lastCamera = newCamera; }
 };
