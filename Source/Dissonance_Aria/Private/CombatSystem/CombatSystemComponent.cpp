@@ -218,11 +218,11 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 	//changedDamage.damageAmount *= powerMult;
 	if (musicMults.Num() >= previousActions.Num())
 	{
-		changedDamage.damageAmount *= musicMults[queueCount - 1];
+		changedDamage.damageAmount *= musicMults[previousActions.Num() - 1];
 	}
 	if (damageMults.Num() >= previousActions.Num())
 	{
-		changedDamage.damageAmount *= damageMults[queueCount - 1];
+		changedDamage.damageAmount *= damageMults[previousActions.Num() - 1];
 	}
 	if (previousActions.Num() && previousActions[previousActions.Num() -1] == E_CombatActionType::HeavyAttack)
 	{
