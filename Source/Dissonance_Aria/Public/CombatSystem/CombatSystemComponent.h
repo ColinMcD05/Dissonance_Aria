@@ -45,8 +45,11 @@ private:
 
 	bool didCharge = false;
 
+	bool tickUp = false;
+
 	float powerMult;
 
+#pragma region Attacks
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool upSwing;
 
@@ -85,18 +88,11 @@ public:
 
 	UCombatSystemComponent();
 
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	//Adds action type to combat queue
-	void AddToCombatQueue(E_CombatActionType action);
-
 	//Deals damage to hit actor
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void DealDamage(AActor*& enemyHit, FS_DamageInfo& damageInfo);
 
-	//Reads the combat queue and performs actions based on it
-	void ReadCombatQueue();
+	void ReadInput();
 
 	//Resets the can attack variable to true
 	void ResetCanAttack();
@@ -116,9 +112,17 @@ public:
 
 	int GetPreviousActionsAmount() { return previousActions.Num(); }
 
-	bool StartCharge();
+#pragma region Old
+	//Adds action type to combat queue
+	//void AddToCombatQueue(E_CombatActionType action);
 
-	void Charge();
+	//Reads the combat queue and performs actions based on it
+	//void ReadCombatQueue();
 
-	void StopCharge();
+	//bool StartCharge();
+
+	//void Charge();
+
+	//void StopCharge();
+#pragma endregion
 };

@@ -123,7 +123,7 @@ void APlayerCharacterCombat::ReadLightAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->AddToCombatQueue(E_CombatActionType::LightAttack);
+		combatSystem->ReadInput();
 	}
 }
 
@@ -132,7 +132,7 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		combatSystem->ReadInput();
 		/*
 		if (combatSystem->GetPreviousActionsAmount() > 0)
 		{
@@ -309,12 +309,12 @@ void APlayerCharacterCombat::StartChargedAttack_Implementation()
 
 void APlayerCharacterCombat::ChargeReady()
 {
-	combatSystem->Charge();
+	//combatSystem->Charge();
 }
 
 void APlayerCharacterCombat::StopChargedAttack_Implementation()
 {
-	combatSystem->StopCharge();
+	//combatSystem->StopCharge();
 }
 #pragma endregion
 
