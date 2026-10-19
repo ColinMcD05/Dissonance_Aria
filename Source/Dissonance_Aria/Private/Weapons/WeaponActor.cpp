@@ -4,6 +4,7 @@
 #include "Player/PlayerCharacterCombat.h"
 #include "GameInfo/DAGameStateCombat.h"
 #include "BasicFunctions/GetGameInfo.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 // Sets default values
 AWeaponActor::AWeaponActor()
@@ -156,6 +157,44 @@ void AWeaponActor::ChargeAttack_Implementation()
 	}
 }
 */
+
+//Starts the sphere tracing
+void AWeaponActor::StartSphereTrace_Implementation()
+{
+	attacking = true;
+	PerformSphereTrace();
+}
+
+//Performs sphere tracing
+void AWeaponActor::PerformSphereTrace_Implementation()
+{
+	//Checks if currently attacking
+	if (attacking)
+	{
+		//Get socket locations
+		FVector startLocation = weaponMesh->GetSocketLocation("START");
+		FVector endLocation = weaponMesh->GetSocketLocation("END");
+
+		//Hit actors
+		FHitResult hit;
+
+		//Do spheretrace
+		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), startLocation, endLocation, radius,
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {playerOwner}, EDrawDebugTrace::ForOneFrame, hit, true))
+		{
+			if (hit.GetActor())
+			{
+				Execute_OverlappedActor(this, hit.GetActor());
+			}
+		}
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::PerformSphereTrace);
+	}
+	else
+	{
+		//Empty enemy array
+		hitEnemies.Empty();
+	}
+}
 #pragma endregion
 
 #pragma region Tolerance
@@ -388,6 +427,9 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 		return false;
 	}
 
+	if (hitEnemies.Contains(enemyHit))
+		return false;
+
 	FS_DamageInfo damageInfo;
 	damageInfo.damageCauser = GetOwner();
 	damageInfo.genreAttack = weaponInfo.genre;
@@ -400,6 +442,8 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 	}
 
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
+
+	hitEnemies.Add(enemyHit);
 
 	return true;
 }

@@ -7,11 +7,13 @@
 #include "Components/ActorComponent.h"
 #include "DamageSystem/DamageInfo.h"
 #include "Input/InputActions/CombatActionBase.h"
+#include "CombatSystem/AttackDirections.h"
 #include "CombatSystemComponent.generated.h"
 
 #define MAX_COMBO_LENGTH 3
 
 class APlayerCharacterCombat;
+class AMusicManagerCombat;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
@@ -23,6 +25,10 @@ private:
 	TArray<float> damageMults = {1, 1.2f, 1.8f};
 
 	TArray<float> musicMults;
+
+	AMusicManagerCombat* musicManager;
+
+	E_CombatDirections previousDirection;
 
 #pragma region Input
 	TQueue<E_CombatActionType> combatQueue;
@@ -65,6 +71,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	float maxMult = 2;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.5"))
+	float timingLeniency = 0.25;
+
 	float timeBetweenInput;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
@@ -92,7 +101,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void DealDamage(AActor*& enemyHit, FS_DamageInfo& damageInfo);
 
-	void ReadInput();
+	bool ReadInput();
+
+	void PerformInput();
+
+	void ResetInputs();
 
 	//Resets the can attack variable to true
 	void ResetCanAttack();

@@ -123,7 +123,10 @@ void APlayerCharacterCombat::ReadLightAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->ReadInput();
+		if (combatSystem->ReadInput())
+		{
+			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
+		}
 	}
 }
 
@@ -132,7 +135,10 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->ReadInput();
+		if (combatSystem->ReadInput())
+		{
+			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
+		}
 		/*
 		if (combatSystem->GetPreviousActionsAmount() > 0)
 		{

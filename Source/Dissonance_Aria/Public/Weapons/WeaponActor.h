@@ -52,6 +52,11 @@ private:
 	bool attackCharged = false;
 
 	E_CombatActionType lastAttack;
+
+	TArray<AActor*> hitEnemies;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
+	float radius = 30;
 #pragma endregion
 
 #pragma region Tolerance Info
@@ -125,8 +130,11 @@ public:
 	*/
 
 	//Starts the sphere trace for attacking
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void StartSphereTrace();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void PerformSphereTrace();
 
 	//Stops sphere trace
 	UFUNCTION(BlueprintCallable)

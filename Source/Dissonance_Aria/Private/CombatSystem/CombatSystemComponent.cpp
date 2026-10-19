@@ -3,6 +3,9 @@
 
 #include "CombatSystem/CombatSystemComponent.h"
 #include "Player/PlayerCharacterCombat.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Music/MusicManagerCombat.h"
 
 // Sets default values for this component's properties
 UCombatSystemComponent::UCombatSystemComponent()
@@ -27,11 +30,59 @@ void UCombatSystemComponent::BeginPlay()
 		world = owner->GetWorld();
 	}
 	
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
 }
 
-void UCombatSystemComponent::ReadInput()
+bool UCombatSystemComponent::ReadInput()
 {
+	ResetInputs();
 
+	float beatPosition = musicManager->GetHowCloseToBeat();
+
+	if (beatPosition > timingLeniency && beatPosition < 1 - timingLeniency)
+		return false;
+
+	PerformInput();
+
+	return true;
+}
+
+void UCombatSystemComponent::PerformInput()
+{
+	int randomInt = 0;
+
+	do
+	{
+		randomInt = UKismetMathLibrary::RandomInteger(4);
+	} while (randomInt == static_cast<uint8>(previousDirection));
+
+	switch (randomInt)
+	{
+	case 0:
+		upSwing = true;
+		previousDirection = E_CombatDirections::Up;
+		break;
+	case 1:
+		downSwing = true;
+		previousDirection = E_CombatDirections::Down;
+		break;
+	case 2:
+		rightSwing = true;
+		previousDirection = E_CombatDirections::Right;
+		break;
+	case 3:
+		leftSwing = true;
+		previousDirection = E_CombatDirections::Left;
+		break;
+	}
+}
+
+void UCombatSystemComponent::ResetInputs()
+{
+	upSwing = false;
+	downSwing = false;
+	rightSwing = false;
+	leftSwing = false;
 }
 
 //Deals damage to hit actor
@@ -48,11 +99,11 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damag
 	//changedDamage.damageAmount *= powerMult;
 	if (musicMults.Num() >= previousActions.Num())
 	{
-		changedDamage.damageAmount *= musicMults[previousActions.Num() - 1];
+		//changedDamage.damageAmount *= musicMults[previousActions.Num() - 1];
 	}
 	if (damageMults.Num() >= previousActions.Num())
 	{
-		changedDamage.damageAmount *= damageMults[previousActions.Num() - 1];
+		//changedDamage.damageAmount *= damageMults[previousActions.Num() - 1];
 	}
 	if (previousActions.Num() && previousActions[previousActions.Num() -1] == E_CombatActionType::HeavyAttack)
 	{
