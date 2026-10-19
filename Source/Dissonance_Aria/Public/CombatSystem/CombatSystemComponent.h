@@ -94,7 +94,7 @@ private:
 
 	FTimerHandle readInputOnlyTimer;
 
-	FTimerHandle resetInputs;
+	FTimerHandle resetInputsTimer;
 #pragma endregion
 
 protected:

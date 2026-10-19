@@ -41,6 +41,7 @@ void UCombatSystemComponent::BeginPlay()
 bool UCombatSystemComponent::ReadInput()
 {
 	ResetInputs();
+	GetWorld()->GetTimerManager().ClearTimer(resetInputsTimer);
 
 	float beatPosition = musicManager->GetHowCloseToBeat();
 
@@ -100,20 +101,21 @@ void UCombatSystemComponent::AttackFinished()
 	if (previousActions.Num() >= MAX_COMBO_LENGTH)
 	{
 		//Prevents player from attack of inpit reading
-		
 
 		canReadInput = false;
 		canAttack = false;
 
+		/*
 		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
 		world->GetTimerManager().ClearTimer(queueTimer);
 		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, .5f, false);
+		*/
 	}
 	else
 	{
 		canAttack = true;
 		//ReadCombatQueue();
-		timeBetweenInput = 0; 
+		//timeBetweenInput = 0; 
 		//tickUp = true;
 		//QueueCountUp();
 	}
@@ -125,7 +127,10 @@ void UCombatSystemComponent::DownBeat()
 	if (musicManager == nullptr)
 		return;
 
+	if (lastAttackBeat == musicManager->GetFocusedBeat())
+		return;
 
+	GetWorld()->GetTimerManager().SetTimer(resetInputsTimer, this, &UCombatSystemComponent::ResetInputs, 0.02f);
 }
 
 bool UCombatSystemComponent::CheckIfValidAttack()
