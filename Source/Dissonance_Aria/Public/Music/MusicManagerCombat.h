@@ -21,6 +21,9 @@ private:
 	float bpm = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MusicInfo", meta = (AllowPrivateAccess = "true"))
+	int currentBeat = 0;
+
+	UPROPERTY(BlueprintReadOnly, Category = "MusicInfo", meta = (AllowPrivateAccess = "true"))
 	float secondsPerBeat;
 
 	//The spot of the song where bpm most recently changed
@@ -60,6 +63,9 @@ public:
 	//Get how close the the beat at current time
 	UFUNCTION(BlueprintCallable)
 	float GetHowCloseToBeat();
+
+	UFUNCTION(BlueprintCallable)
+	int GetFocusedBeat();
 #pragma endregion
 
 #pragma region Music

@@ -26,9 +26,11 @@ private:
 
 	TArray<float> musicMults;
 
+#pragma region Music
 	AMusicManagerCombat* musicManager;
 
-	E_CombatDirections previousDirection;
+	int lastAttackBeat;
+#pragma endregion
 
 #pragma region Input
 	TQueue<E_CombatActionType> combatQueue;
@@ -72,12 +74,18 @@ private:
 	float maxMult = 2;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.5"))
-	float timingLeniency = 0.25;
+	float preBeatLeniency = 0.25;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.5"))
+	float postBeatLeniency = 0.25;
 
 	float timeBetweenInput;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
 	float maxTimeBetweenInput = 2.5;
+
+	E_CombatDirections previousDirection;
+#pragma endregion
 
 #pragma region Timer
 	FTimerHandle combatTimer;
@@ -123,8 +131,11 @@ public:
 
 	void QueueCountUp();
 
+	void DownBeat();
+
 	int GetPreviousActionsAmount() { return previousActions.Num(); }
 
+	bool CheckIfValidAttack();
 #pragma region Old
 	//Adds action type to combat queue
 	//void AddToCombatQueue(E_CombatActionType action);

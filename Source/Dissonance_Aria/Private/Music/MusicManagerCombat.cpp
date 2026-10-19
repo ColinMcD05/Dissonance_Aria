@@ -113,6 +113,11 @@ float AMusicManagerCombat::GetHowCloseToBeat()
 
 	return position - FMath::Floor(position);
 }
+
+int AMusicManagerCombat::GetFocusedBeat()
+{
+	return currentBeat + GetPositionOfBeat() + 0.5f;
+}
 #pragma endregion
 
 #pragma region OnBeat
@@ -127,6 +132,7 @@ void AMusicManagerCombat::OnDownBeat(int bar, int beat, int position, float temp
 		bpm = tempo;
 		timeConsideredStart = position;
 		secondsPerBeat = 60/bpm;
+		currentBeat = beat;
 
 		//Broadcast new info
 		OnBPMChange.Broadcast(bpm, secondsPerBeat);
