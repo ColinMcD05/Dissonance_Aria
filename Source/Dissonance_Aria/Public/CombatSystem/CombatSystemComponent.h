@@ -21,23 +21,12 @@ class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
-	TArray<float> damageMults = {1, 1.2f, 1.8f};
-
-	TArray<float> musicMults;
+	float musicMults;
 
 #pragma region Music
 	AMusicManagerCombat* musicManager;
 
 	int lastAttackBeat;
-#pragma endregion
-
-#pragma region Input
-	TQueue<E_CombatActionType> combatQueue;
-
-	int queueCount;
-
-	TArray<E_CombatActionType> previousActions;
 #pragma endregion
 
 #pragma region References
@@ -49,6 +38,49 @@ private:
 
 	bool canReadInput = true;
 
+#pragma region Attacks
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	float maxMult = 2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.5"))
+	float preBeatLeniency = 0.25f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.5"))
+	float postBeatLeniency = 0.25f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.2"))
+	float resetTime = 0.05f;
+
+	E_CombatDirections previousDirection = E_CombatDirections::None;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	int combo;
+#pragma endregion
+
+#pragma region Timer
+	FTimerHandle resetInputsTimer;
+#pragma endregion
+
+#pragma region Old
+	/*
+	FTimerHandle combatTimer;
+
+	FTimerHandle queueTimer;
+
+	FTimerHandle readInputOnlyTimer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	bool upSwing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	bool downSwing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	bool rightSwing;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	bool leftSwing;
+
 	bool isCharging = false;
 
 	bool didCharge = false;
@@ -57,86 +89,64 @@ private:
 
 	float powerMult;
 
-#pragma region Attacks
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool upSwing;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool downSwing;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool rightSwing;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	bool leftSwing;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
-	float maxMult = 2;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.5"))
-	float preBeatLeniency = 0.25;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.5"))
-	float postBeatLeniency = 0.25;
-
 	float timeBetweenInput;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = true))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	float maxTimeBetweenInput = 2.5;
 
-	E_CombatDirections previousDirection;
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
+	TArray<float> damageMults = {1, 1.2f, 1.8f};
+
+	TQueue<E_CombatActionType> combatQueue;
+
+	int queueCount;
+
+	TArray<E_CombatActionType> previousActions;
+	*/
 #pragma endregion
-
-#pragma region Timer
-	FTimerHandle combatTimer;
-
-	FTimerHandle queueTimer;
-
-	FTimerHandle readInputOnlyTimer;
-
-	FTimerHandle resetInputsTimer;
-#pragma endregion
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
-
+#pragma region General/Setup
 	UCombatSystemComponent();
+#pragma endregion
+
+#pragma region Input
+	//Reads player input
+	bool ReadInput();
+
+	//Performs the input
+	void PerformInput();
+#pragma endregion
+
+#pragma region Attack
+	//Resets all attack info
+	void ResetAttackInfo();
+
+	//Returns if player is able to attack
+	bool CheckIfValidAttack(float beatPosition);
 
 	//Deals damage to hit actor
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void DealDamage(AActor*& enemyHit, FS_DamageInfo& damageInfo);
+#pragma endregion
 
-	bool ReadInput();
-
-	void PerformInput();
-
-	void ResetInputs();
-
-	//Resets the can attack variable to true
-	void ResetCanAttack();
-
-	//Emptys the queue and waits to let players attack
-	void ResetQueue(float waitTime);
-
-	UFUNCTION(BlueprintCallable)
-	void AttackFinished();
-
-	//Resets ability to read inputs
-	void ResetReadInputs();
-
-	void ResetReadInputsOnly() { canReadInput = true; }
-
-	void QueueCountUp();
-
+#pragma region DownBeat
+	UFUNCTION()
+	//Perform behaviour of downbeat of music
 	void DownBeat();
+#pragma endregion
 
-	int GetPreviousActionsAmount() { return previousActions.Num(); }
+#pragma region Getters
+	//Returns the combat direction
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	E_CombatDirections GetCombatDirection() { return previousDirection; }
+#pragma endregion
 
-	bool CheckIfValidAttack();
 #pragma region Old
+	/*
 	//Adds action type to combat queue
 	//void AddToCombatQueue(E_CombatActionType action);
 
@@ -148,5 +158,25 @@ public:
 	//void Charge();
 
 	//void StopCharge();
+
+	int GetPreviousActionsAmount() { return previousActions.Num(); }
+
+	//Resets the can attack variable to true
+	void ResetCanAttack();
+
+	void ResetReadInputsOnly() { canReadInput = true; }
+
+	//Resets ability to read inputs
+	void ResetReadInputs();
+
+	void QueueCountUp();
+
+	//Emptys the queue and waits to let players attack
+	void ResetQueue(float waitTime);
+
+
+	UFUNCTION(BlueprintCallable)
+	void AttackFinished();
+	*/
 #pragma endregion
 };
