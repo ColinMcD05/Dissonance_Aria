@@ -118,6 +118,14 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	}
 }
 
+void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
+{
+	if (canMove)
+	{
+		Super::Move(value);
+	}
+}
+
 //Read the light attack input
 void APlayerCharacterCombat::ReadLightAttack()
 {
@@ -305,12 +313,7 @@ void APlayerCharacterCombat::RotatePlayer()
 #pragma region HeavyAttack
 void APlayerCharacterCombat::StartChargedAttack_Implementation()
 {
-	/*
-	if (combatSystem->StartCharge())
-	{
-		weaponsSystem->GetCurrentHeldWeapon()->StartChargeAttack();
-	}
-	*/
+
 }
 
 void APlayerCharacterCombat::ChargeReady()
@@ -320,7 +323,7 @@ void APlayerCharacterCombat::ChargeReady()
 
 void APlayerCharacterCombat::StopChargedAttack_Implementation()
 {
-	//combatSystem->StopCharge();
+	
 }
 #pragma endregion
 

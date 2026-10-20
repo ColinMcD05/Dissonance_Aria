@@ -30,11 +30,9 @@ class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, 
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameStateInfo", meta = (AllowPrivateAccess = "true"))
-	bool combatEnd = false;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameStateInfo", meta = (AllowPrivateAccess = "true"))
-	E_ControllerType controllerType = E_ControllerType::Keyboard;
+#pragma region Movement
+	bool canMove = true;
+#pragma endregion
 
 	//Needed components and actors
 #pragma region Components
@@ -106,6 +104,12 @@ private:
 
 #pragma region GameInfo
 	ADAGameStateCombat* gameState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameStateInfo", meta = (AllowPrivateAccess = "true"))
+	bool combatEnd = false;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameStateInfo", meta = (AllowPrivateAccess = "true"))
+	E_ControllerType controllerType = E_ControllerType::Keyboard;
 #pragma endregion
 protected:
 	// Called when the game starts or when spawned
@@ -169,6 +173,10 @@ public:
 #pragma endregion
 
 	E_ControllerType KeyboardOrGamepad(FKey pressedKey);
+
+#pragma region Movement
+	virtual void Move_Implementation(const FInputActionValue& value) override;
+#pragma endregion
 
 #pragma region Camera
 	UFUNCTION()

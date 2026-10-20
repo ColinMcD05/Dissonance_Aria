@@ -159,6 +159,10 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit, FS_DamageInfo& damage
 	{
 		changedDamage.damageAmount *= musicMult;
 	}
+	if (combo > 0)
+	{
+		changedDamage.damageAmount += combo * 0.2f;
+	}
 	/*
 	if (damageMults.Num() >= previousActions.Num())
 	{

@@ -21,22 +21,23 @@ class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	float musicMult;
+#pragma region References
+	APlayerCharacterCombat* owner;
+
+	UWorld* world;
+#pragma endregion
+
+#pragma region Input Checks
+	bool canAttack = true;
+
+	bool canReadInput = true;
+#pragma
 
 #pragma region Music
 	AMusicManagerCombat* musicManager;
 
 	int lastAttackBeat;
 #pragma endregion
-
-#pragma region References
-	APlayerCharacterCombat* owner;
-
-	UWorld* world;
-#pragma endregion
-	bool canAttack = true;
-
-	bool canReadInput = true;
 
 #pragma region Attacks
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
@@ -61,6 +62,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.15"))
 	float critDamage = 2;
+
+	float musicMult;
 #pragma endregion
 
 #pragma region Timer
