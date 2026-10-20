@@ -10,10 +10,10 @@
 #include "CombatSystem/AttackDirections.h"
 #include "CombatSystemComponent.generated.h"
 
-#define MAX_COMBO_LENGTH 3
-
 class APlayerCharacterCombat;
 class AMusicManagerCombat;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnComboDrop);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
@@ -158,6 +158,9 @@ public:
 	//Returns the combat direction
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	E_CombatDirections GetCombatDirection() { return previousDirection; }
+#pragma endregion
+
+#pragma region Delegates
 #pragma endregion
 
 #pragma region Old
