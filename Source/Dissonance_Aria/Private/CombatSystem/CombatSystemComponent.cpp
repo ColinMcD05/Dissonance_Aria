@@ -55,7 +55,10 @@ bool UCombatSystemComponent::ReadInput()
 
 	//Validates attack input
 	if (!CheckIfValidAttack(beatPosition))
+	{
+		ResetAttackInfo();
 		return false;
+	}
 
 	//Performs input
 	PerformInput();
@@ -105,6 +108,11 @@ void UCombatSystemComponent::PerformInput()
 //Resets attack intfo
 void UCombatSystemComponent::ResetAttackInfo()
 {
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Reset"));
+	}
+
 	//Sets previous direction to none
 	previousDirection = E_CombatDirections::None;
 
@@ -131,6 +139,7 @@ bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
 
 	//Set lastAttackBeat to the focus beat
 	lastAttackBeat = musicManager->GetFocusedBeat();
+
 	return true;
 }
 
@@ -149,10 +158,6 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit, FS_DamageInfo& damage
 	if (musicMult > 0)
 	{
 		changedDamage.damageAmount *= musicMult;
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(changedDamage.damageAmount));
-		}
 	}
 	/*
 	if (damageMults.Num() >= previousActions.Num())
@@ -174,16 +179,11 @@ float UCombatSystemComponent::MusicalMultiplier_Implementation()
 	if (musicManager == nullptr)
 		return 1;
 
-	float multiplier = FMath::Abs(0.5f - musicManager->GetPositionOfBeat());
+	float multiplier = FMath::Abs(0.5f - musicManager->GetHowCloseToBeat());
 
 	if (multiplier >= 0.5 - critRange)
 	{
 		return critDamage;
-	}
-
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(multiplier + 0.8f));
 	}
 
 	return multiplier + 0.8f;
