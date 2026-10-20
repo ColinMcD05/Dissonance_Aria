@@ -436,11 +436,6 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 
 	damageInfo.damageAmount = stats.damage;
 
-	if (lastAttack == E_CombatActionType::HeavyAttack)
-	{
-		damageInfo.damageAmount *= 1.25;
-	}
-
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
 
 	hitEnemies.Add(enemyHit);

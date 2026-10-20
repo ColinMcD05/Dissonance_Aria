@@ -21,7 +21,7 @@ class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	float musicMults;
+	float musicMult;
 
 #pragma region Music
 	AMusicManagerCombat* musicManager;
@@ -55,10 +55,18 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	int combo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.15"))
+	float critRange = 0.1f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.15"))
+	float critDamage = 2;
 #pragma endregion
 
 #pragma region Timer
-	FTimerHandle resetInputsTimer;
+	FTimerHandle resetAttackInfoTimer;
+
+	FTimerHandle readInputTimer;
 #pragma endregion
 
 #pragma region Old
@@ -66,8 +74,6 @@ private:
 	FTimerHandle combatTimer;
 
 	FTimerHandle queueTimer;
-
-	FTimerHandle readInputOnlyTimer;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool upSwing;
@@ -119,6 +125,9 @@ public:
 
 	//Performs the input
 	void PerformInput();
+
+	//Resets canReadInput to true
+	void ResetReadInputs() { canReadInput = true; }
 #pragma endregion
 
 #pragma region Attack
@@ -131,6 +140,9 @@ public:
 	//Deals damage to hit actor
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void DealDamage(AActor*& enemyHit, FS_DamageInfo& damageInfo);
+
+	UFUNCTION(BlueprintNativeEvent)
+	float MusicalMultiplier();
 #pragma endregion
 
 #pragma region DownBeat
@@ -163,8 +175,6 @@ public:
 
 	//Resets the can attack variable to true
 	void ResetCanAttack();
-
-	void ResetReadInputsOnly() { canReadInput = true; }
 
 	//Resets ability to read inputs
 	void ResetReadInputs();

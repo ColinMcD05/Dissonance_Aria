@@ -44,8 +44,11 @@ void UCombatSystemComponent::BeginPlay()
 //Reads player input
 bool UCombatSystemComponent::ReadInput()
 {
+	if (!canReadInput)
+		return false;
+
 	//Resets timer incase it was running
-	GetWorld()->GetTimerManager().ClearTimer(resetInputsTimer);
+	GetWorld()->GetTimerManager().ClearTimer(resetAttackInfoTimer);
 
 	//Get how close to beat input was
 	float beatPosition = musicManager->GetHowCloseToBeat();
@@ -56,6 +59,10 @@ bool UCombatSystemComponent::ReadInput()
 
 	//Performs input
 	PerformInput();
+
+	//Set read input
+	canReadInput = false;
+	GetWorld()->GetTimerManager().SetTimer(readInputTimer, this, &UCombatSystemComponent::ResetReadInputs, 0.01f);
 
 	return true;
 }
@@ -87,6 +94,8 @@ void UCombatSystemComponent::PerformInput()
 			previousDirection = E_CombatDirections::Left;
 			break;
 	}
+
+	musicMult = MusicalMultiplier();
 
 	combo++;
 }
@@ -137,9 +146,13 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit, FS_DamageInfo& damage
 	FS_DamageInfo changedDamage = damageInfo;
 
 	//changedDamage.damageAmount *= powerMult;
-	if (musicMults > 0)
+	if (musicMult > 0)
 	{
-		changedDamage.damageAmount *= musicMults;
+		changedDamage.damageAmount *= musicMult;
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(changedDamage.damageAmount));
+		}
 	}
 	/*
 	if (damageMults.Num() >= previousActions.Num())
@@ -153,6 +166,27 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit, FS_DamageInfo& damage
 	*/
 
 	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
+}
+
+//Calculates multiplier for combos
+float UCombatSystemComponent::MusicalMultiplier_Implementation()
+{
+	if (musicManager == nullptr)
+		return 1;
+
+	float multiplier = FMath::Abs(0.5f - musicManager->GetPositionOfBeat());
+
+	if (multiplier >= 0.5 - critRange)
+	{
+		return critDamage;
+	}
+
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(multiplier + 0.8f));
+	}
+
+	return multiplier + 0.8f;
 }
 #pragma endregion
 
@@ -169,7 +203,7 @@ void UCombatSystemComponent::DownBeat()
 		return;
 
 	//If last attack is different, set a timer to reset inputs
-	GetWorld()->GetTimerManager().SetTimer(resetInputsTimer, this, &UCombatSystemComponent::ResetAttackInfo, resetTime);
+	GetWorld()->GetTimerManager().SetTimer(resetAttackInfoTimer, this, &UCombatSystemComponent::ResetAttackInfo, resetTime);
 }
 #pragma endregion
 
