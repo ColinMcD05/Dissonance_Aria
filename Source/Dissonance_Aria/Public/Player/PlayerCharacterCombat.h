@@ -20,6 +20,7 @@
 
 class UInputAction;
 class UCombatActionBase;
+class UDodgeComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwapController, E_ControllerType, newController);
@@ -59,6 +60,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	AWeaponActor* weapon2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UDodgeComponent* dodgeComponent;
 #pragma endregion
 
 #pragma region Inputs
@@ -124,8 +128,6 @@ protected:
 public:	
 	// Called every frame
 	APlayerCharacterCombat();
-
-	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

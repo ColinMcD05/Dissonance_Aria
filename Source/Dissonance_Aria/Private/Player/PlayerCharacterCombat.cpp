@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameInfo/DAGameModeBase.h"
+#include "CombatSystem/DodgeComponent.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -55,6 +56,9 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 	}
 
 	camera->SetupAttachment(springArm, USpringArmComponent::SocketName);
+
+	//Setup Dodge Component
+	dodgeComponent = CreateDefaultSubobject<UDodgeComponent>(TEXT("DodgeComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -91,12 +95,6 @@ void APlayerCharacterCombat::BeginPlay()
 
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
-}
-
-// Called every frame
-void APlayerCharacterCombat::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
 }
 
 #pragma region Inputs
@@ -190,7 +188,26 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 //Read the side step input
 void APlayerCharacterCombat::ReadSidestep()
 {
+	if (!IsValid(dodgeComponent))
+		return;
 
+	E_Directions direction = dodgeComponent->CalculateDodgeDirection();
+
+	switch (direction)
+	{
+		case E_Directions::Backward:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Backward"));
+			break;
+		case E_Directions::Left:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Left"));
+			break;
+		case E_Directions::Right:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Right"));
+			break;
+		case E_Directions::Forward:
+		default:
+			break;
+	}
 }
 
 //Read Swap Input

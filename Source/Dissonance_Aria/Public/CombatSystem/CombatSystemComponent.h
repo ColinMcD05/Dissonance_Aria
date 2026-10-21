@@ -7,7 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "DamageSystem/DamageInfo.h"
 #include "Input/InputActions/CombatActionBase.h"
-#include "CombatSystem/AttackDirections.h"
+#include "CombatSystem/Directions.h"
 #include "CombatSystemComponent.generated.h"
 
 class APlayerCharacterCombat;
