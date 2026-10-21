@@ -29,6 +29,7 @@ void UCombatSystemComponent::BeginPlay()
 	if (owner)
 	{
 		world = owner->GetWorld();
+		OnComboDrop.AddDynamic(owner, &APlayerCharacterCombat::ResetCanMove);
 	}
 	
 	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
@@ -108,10 +109,7 @@ void UCombatSystemComponent::PerformInput()
 //Resets attack intfo
 void UCombatSystemComponent::ResetAttackInfo()
 {
-	if (GEngine)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Reset"));
-	}
+	OnComboDrop.Broadcast();
 
 	//Sets previous direction to none
 	previousDirection = E_CombatDirections::None;

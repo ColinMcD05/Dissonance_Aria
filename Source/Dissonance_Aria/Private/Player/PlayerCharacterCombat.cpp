@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameInfo/DAGameModeBase.h"
 
 // Sets default values
@@ -122,7 +123,29 @@ void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
 {
 	if (canMove)
 	{
-		Super::Move(value);
+		Super::Move_Implementation(value);
+	}
+}
+
+void APlayerCharacterCombat::SnapToEnemy()
+{
+	if (IsValid(lockedOnEnemy))
+	{
+		FVector distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+		distance.Normalize();
+
+		FVector endPosition = GetActorLocation() + (distance * snapDistance);
+
+		FHitResult result;
+
+		UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPosition,
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon1, weapon2}, EDrawDebugTrace::Persistent, result, true);
+
+		if (result.GetActor() == lockedOnEnemy)
+		{
+			this->SetActorLocation(GetActorLocation() + distance * (result.Distance - paddingDistance));
+		}
+
 	}
 }
 
@@ -134,6 +157,10 @@ void APlayerCharacterCombat::ReadLightAttack()
 		if (combatSystem->ReadInput())
 		{
 			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
+			SnapToEnemy();
+
+			if (canMove)
+				canMove = false;
 		}
 	}
 }

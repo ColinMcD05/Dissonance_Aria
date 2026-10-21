@@ -161,6 +161,7 @@ public:
 #pragma endregion
 
 #pragma region Delegates
+	FOnComboDrop OnComboDrop;
 #pragma endregion
 
 #pragma region Old

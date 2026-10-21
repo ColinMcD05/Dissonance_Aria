@@ -32,6 +32,12 @@ class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, 
 private:
 #pragma region Movement
 	bool canMove = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float snapDistance = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float paddingDistance = 20;
 #pragma endregion
 
 	//Needed components and actors
@@ -144,6 +150,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	AWeaponActor* GetWeaponActor(int weapon) { return (weapon == 0) ? weapon1 : weapon2; }
 
+	//Gets the current controller type being used
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	E_ControllerType GetControllerType() { return controllerType; }
 #pragma endregion
@@ -176,6 +183,13 @@ public:
 
 #pragma region Movement
 	virtual void Move_Implementation(const FInputActionValue& value) override;
+
+	//Lets the player move
+	UFUNCTION()
+	void ResetCanMove() { canMove = true; }
+
+	//Snaps to the focused enemy
+	void SnapToEnemy();
 #pragma endregion
 
 #pragma region Camera
