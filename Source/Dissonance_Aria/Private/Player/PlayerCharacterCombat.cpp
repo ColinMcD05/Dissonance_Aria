@@ -95,6 +95,11 @@ void APlayerCharacterCombat::BeginPlay()
 
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
+
+	if (IsValid(dodgeComponent) && IsValid(combatSystem))
+	{
+
+	}
 }
 
 #pragma region Inputs

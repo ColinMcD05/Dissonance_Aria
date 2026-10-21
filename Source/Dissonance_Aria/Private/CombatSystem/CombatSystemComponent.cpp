@@ -45,7 +45,7 @@ void UCombatSystemComponent::BeginPlay()
 //Reads player input
 bool UCombatSystemComponent::ReadInput()
 {
-	if (!canReadInput)
+	if (!canReadInput || isDodging)
 		return false;
 
 	//Resets timer incase it was running
@@ -192,6 +192,17 @@ float UCombatSystemComponent::MusicalMultiplier_Implementation()
 }
 #pragma endregion
 
+void UCombatSystemComponent::SetIsDodging(E_Directions directions)
+{
+	if (directions == E_Directions::None)
+	{
+		lastAttackBeat = musicManager->GetFocusedBeat();
+		isDodging = false;
+	}
+	else
+		isDodging = true;
+}
+
 #pragma region Downbeat
 //Looks at down beat
 void UCombatSystemComponent::DownBeat()
@@ -201,7 +212,7 @@ void UCombatSystemComponent::DownBeat()
 		return;
 
 	//Check if last attack equals the "focused" beat
-	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None)
+	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging)
 		return;
 
 	//If last attack is different, set a timer to reset inputs

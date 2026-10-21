@@ -15,6 +15,14 @@ class DISSONANCE_ARIA_API UDodgeComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Dodge", meta(AllowPrivateAccess = "true"))
+	float timeToDodge;
+
+	bool dodging = false;
+
+	E_Directions currentDirection = E_Directions::None;
+
+	float distance = 0;
 
 protected:
 	// Called when the game starts
@@ -27,7 +35,12 @@ public:
 	E_Directions CalculateDodgeDirection();
 
 	UFUNCTION(BlueprintCallable, Category = "Dodge")
-	void Dodge(E_Directions direction);
+	void StartDodge(E_Directions direction, float timing);
+
+	void Dodge();
+
+	UFUNCTION(BlueprintCallable, Category = "Dodge")
+	void EndDodge();
 
 	UFUNCTION(BlueprintCallable, Category = "Dodge")
 	void ResetDodge();

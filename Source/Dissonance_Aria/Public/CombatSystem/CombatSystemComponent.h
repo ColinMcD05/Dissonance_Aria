@@ -31,6 +31,8 @@ private:
 	bool canAttack = true;
 
 	bool canReadInput = true;
+
+	bool isDodging = false;
 #pragma
 
 #pragma region Music
@@ -158,6 +160,11 @@ public:
 	//Returns the combat direction
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	E_CombatDirections GetCombatDirection() { return previousDirection; }
+#pragma endregion
+
+#pragma region SetDodging
+	UFUNCTION()
+	void SetIsDodging(E_Directions directions);
 #pragma endregion
 
 #pragma region Delegates

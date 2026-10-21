@@ -44,17 +44,35 @@ E_Directions UDodgeComponent::CalculateDodgeDirection()
 	else return E_Directions::Backward;
 }
 
-void UDodgeComponent::Dodge(E_Directions direction)
+void UDodgeComponent::StartDodge(E_Directions direction, float distance)
 {
+	if (dodging)
+		return;
+
 	if (direction == E_Directions::None)
 		direction = CalculateDodgeDirection();
 
 	OnDodge.Broadcast(direction);
 
-	switch ()
-	{
-		
-	}
+	dodging = true;
+
+	this->currentDirection = direction;
+	this->distance = distance;
+
+	Dodge();
+}
+
+void UDodgeComponent::Dodge()
+{
+
+
+	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UDodgeComponent::Dodge);
+}
+
+void UDodgeComponent::EndDodge()
+{
+	OnDodge.Broadcast(E_Directions::None);
+	dodging = false;
 }
 
 void UDodgeComponent::ResetDodge()
