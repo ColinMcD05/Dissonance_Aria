@@ -44,7 +44,7 @@ E_Directions UDodgeComponent::CalculateDodgeDirection()
 	else return E_Directions::Backward;
 }
 
-void UDodgeComponent::StartDodge(E_Directions direction, float distance)
+void UDodgeComponent::StartDodge(E_Directions direction, float newDistance)
 {
 	if (dodging)
 		return;
@@ -57,7 +57,7 @@ void UDodgeComponent::StartDodge(E_Directions direction, float distance)
 	dodging = true;
 
 	this->currentDirection = direction;
-	this->distance = distance;
+	this->distance = newDistance;
 
 	Dodge();
 }

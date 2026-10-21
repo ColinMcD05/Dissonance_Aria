@@ -15,7 +15,7 @@ class DISSONANCE_ARIA_API UDodgeComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Dodge", meta(AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Dodge", meta = (AllowPrivateAccess = "true"))
 	float timeToDodge;
 
 	bool dodging = false;
