@@ -10,7 +10,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameInfo/DAGameModeBase.h"
+#include "CombatSystem/DodgeComponent.h"
+#include "Music/MusicManagerCombat.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -54,6 +57,9 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 	}
 
 	camera->SetupAttachment(springArm, USpringArmComponent::SocketName);
+
+	//Setup Dodge Component
+	dodgeComponent = CreateDefaultSubobject<UDodgeComponent>(TEXT("DodgeComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -90,12 +96,13 @@ void APlayerCharacterCombat::BeginPlay()
 
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
-}
 
-// Called every frame
-void APlayerCharacterCombat::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
+
+	if (IsValid(dodgeComponent))
+	{
+		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+	}
 }
 
 #pragma region Inputs
@@ -118,14 +125,6 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	}
 }
 
-void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
-{
-	if (canMove)
-	{
-		Super::Move(value);
-	}
-}
-
 //Read the light attack input
 void APlayerCharacterCombat::ReadLightAttack()
 {
@@ -134,6 +133,10 @@ void APlayerCharacterCombat::ReadLightAttack()
 		if (combatSystem->ReadInput())
 		{
 			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
+			SnapToEnemy();
+
+			if (canMove)
+				canMove = false;
 		}
 	}
 }
@@ -163,7 +166,26 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 //Read the side step input
 void APlayerCharacterCombat::ReadSidestep()
 {
+	if (!IsValid(dodgeComponent))
+		return;
 
+	dodgeComponent->StartDodge(direction);
+
+	switch (direction)
+	{
+		case E_Directions::Backward:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Backward"));
+			break;
+		case E_Directions::Left:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Left"));
+			break;
+		case E_Directions::Right:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Right"));
+			break;
+		case E_Directions::Forward:
+		default:
+			break;
+	}
 }
 
 //Read Swap Input
@@ -238,6 +260,63 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 }
 #pragma endregion
 
+#pragma region Movement
+void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
+{
+	if (canMove)
+	{
+		Super::Move_Implementation(value);
+	}
+
+	direction = CalculateDirection(value.Get<FVector>());
+}
+
+void APlayerCharacterCombat::SnapToEnemy()
+{
+	if (IsValid(lockedOnEnemy))
+	{
+		FVector distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+		distance.Normalize();
+
+		FVector endPosition = GetActorLocation() + (distance * snapDistance);
+
+		FHitResult result;
+
+		UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPosition,
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon1, weapon2}, EDrawDebugTrace::Persistent, result, true);
+
+		if (result.GetActor() == lockedOnEnemy)
+		{
+			this->SetActorLocation(GetActorLocation() + distance * (result.Distance - paddingDistance));
+		}
+
+	}
+}
+
+E_Directions APlayerCharacterCombat::CalculateDirection(FVector vector2)
+{
+	vector2.Normalize();
+
+	//Calculate angle
+	float angle = FMath::RadiansToDegrees(FMath::Atan2(vector2.Y, vector2.X));
+	angle += 270;
+
+	//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(angle));
+
+	//Return direction based on angle
+	if (angle == 0 || (angle <= 240 && angle >= 120))
+		return E_Directions::Backward;
+
+	if (angle > 240 && angle < 360)
+		return E_Directions::Right;
+
+	if (angle > 0 && angle < 120)
+		return E_Directions::Left;
+
+	else return E_Directions::Backward;
+}
+#pragma endregion
+
 E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
 {
 	if (pressedKey.IsGamepadKey())
@@ -252,6 +331,15 @@ E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
 	{
 		return E_ControllerType::Keyboard;
 	}
+}
+
+void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
+{
+	if (moveDirection == E_Directions::None)
+	{
+		canMove = true;
+	}
+	else canMove = false;
 }
 
 #pragma region Tuning

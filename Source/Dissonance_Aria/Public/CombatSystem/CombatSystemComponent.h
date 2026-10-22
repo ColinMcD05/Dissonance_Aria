@@ -7,7 +7,7 @@
 #include "Components/ActorComponent.h"
 #include "DamageSystem/DamageInfo.h"
 #include "Input/InputActions/CombatActionBase.h"
-#include "CombatSystem/AttackDirections.h"
+#include "CombatSystem/Directions.h"
 #include "CombatSystemComponent.generated.h"
 
 class APlayerCharacterCombat;
@@ -31,6 +31,8 @@ private:
 	bool canAttack = true;
 
 	bool canReadInput = true;
+
+	bool isDodging = false;
 #pragma
 
 #pragma region Music
@@ -160,7 +162,13 @@ public:
 	E_CombatDirections GetCombatDirection() { return previousDirection; }
 #pragma endregion
 
+#pragma region SetDodging
+	UFUNCTION()
+	void SetIsDodging(E_Directions directions);
+#pragma endregion
+
 #pragma region Delegates
+	FOnComboDrop OnComboDrop;
 #pragma endregion
 
 #pragma region Old

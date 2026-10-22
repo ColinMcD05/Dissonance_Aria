@@ -8,9 +8,9 @@ public class Dissonance_Aria : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "FMODStudio" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "FMODStudio", "AnimGraphRuntime" });
 
-		PrivateDependencyModuleNames.AddRange(new string[] { "CoreUObject", "Engine" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "CoreUObject", "Engine", "AnimGraphRuntime" });
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

@@ -16,10 +16,13 @@
 #include "DamageSystem/DamageSystemComponent.h"
 #include "GameInfo/DAGameStateCombat.h"
 #include "Input/ControllerTypeInfo.h"
+#include "CombatSystem/Directions.h"
 #include "PlayerCharacterCombat.generated.h"
 
 class UInputAction;
 class UCombatActionBase;
+class UDodgeComponent;
+class UMusicManagerCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwapController, E_ControllerType, newController);
@@ -32,6 +35,15 @@ class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, 
 private:
 #pragma region Movement
 	bool canMove = true;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float snapDistance = 200;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	float paddingDistance = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	E_Directions direction;
 #pragma endregion
 
 	//Needed components and actors
@@ -53,6 +65,12 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	AWeaponActor* weapon2;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UDodgeComponent* dodgeComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	AMusicManagerCombat* musicManager;
 #pragma endregion
 
 #pragma region Inputs
@@ -119,8 +137,6 @@ public:
 	// Called every frame
 	APlayerCharacterCombat();
 
-	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
@@ -144,8 +160,12 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	AWeaponActor* GetWeaponActor(int weapon) { return (weapon == 0) ? weapon1 : weapon2; }
 
+	//Gets the current controller type being used
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	E_ControllerType GetControllerType() { return controllerType; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
+	UDodgeComponent* GetDodgeComponent() { return dodgeComponent; }
 #pragma endregion
 
 #pragma region Input
@@ -176,6 +196,19 @@ public:
 
 #pragma region Movement
 	virtual void Move_Implementation(const FInputActionValue& value) override;
+
+	//Lets the player move
+	UFUNCTION()
+	void ResetCanMove() { canMove = true; }
+
+	UFUNCTION()
+	void ListenToDodge(E_Directions moveDirection);
+
+	//Snaps to the focused enemy
+	void SnapToEnemy();
+
+	//Calculates the direction the player is going
+	E_Directions CalculateDirection(FVector vector2);
 #pragma endregion
 
 #pragma region Camera
