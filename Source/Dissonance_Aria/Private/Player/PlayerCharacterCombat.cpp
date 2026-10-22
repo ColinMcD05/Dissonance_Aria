@@ -125,36 +125,6 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	}
 }
 
-void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
-{
-	if (canMove)
-	{
-		Super::Move_Implementation(value);
-	}
-}
-
-void APlayerCharacterCombat::SnapToEnemy()
-{
-	if (IsValid(lockedOnEnemy))
-	{
-		FVector distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
-		distance.Normalize();
-
-		FVector endPosition = GetActorLocation() + (distance * snapDistance);
-
-		FHitResult result;
-
-		UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPosition,
-			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon1, weapon2}, EDrawDebugTrace::Persistent, result, true);
-
-		if (result.GetActor() == lockedOnEnemy)
-		{
-			this->SetActorLocation(GetActorLocation() + distance * (result.Distance - paddingDistance));
-		}
-
-	}
-}
-
 //Read the light attack input
 void APlayerCharacterCombat::ReadLightAttack()
 {
@@ -199,8 +169,7 @@ void APlayerCharacterCombat::ReadSidestep()
 	if (!IsValid(dodgeComponent))
 		return;
 
-	E_Directions direction = dodgeComponent->CalculateDodgeDirection();
-	dodgeComponent->StartDodge();
+	dodgeComponent->StartDodge(direction);
 
 	switch (direction)
 	{
@@ -291,6 +260,63 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 }
 #pragma endregion
 
+#pragma region Movement
+void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
+{
+	if (canMove)
+	{
+		Super::Move_Implementation(value);
+	}
+
+	direction = CalculateDirection(value.Get<FVector>());
+}
+
+void APlayerCharacterCombat::SnapToEnemy()
+{
+	if (IsValid(lockedOnEnemy))
+	{
+		FVector distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+		distance.Normalize();
+
+		FVector endPosition = GetActorLocation() + (distance * snapDistance);
+
+		FHitResult result;
+
+		UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPosition,
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon1, weapon2}, EDrawDebugTrace::Persistent, result, true);
+
+		if (result.GetActor() == lockedOnEnemy)
+		{
+			this->SetActorLocation(GetActorLocation() + distance * (result.Distance - paddingDistance));
+		}
+
+	}
+}
+
+E_Directions APlayerCharacterCombat::CalculateDirection(FVector vector2)
+{
+	vector2.Normalize();
+
+	//Calculate angle
+	float angle = FMath::RadiansToDegrees(FMath::Atan2(vector2.Y, vector2.X));
+	angle += 270;
+
+	//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(angle));
+
+	//Return direction based on angle
+	if (angle == 0 || (angle <= 240 && angle >= 120))
+		return E_Directions::Backward;
+
+	if (angle > 240 && angle < 360)
+		return E_Directions::Right;
+
+	if (angle > 0 && angle < 120)
+		return E_Directions::Left;
+
+	else return E_Directions::Backward;
+}
+#pragma endregion
+
 E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
 {
 	if (pressedKey.IsGamepadKey())
@@ -307,9 +333,9 @@ E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
 	}
 }
 
-void APlayerCharacterCombat::ListenToDodge(E_Directions direction)
+void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
 {
-	if (direction == E_Directions::None)
+	if (moveDirection == E_Directions::None)
 	{
 		canMove = true;
 	}

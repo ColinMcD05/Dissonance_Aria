@@ -28,25 +28,6 @@ void UDodgeComponent::BeginPlay()
 	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
 }
 
-E_Directions UDodgeComponent::CalculateDodgeDirection()
-{
-	if (!IsValid(player))
-		return E_Directions::Forward;
-
-	float direction = UKismetAnimationLibrary::CalculateDirection(player->GetVelocity(), player->GetActorRotation());
-
-	if (direction == 0 || (direction <= -110 && direction <= 60))
-		return E_Directions::Backward;
-
-	if (direction > -110 && direction < 0)
-		return E_Directions::Left;
-
-	if (direction < 180 && direction > 60)
-		return E_Directions::Right;
-
-	else return E_Directions::Backward;
-}
-
 void UDodgeComponent::StartDodge(E_Directions direction)
 {
 	if (dodging || !IsValid(musicManager))
@@ -56,7 +37,7 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 	}
 
 	if (direction == E_Directions::None)
-		direction = CalculateDodgeDirection();
+		direction = E_Directions::Backward;
 
 	dodging = true;
 
@@ -98,6 +79,16 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 	{
 		distance = baseDistance * (timing + 0.2);
 	}
+
+	FVector tempEndPoint = player->GetActorLocation() + distance * endPoint;
+
+	FHitResult hit;
+
+	UKismetSystemLibrary::LineTraceSingle(this, player->GetActorLocation(), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_Visibility), 
+		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
+
+	if (hit.bBlockingHit)
+		distance = hit.Distance - 0.5;
 
 	endPoint = player->GetActorLocation() + distance * endPoint;
 

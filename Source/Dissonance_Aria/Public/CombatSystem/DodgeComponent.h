@@ -49,9 +49,6 @@ public:
 	UDodgeComponent();
 
 	UFUNCTION(BlueprintCallable, Category = "Dodge")
-	E_Directions CalculateDodgeDirection();
-
-	UFUNCTION(BlueprintCallable, Category = "Dodge")
 	void StartDodge(E_Directions direction = E_Directions::None);
 
 	void Dodge();

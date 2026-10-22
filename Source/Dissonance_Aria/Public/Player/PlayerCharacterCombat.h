@@ -16,6 +16,7 @@
 #include "DamageSystem/DamageSystemComponent.h"
 #include "GameInfo/DAGameStateCombat.h"
 #include "Input/ControllerTypeInfo.h"
+#include "CombatSystem/Directions.h"
 #include "PlayerCharacterCombat.generated.h"
 
 class UInputAction;
@@ -40,6 +41,9 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	float paddingDistance = 20;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
+	E_Directions direction;
 #pragma endregion
 
 	//Needed components and actors
@@ -195,10 +199,13 @@ public:
 	void ResetCanMove() { canMove = true; }
 
 	UFUNCTION()
-	void ListenToDodge(E_Directions direction);
+	void ListenToDodge(E_Directions moveDirection);
 
 	//Snaps to the focused enemy
 	void SnapToEnemy();
+
+	//Calculates the direction the player is going
+	E_Directions CalculateDirection(FVector vector2);
 #pragma endregion
 
 #pragma region Camera
