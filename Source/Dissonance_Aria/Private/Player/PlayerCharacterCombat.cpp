@@ -13,6 +13,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameInfo/DAGameModeBase.h"
 #include "CombatSystem/DodgeComponent.h"
+#include "Music/MusicManagerCombat.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -96,9 +97,11 @@ void APlayerCharacterCombat::BeginPlay()
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
 
-	if (IsValid(dodgeComponent) && IsValid(combatSystem))
-	{
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
 
+	if (IsValid(dodgeComponent))
+	{
+		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
 	}
 }
 
@@ -197,6 +200,7 @@ void APlayerCharacterCombat::ReadSidestep()
 		return;
 
 	E_Directions direction = dodgeComponent->CalculateDodgeDirection();
+	dodgeComponent->StartDodge();
 
 	switch (direction)
 	{
@@ -301,6 +305,15 @@ E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
 	{
 		return E_ControllerType::Keyboard;
 	}
+}
+
+void APlayerCharacterCombat::ListenToDodge(E_Directions direction)
+{
+	if (direction == E_Directions::None)
+	{
+		canMove = true;
+	}
+	else canMove = false;
 }
 
 #pragma region Tuning

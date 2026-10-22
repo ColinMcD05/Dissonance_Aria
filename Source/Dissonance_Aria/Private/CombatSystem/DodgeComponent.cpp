@@ -2,7 +2,10 @@
 
 
 #include "CombatSystem/DodgeComponent.h"
+#include "Player/PlayerCharacterCombat.h"
 #include "KismetAnimationLibrary.h"
+#include "Music/MusicManagerCombat.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values for this component's properties
 UDodgeComponent::UDodgeComponent()
@@ -20,17 +23,17 @@ void UDodgeComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
-	
+	player = Cast<APlayerCharacterCombat>(GetOwner());
+
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
 }
 
 E_Directions UDodgeComponent::CalculateDodgeDirection()
 {
-	AActor* owner = GetOwner();
-	if (!IsValid(owner))
+	if (!IsValid(player))
 		return E_Directions::Forward;
 
-	float direction = UKismetAnimationLibrary::CalculateDirection(owner->GetVelocity(), owner->GetActorRotation());
+	float direction = UKismetAnimationLibrary::CalculateDirection(player->GetVelocity(), player->GetActorRotation());
 
 	if (direction == 0 || (direction <= -110 && direction <= 60))
 		return E_Directions::Backward;
@@ -44,29 +47,88 @@ E_Directions UDodgeComponent::CalculateDodgeDirection()
 	else return E_Directions::Backward;
 }
 
-void UDodgeComponent::StartDodge(E_Directions direction, float newDistance)
+void UDodgeComponent::StartDodge(E_Directions direction)
 {
-	if (dodging)
+	if (dodging || !IsValid(musicManager))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::Printf(TEXT("dodging: %d, valid: %d"), dodging, IsValid(musicManager)));
 		return;
+	}
 
 	if (direction == E_Directions::None)
 		direction = CalculateDodgeDirection();
 
-	OnDodge.Broadcast(direction);
-
 	dodging = true;
 
-	this->currentDirection = direction;
-	this->distance = newDistance;
+	if (musicManager->GetBPM() <= 0.)
+	{
+		EndDodge();
+		return;
+	}
+
+	timeToDodge = (60 / musicManager->GetBPM()) * 0.5;
+
+	OnDodge.Broadcast(direction);
+
+	float timing = FMath::Abs(0.5 - musicManager->GetHowCloseToBeat()) + 0.5f;
+	float distance = baseDistance;
+
+	switch (direction)
+	{
+		case E_Directions::Left:
+			endPoint = player->GetActorRightVector() * -1;
+			break;
+		case E_Directions::Backward:
+			endPoint = player->GetActorForwardVector() * -1;
+			break;
+		case E_Directions::Right:
+			endPoint = player->GetActorRightVector();
+			break;
+		default:
+		case E_Directions::None:
+			dodging = false;
+			break;
+	}
+
+	if (timing < 0.5 + perfectDodgeRange)
+	{
+		distance = baseDistance * perfectDodgeMult;
+	}
+	else
+	{
+		distance = baseDistance * (timing + 0.2);
+	}
+
+	endPoint = player->GetActorLocation() + distance * endPoint;
+
+	speed = distance/timeToDodge;
 
 	Dodge();
 }
 
 void UDodgeComponent::Dodge()
 {
+	if (!IsValid(player))
+	{
+		EndDodge();
+		return;
+	}
 
+	if (player->GetActorLocation().Equals(endPoint, 0.1f))
+	{
+		player->SetActorLocation(endPoint);
+		EndDodge();
+	}
+	else 
+	{
+		FVector newPosition = FMath::VInterpConstantTo(player->GetActorLocation(), endPoint, GetWorld()->DeltaTimeSeconds, speed);
+		
+		//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(newPosition.X).Append(FString::SanitizeFloat(newPosition.Y)).Append(FString::SanitizeFloat(newPosition.Z)));
 
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UDodgeComponent::Dodge);
+		player->SetActorLocation(newPosition);
+		
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UDodgeComponent::Dodge);
+	}
 }
 
 void UDodgeComponent::EndDodge()
@@ -78,4 +140,5 @@ void UDodgeComponent::EndDodge()
 void UDodgeComponent::ResetDodge()
 {
 	OnDodge.Broadcast(E_Directions::None);
+	dodging = false;
 }

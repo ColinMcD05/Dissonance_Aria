@@ -80,6 +80,9 @@ public:
 	//Change the music channel
 	UFUNCTION()
 	void ChangeChannel(int newChannel);
+
+	UFUNCTION(BlueprintCallable)
+	float GetBPM() { return bpm; }
 #pragma region OnBeat
 	//Runs on every beat to check and/or change
 	UFUNCTION()
@@ -88,10 +91,10 @@ public:
 
 #pragma region Delegates
 	//Delegate that fires once bpm changes
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FOnBPMChange OnBPMChange;
 
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	UPROPERTY(BlueprintAssignable)
 	FOnBeat OnBeat;
 #pragma endregion
 };

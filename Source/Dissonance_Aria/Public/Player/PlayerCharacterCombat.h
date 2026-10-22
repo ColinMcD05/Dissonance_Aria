@@ -21,6 +21,7 @@
 class UInputAction;
 class UCombatActionBase;
 class UDodgeComponent;
+class UMusicManagerCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwapController, E_ControllerType, newController);
@@ -63,6 +64,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UDodgeComponent* dodgeComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	AMusicManagerCombat* musicManager;
 #pragma endregion
 
 #pragma region Inputs
@@ -189,6 +193,9 @@ public:
 	//Lets the player move
 	UFUNCTION()
 	void ResetCanMove() { canMove = true; }
+
+	UFUNCTION()
+	void ListenToDodge(E_Directions direction);
 
 	//Snaps to the focused enemy
 	void SnapToEnemy();
