@@ -163,6 +163,9 @@ public:
 	//Gets the current controller type being used
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
 	E_ControllerType GetControllerType() { return controllerType; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
+	UDodgeComponent* GetDodgeComponent() { return dodgeComponent; }
 #pragma endregion
 
 #pragma region Input

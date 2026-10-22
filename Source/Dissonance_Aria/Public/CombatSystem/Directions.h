@@ -19,7 +19,7 @@ enum class E_Directions : uint8
 {
 	None UMETA(DisplayName = "None"),
 	Forward UMETA(DisplayName = "Forward"),
-	Backward UMETA(DisplayName = "Down"),
+	Backward UMETA(DisplayName = "Backward"),
 	Right UMETA(DisplayName = "Right"),
 	Left UMETA(DisplayName = "Left")
 };
