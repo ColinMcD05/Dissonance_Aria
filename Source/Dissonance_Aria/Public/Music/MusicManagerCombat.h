@@ -66,6 +66,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	int GetFocusedBeat();
+
+	UFUNCTION(BlueprintCallable)
+	int GetBeatInTimeSig();
 #pragma endregion
 
 #pragma region Music

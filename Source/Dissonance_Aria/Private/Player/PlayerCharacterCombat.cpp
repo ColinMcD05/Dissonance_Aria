@@ -133,7 +133,7 @@ void APlayerCharacterCombat::ReadLightAttack()
 		if (combatSystem->ReadInput())
 		{
 			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
-			SnapToEnemy();
+			StartSnapToEnemy();
 
 			if (canMove)
 				canMove = false;
@@ -271,14 +271,14 @@ void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
 	direction = CalculateDirection(value.Get<FVector>());
 }
 
-void APlayerCharacterCombat::SnapToEnemy()
+void APlayerCharacterCombat::StartSnapToEnemy()
 {
 	if (IsValid(lockedOnEnemy))
 	{
-		FVector distance = lockedOnEnemy->GetActorLocation() - GetActorLocation();
-		distance.Normalize();
+		endPoint = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+		endPoint.Normalize();
 
-		FVector endPosition = GetActorLocation() + (distance * snapDistance);
+		FVector endPosition = GetActorLocation() + (endPoint * snapDistance);
 
 		FHitResult result;
 
@@ -287,9 +287,28 @@ void APlayerCharacterCombat::SnapToEnemy()
 
 		if (result.GetActor() == lockedOnEnemy)
 		{
-			this->SetActorLocation(GetActorLocation() + distance * (result.Distance - paddingDistance));
+			endPoint = GetActorLocation() + endPoint * (result.Distance - paddingDistance);
+			SnapToEnemy();
 		}
+	}
+}
 
+void APlayerCharacterCombat::SnapToEnemy()
+{
+	if(GetActorLocation().Equals(endPoint, 0.1f))
+	{
+		SetActorLocation(endPoint);
+		return;
+	}
+	else
+	{
+		FVector newPosition = FMath::VInterpConstantTo(GetActorLocation(), endPoint, GetWorld()->DeltaTimeSeconds, snapSpeed);
+
+		//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(newPosition.X).Append(FString::SanitizeFloat(newPosition.Y)).Append(FString::SanitizeFloat(newPosition.Z)));
+
+		SetActorLocation(newPosition);
+
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayerCharacterCombat::SnapToEnemy);
 	}
 }
 
