@@ -134,6 +134,8 @@ public:
 	FOnTuningToleranceChange OnTuningToleranceChange;
 #pragma endregion
 
+	void CopyTunings(UInventoryComponent* inventory);
+
 #pragma region Old
 /*
 	//Swap held weapon and stored weapon

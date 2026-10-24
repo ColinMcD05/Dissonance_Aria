@@ -63,6 +63,8 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 	currentTuning = &baseTuning;
 	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
 	GiveTuningInfo();
+
+	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 3, false);
 }
 #pragma endregion
 
@@ -79,6 +81,9 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 		currentTuning = &equippedTunings[tuning];
 	}
 
+	//GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(static_cast<int8>(currentTuning->genre)));
+	//GameInfoUtilities::PrintToScreen(currentTuning->name);
+
 	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
 
 	canSwapTuning = false;
@@ -91,8 +96,18 @@ int UWeaponsSystemComponent::CanTune(int tuning)
 	if (!canSwapTuning)
 		return -2;
 
-	if (tuning < 0 || equippedTunings.Num() >= tuning || currentTuning == &equippedTunings[tuning])
+	if (tuning < 0)
+	{
 		return -1;
+	}
+	if (equippedTunings.Num() <= tuning)
+	{
+		return -1;
+	}
+	if (currentTuning == &equippedTunings[tuning])
+	{
+		return -1;
+	}
 
 	return tuning;
 }
@@ -116,6 +131,16 @@ void  UWeaponsSystemComponent::ResetCanSwapTuning()
 	canSwapTuning = true;
 }
 #pragma endregion
+
+void UWeaponsSystemComponent::CopyTunings(UInventoryComponent* inventory)
+{
+	TArray <FS_Tuning>& tunings = inventory->GetEquippedTunings();
+
+	for (int i = 0; i < inventory->GetEquippedTunings().Num(); i++)
+	{
+
+	}
+}
 
 #pragma region Old
 /*

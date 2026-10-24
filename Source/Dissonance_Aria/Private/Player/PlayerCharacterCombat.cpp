@@ -189,10 +189,13 @@ void APlayerCharacterCombat::ReadSidestep()
 
 void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
-	float tuning = weaponsSystem->CanTune(value.Get<float>());
-	if (tuning == 1)
+	float inputValue = value.Get<float>() - 2;
+
+	float tuning = weaponsSystem->CanTune(inputValue);
+
+	if (tuning > -1)
 	{
-		StartTuning(value.Get<float>());
+		StartTuning(inputValue);
 	}
 	else if (tuning == -1)
 	{

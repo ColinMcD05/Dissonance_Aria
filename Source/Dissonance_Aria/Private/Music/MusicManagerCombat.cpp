@@ -24,6 +24,7 @@ void AMusicManagerCombat::BeginPlay()
 {
 	Super::BeginPlay();
 	audioComponent->OnTimelineBeat.AddDynamic(this, &AMusicManagerCombat::OnDownBeat);
+	BindEvents();
 }
 
 void AMusicManagerCombat::BindEvents()
@@ -67,6 +68,7 @@ void AMusicManagerCombat::ChangeChannel(int newChannel)
 {
 	//New channels
 	currentChannel = newChannel;
+	GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(newChannel));
 	UFMODBlueprintStatics::SetGlobalParameterByName("EquippedWeapon", newChannel);
 }
 #pragma endregion

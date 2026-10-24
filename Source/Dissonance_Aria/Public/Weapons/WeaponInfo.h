@@ -50,6 +50,9 @@ struct FS_Tuning
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
+	FString name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	E_Genre genre;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")

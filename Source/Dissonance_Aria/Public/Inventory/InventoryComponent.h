@@ -31,7 +31,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FS_Tuning> equppiedTunings;
 
-	TArray<FS_Tuning> allTunings;
+	TArray<FS_Tuning*> allTunings;
 #pragma endregion
 
 #pragma region Old
@@ -66,7 +66,7 @@ public:
 
 	FS_WeaponInfo* GetWeapon() { return &weapon; }
 
-	TArray<FS_Tuning> GetEquippedTunings() { return equppiedTunings; }
+	TArray<FS_Tuning>& GetEquippedTunings() { return equppiedTunings; }
 
 	//Returns an InventorySace struct for saving.
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
