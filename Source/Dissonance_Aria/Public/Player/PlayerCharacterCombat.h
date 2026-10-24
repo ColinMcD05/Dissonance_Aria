@@ -66,10 +66,7 @@ private:
 	UDamageSystemComponent* damageSystem;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	AWeaponActor* weapon1;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	AWeaponActor* weapon2;
+	AWeaponActor* weapon;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UDodgeComponent* dodgeComponent;
@@ -163,7 +160,7 @@ public:
 
 	//Get weapon actor based on index. 0 for weapon 1, 1 for weapon 2
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
-	AWeaponActor* GetWeaponActor(int weapon) { return (weapon == 0) ? weapon1 : weapon2; }
+	AWeaponActor* GetWeaponActor() { return weapon; }
 
 	//Gets the current controller type being used
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Components")
@@ -182,9 +179,6 @@ public:
 
 	//Read the side step input
 	void ReadSidestep();
-
-	//Read Swap Weapon input
-	void ReadSwapWeapon(const FInputActionValue& value);
 
 	//Read Swap Tuning input
 	void ReadSwapTuning(const FInputActionValue& value);
@@ -273,4 +267,11 @@ public:
 	virtual bool TakeDamage_Implementation(FS_DamageInfo DamageInfo) override;
 	virtual void HandleDeath_Implementation(AActor* killer) override;
 #pragma
+
+#pragma region Old
+/*
+	//Read Swap Weapon input
+	void ReadSwapWeapon(const FInputActionValue& value);
+*/
+#pragma endregion
 };

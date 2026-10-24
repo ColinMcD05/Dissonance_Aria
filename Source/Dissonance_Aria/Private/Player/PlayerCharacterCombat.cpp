@@ -75,8 +75,7 @@ void APlayerCharacterCombat::BeginPlay()
 	{
 		weaponsSystem->SpawnWeapons(inventory, this);
 
-		weapon1 = weaponsSystem->GetCurrentHeldWeapon();
-		weapon2 = weaponsSystem->GetStoredWeapon();
+		weapon = weaponsSystem->GetCurrentHeldWeapon();
 	}
 
 	if (damageSystem)
@@ -118,7 +117,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
 		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
-		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
+		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
 		PlayerInputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &APlayerCharacterCombat::ReadAnyKey);
@@ -188,30 +187,6 @@ void APlayerCharacterCombat::ReadSidestep()
 	}
 }
 
-//Read Swap Input
-void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
-{
-	bool didSwap = false;
-	int swapValue = value.Get<float>();
-	if (weaponsSystem)
-	{
-		switch (swapValue)
-		{
-			case 1:
-				didSwap = weaponsSystem->SwapWeapons(weapon1, 1);
-				break;
-			case 2:
-				didSwap = weaponsSystem->SwapWeapons(weapon2, 2);
-				break;
-		}
-	}
-
-	if (didSwap && damageSystem)
-	{
-		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
-	}
-}
-
 void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
 	float tuning = weaponsSystem->CanTune(value.Get<float>());
@@ -219,9 +194,9 @@ void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 	{
 		StartTuning(value.Get<float>());
 	}
-	else if (tuning == 0)
+	else if (tuning == -1)
 	{
-		weaponsSystem->SwapTunings(value.Get<float>());
+		weaponsSystem->SwapTunings(-1);
 	}
 }
 
@@ -283,7 +258,7 @@ void APlayerCharacterCombat::StartSnapToEnemy()
 		FHitResult result;
 
 		UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPosition,
-			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon1, weapon2}, EDrawDebugTrace::Persistent, result, true);
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon}, EDrawDebugTrace::Persistent, result, true);
 
 		if (result.GetActor() == lockedOnEnemy)
 		{
@@ -529,3 +504,32 @@ void APlayerCharacterCombat::CombatEnded(int exp)
 {
 	combatEnd = true;
 }
+
+#pragma region Old
+/*
+
+//Read Swap Input
+void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
+{
+	bool didSwap = false;
+	int swapValue = value.Get<float>();
+	if (weaponsSystem)
+	{
+		switch (swapValue)
+		{
+			case 1:
+				didSwap = weaponsSystem->SwapWeapons(weapon1, 1);
+				break;
+			case 2:
+				didSwap = weaponsSystem->SwapWeapons(weapon2, 2);
+				break;
+		}
+	}
+
+	if (didSwap && damageSystem)
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+}
+*/
+#pragma endregion

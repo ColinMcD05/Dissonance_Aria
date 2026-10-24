@@ -8,7 +8,7 @@
 #include "Saving/SaveInfo.h"
 #include "InventoryComponent.generated.h"
 
-#define MAX_WEAPONS_AMOUNT 4
+#define MAX_TUNING_AMOUNT 4
 #define MAX_LEVEL 4
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponLevelUp, FS_WeaponInfo, weapon);
@@ -22,24 +22,34 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	UDataTable* levelsTable;
 
-public:	
-	// Sets default values for this component's properties
-	UInventoryComponent();
-
 #pragma region Weapons
+	UPROPERTY(EditAnywhere)
+	FS_WeaponInfo weapon;
+#pragma endregion
+
+#pragma region Tunings
+	TArray<FS_Tuning> equppiedTunings;
+
+	TArray<FS_Tuning> allTunings;
+#pragma endregion
+
+#pragma region Old
+/*
 	UPROPERTY(EditAnywhere)
 	TArray<FS_WeaponInfo> weapons;
 
 	int weaponOneIndex = 0;
 	int weaponTwoIndex = 1;
+*/
 #pragma endregion
-
-
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 public:	
+	// Sets default values for this component's properties
+	UInventoryComponent();
+
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
@@ -51,9 +61,48 @@ public:
 
 	void LevelUp(FS_WeaponInfo* info, int maxLevel);
 
+	void SetWeapon(FS_WeaponInfo* newWeapon) { weapon = *newWeapon; }
+
+	FS_WeaponInfo* GetWeapon() { return &weapon; }
+
+	TArray<FS_Tuning> GetEquippedTunings() { return equppiedTunings; }
+
+	//Returns an InventorySace struct for saving.
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void AddNewWeapon(const FS_WeaponInfo newWeapon);
-	//Getters
+	FS_InventorySave SaveInventory();
+
+	//Takes an InventorySace struct for loading
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void LoadInventory(const FS_InventorySave& loadedInventory);
+
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponLevelUp OnWeaponLevelUp;
+
+#pragma region Old
+/*
+	//Returns negative one if there is no equppied weapon at this spot
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int GetEquippedWeaponOneIndex() { return weaponOneIndex; }
+
+	//Returns negative one if there is no equppied weapon at this spot
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	int GetEquippedWeaponTwoIndex() { return weaponTwoIndex; }
+
+	//Checks if the weapon is currently equipped
+	bool CheckIfWeaponEquipped(E_WeaponType weaponType);
+
+	//Checks if the weapon if currently in the inventory
+	bool CheckIfWeaponInInventory(E_WeaponType weaponType);
+
+	/*Finds whether weapon is equipped weapon 1 or 2. returns - 1 for failure
+	int WhichEquippedWeapon(E_WeaponType weaponType);
+
+	//Returns the index of the weapon base on type -1 for failure
+	int GetIndexByWeaponType(E_WeaponType weaponType);
+
+	int GetWeaponsLength() { return MAX_WEAPONS_AMOUNT; }
+
+		//Getters
 	//Returns weapon struct based on the index
 	FS_WeaponInfo* GetWeaponAtIndex(int index);
 
@@ -74,39 +123,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Swap")
 	bool SwapEquipedWeapons(E_WeaponType weaponToEquip, E_WeaponType weaponToUnequip);
 
-	//Returns negative one if there is no equppied weapon at this spot
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	int GetEquippedWeaponOneIndex() { return weaponOneIndex; }
-
-	//Returns negative one if there is no equppied weapon at this spot
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	int GetEquippedWeaponTwoIndex() { return weaponTwoIndex; }
-
-	//Checks if the weapon is currently equipped
-	bool CheckIfWeaponEquipped(E_WeaponType weaponType);
-
-	//Checks if the weapon if currently in the inventory
-	bool CheckIfWeaponInInventory(E_WeaponType weaponType);
-	
-	/*Finds whether weapon is equipped weapon 1 or 2. returns - 1 for failure*/
-	int WhichEquippedWeapon(E_WeaponType weaponType);
-
-	//Returns the index of the weapon base on type -1 for failure
-	int GetIndexByWeaponType(E_WeaponType weaponType);
-
-	int GetWeaponsLength() { return MAX_WEAPONS_AMOUNT; }
-
 	void SetWeaponOne(int newWeaponOne) { weaponOneIndex = newWeaponOne; }
 	void SetWeaponTwo(int newWeaponTwo) { weaponTwoIndex = newWeaponTwo; }
 
-	//Returns an InventorySace struct for saving.
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	FS_InventorySave SaveInventory();
-
-	//Takes an InventorySace struct for loading
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void LoadInventory(const FS_InventorySave& loadedInventory);
-
-	UPROPERTY(BlueprintAssignable)
-	FOnWeaponLevelUp OnWeaponLevelUp;
+	void AddNewWeapon(const FS_WeaponInfo newWeapon);
+*/
+#pragma endregion
 };

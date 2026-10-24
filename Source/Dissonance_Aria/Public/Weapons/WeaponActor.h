@@ -35,12 +35,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapons", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
 	FS_Stats stats;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true"))
-	TArray<UDataTable*> statsTable;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "WeaponData", meta = (AllowPrivateAccess = "true", ClampMin = "0"))
-	int currentTuning = 0;
-
 	bool activated = false;
 #pragma endregion
 
@@ -57,25 +51,13 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack", meta = (AllowPrivateAccess = "true"))
 	float radius = 30;
+
+	E_Genre currentGenre;
 #pragma endregion
 
 #pragma region Tolerance Info
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	float timeToDrainTolerance = 90;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	float timeToFillTolerance = 45;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	float timeToDrainTuning = 35;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
-	float timeToFillTuning = 25;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	float depletionAmount = 0.75;
-
-	bool raisingTolerance = false;
 
 	bool depleted = false;
 #pragma endregion
@@ -141,23 +123,6 @@ public:
 	void StopSphereTrace() { attacking = false; }
 #pragma endregion
 
-#pragma region Tolerance
-	//Lowers tolerance bar
-	void LowerTolerance();
-
-	//Raises tolerance bar
-	void RaiseTolerance();
-
-	//Raises tuning tolerance
-	void RaiseTuningTolerance();
-
-	//Gets weapon tolerance
-	float GetCurrentWeaponTolerance();
-
-	//When returning -1, there is no active tuning
-	float GetCurrentTuningTolerance();
-#pragma endregion
-
 #pragma region Weapon Info
 	//Gets the weapon info
 	UFUNCTION(BlueprintCallable, Category = "WeaponData")
@@ -175,18 +140,6 @@ public:
 
 	//Gets stats of weapon
 	FS_Stats GetStats() { return stats; }
-#pragma endregion
-
-#pragma region Tunings
-	//return -1 if failed. Else, rtuen current tuning
-	int SwapTuning(int newTuning);
-
-	//Can tune
-	int CanTune(int tuning);
-
-	//Get the current tuning of weapon
-	UFUNCTION(BlueprintCallable)
-	int GetCurrentTuning();
 #pragma endregion
 
 #pragma region EndCombat

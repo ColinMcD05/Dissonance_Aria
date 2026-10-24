@@ -50,16 +50,8 @@ void AWeaponActor::Activate()
 	SetActorHiddenInGame(false);
 
 	//Set up weapon
-	currentTuning = 0;
 	ChangeWeaponStats();
 	activated = true;
-
-	//Lowers tolerance
-	LowerTolerance();
-	if (!raisingTolerance)
-	{
-		RaiseTuningTolerance();
-	}
 }
 
 //Deactivate weapon
@@ -71,14 +63,6 @@ void AWeaponActor::Deactivate()
 
 	//Deactivates weapon
 	activated = false;
-	RaiseTolerance();
-	GetWorld()->GetTimerManager().SetTimer(raiserTimer, this, &AWeaponActor::RaiseTolerance, 5, false);
-	currentTuning = 0;
-
-	if (!raisingTolerance)
-	{
-		RaiseTuningTolerance();
-	}
 }
 
 //Initializes the weapon
@@ -93,22 +77,12 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 
 	//Assign weapon info
 	weaponInfo = newWeaponInfo;
-	//Reset tolerance meter for tunings and weapons
-	weaponInfo.toleranceMeter = 1;
-
-	for (FS_Tuning tolerance : weaponInfo.tunings)
-	{
-		tolerance.toleranceMeter = 1;
-	}
 
 	//Get level
-	if (statsTable.Num() > 0 && statsTable[0])
+	/*if (statsTable.Num() > 0 && statsTable[0])
 	{
 		weaponInfo.level = FMath::Clamp(weaponInfo.level, 1, statsTable[0]->GetRowNames().Num());
-	}
-
-	//Change stats
-	ChangeWeaponStats();
+	}*/
 }
 #pragma endregion
 
@@ -197,212 +171,21 @@ void AWeaponActor::PerformSphereTrace_Implementation()
 }
 #pragma endregion
 
-#pragma region Tolerance
-void AWeaponActor::LowerTolerance()
-{
-	if (activated)
-	{
-		if (weaponInfo.toleranceMeter > 0)
-		{
-			weaponInfo.toleranceMeter -= GetWorld()->DeltaTimeSeconds / timeToDrainTolerance;
-			weaponInfo.toleranceMeter = FMath::Clamp(weaponInfo.toleranceMeter, 0, 1);
-			if (currentTuning > 0)
-			{
-				if (weaponInfo.tunings.Num() == currentTuning)
-				{
-					weaponInfo.tunings[currentTuning - 1].toleranceMeter -= GetWorld()->DeltaTimeSeconds / timeToDrainTuning;
-					weaponInfo.tunings[currentTuning - 1].toleranceMeter = FMath::Clamp(weaponInfo.tunings[currentTuning - 1].toleranceMeter, 0, 1);
-					if (weaponInfo.tunings[currentTuning - 1].toleranceMeter <= 0)
-					{
-						currentTuning = 0;
-						ChangeWeaponStats();
-						if (playerOwner)
-						{
-							if (playerOwner->GetWeaponsSystem())
-							{
-								playerOwner->GetWeaponsSystem()->OnTuningSwapped.Broadcast(0);
-								playerOwner->GetWeaponsSystem()->OnChangeMusic.Broadcast(static_cast<int32>(weaponInfo.genre));
-							}
-						}
-					}
-				}
-			}
-			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::LowerTolerance);
-		}
-		else
-		{
-			depleted = true;
-			currentTuning = 0;
-			ChangeWeaponStats();
-
-		}
-	}
-}
-
-void AWeaponActor::RaiseTolerance()
-{
-	if (!activated)
-	{
-		if (weaponInfo.toleranceMeter < 1)
-		{
-			weaponInfo.toleranceMeter += GetWorld()->DeltaTimeSeconds / timeToFillTolerance;
-			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::RaiseTolerance);
-			weaponInfo.toleranceMeter = FMath::Clamp(weaponInfo.toleranceMeter, 0, 1);
-		}
-		else if (depleted)
-		{
-			stats.damage /= 0.75f;
-			stats.sidestepDistance /= 0.75f;
-			depleted = false;
-			ChangeWeaponStats();
-
-		}
-	}
-}
-
-
-void AWeaponActor::RaiseTuningTolerance()
-{
-	if (depleted && activated)
-	{
-		return;
-	}
-	raisingTolerance = true;
-	bool checks[2] = { false, false };
-	for (int i = 1; i <= weaponInfo.tunings.Num(); i++)
-	{
-		if (checks[i])
-		{
-			continue;
-		}
-		if (i == currentTuning)
-		{
-			checks[i] = true;
-			continue;
-		}
-		if (weaponInfo.tunings[i - 1].toleranceMeter < 1)
-		{
-			weaponInfo.tunings[i - 1].toleranceMeter += GetWorld()->DeltaTimeSeconds / timeToDrainTolerance;
-			weaponInfo.tunings[i - 1].toleranceMeter = FMath::Clamp(weaponInfo.tunings[i - 1].toleranceMeter, 0, 1);
-		}
-		else
-		{
-			checks[i] = true;
-		}
-	}
-	if (checks[0])
-	{
-		raisingTolerance = false;
-		return;
-	}
-
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::RaiseTuningTolerance);
-}
-
-float AWeaponActor::GetCurrentWeaponTolerance()
-{
-	return weaponInfo.toleranceMeter;
-}
-
-//When returning -1, there is no active tuning
-float AWeaponActor::GetCurrentTuningTolerance()
-{
-	if (currentTuning == 0 || currentTuning > weaponInfo.tunings.Num())
-	{
-		return -1;
-	}
-
-	return weaponInfo.tunings[currentTuning - 1].toleranceMeter;
-}
-#pragma endregion
-
 #pragma region Weapon Info
-	void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
-	{
-		weaponInfo = newWeaponInfo;
-	}
+void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
+{
+	weaponInfo = newWeaponInfo;
+}
 
-	void AWeaponActor::ChangeWeaponStats()
-	{
-		if (currentTuning < statsTable.Num() && statsTable[currentTuning])
-		{
-			int nextLevel = FMath::Clamp(weaponInfo.level, 1, statsTable[currentTuning]->GetRowNames().Num());
-
-			FS_Stats* newStats = statsTable[currentTuning]->FindRow<FS_Stats>(FName(*FString::FromInt(weaponInfo.level)), "", true);
-
-			if (newStats)
-			{
-				stats = *newStats;
-			}
-			if (newStats && depleted)
-			{
-				stats.damage *= depletionAmount;
-				stats.sidestepDistance *= depletionAmount;
-
-			}
-		}
-	}
-#pragma endregion
-
-#pragma region Tunings
-	int AWeaponActor::SwapTuning(int newTuning)
-	{
-		if (newTuning > weaponInfo.tunings.Num() || depleted)
-		{
-			return -1;
-		}
-
-		if (newTuning == currentTuning)
-		{
-			currentTuning = 0;
-			ChangeWeaponStats();
-			return 0;
-		}
-
-		if (weaponInfo.tunings[newTuning - 1].toleranceMeter < 1)
-		{
-			return -1;
-		}
-
-		currentTuning = newTuning;
-		if (!raisingTolerance)
-		{
-			RaiseTuningTolerance();
-		}
-		ChangeWeaponStats();
-
-		return currentTuning;
-	}
-
-	int AWeaponActor::CanTune(int tuning)
-	{
-		if (tuning > weaponInfo.tunings.Num() || depleted)
-		{
-			return -1;
-		}
-
-		if (tuning == currentTuning)
-		{
-			return 0;
-		}
-
-		if (weaponInfo.tunings[tuning - 1].toleranceMeter < 1)
-		{
-			return -1;
-		}
-
-		return 1;
-	}
-
-	int AWeaponActor::GetCurrentTuning()
-	{
-		return currentTuning;
-	}
+void AWeaponActor::ChangeWeaponStats()
+{
+}
 #pragma endregion
 
 #pragma region EndCombat
 void AWeaponActor::CombatEnd(int gainedExp)
 {
+	/*
 	weaponInfo.exp.currentExperience += gainedExp;
 	if (statsTable.Num() == 0 && statsTable[0] == nullptr)
 	{
@@ -415,6 +198,7 @@ void AWeaponActor::CombatEnd(int gainedExp)
 		return;
 	}
 	playerOwner->UpdateInventoryWeaponInfo(weaponInfo, statsTable[0]->GetRowNames().Num());
+	*/
 }
 #pragma endregion
 
@@ -432,7 +216,7 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 
 	FS_DamageInfo damageInfo;
 	damageInfo.damageCauser = GetOwner();
-	damageInfo.genreAttack = weaponInfo.genre;
+	damageInfo.genreAttack = currentGenre;
 
 	damageInfo.damageAmount = stats.damage;
 
