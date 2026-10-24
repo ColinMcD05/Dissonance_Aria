@@ -49,8 +49,6 @@ void AWeaponActor::Activate()
 	//Shows weapon
 	SetActorHiddenInGame(false);
 
-	//Set up weapon
-	ChangeWeaponStats();
 	activated = true;
 }
 
@@ -177,8 +175,9 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 	weaponInfo = newWeaponInfo;
 }
 
-void AWeaponActor::ChangeWeaponStats()
+void AWeaponActor::ChangeWeaponStats(FS_Stats* newStats)
 {
+	stats = *newStats;
 }
 #pragma endregion
 

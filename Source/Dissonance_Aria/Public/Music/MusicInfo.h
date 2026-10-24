@@ -12,7 +12,7 @@ enum class E_Genre : uint8
 	Classical = 1 UMETA(DisplayName = "Orchestral"),
 	Choral = 2 UMETA(DisplayName = "Choral"),
 	Folk = 3 UMETA(DisplayName = "Folk"),
-	Celtic = 4 UMETA(DisplayName = "Irish"),
+	Celtic = 4 UMETA(DisplayName = "Celtic"),
 	//Jazz = 7 UMETA(DisplayName = "Jazz"),
 	//Metal = 10 UMETA(DisplayName = "Metal")
 };

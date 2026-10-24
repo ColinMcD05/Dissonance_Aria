@@ -28,6 +28,7 @@ private:
 #pragma endregion
 
 #pragma region Tunings
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FS_Tuning> equppiedTunings;
 
 	TArray<FS_Tuning> allTunings;

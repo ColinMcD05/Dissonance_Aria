@@ -49,14 +49,11 @@ struct FS_Tuning
 	GENERATED_BODY();
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tunings", meta = (ClampMin = "0", ClampMax = "1"))
-	float toleranceMeter = 1;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	E_Genre genre;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
-	FS_Stats stats;
+	UDataTable* statsTable;
 };
 
 //Struct for all important weapon info. This is what weapons reference

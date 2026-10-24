@@ -10,6 +10,7 @@
 #include "WeaponsSystemComponent.generated.h"
 
 class AWeaponActor;
+class APlayerCharacterCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
@@ -23,6 +24,10 @@ class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
+#pragma region References
+	APlayerCharacterCombat* player;
+#pragma endregion
+
 #pragma region Weapon
 	//Weapon references
 
@@ -86,10 +91,6 @@ public:
 	//Spawn and initialize weapon
 	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
 
-	//Send the tolerance of the current equipped weapon
-	UFUNCTION(BlueprintCallable)
-	void SendCurrentWeaponTolerance();
-
 	//Getters
 	//Get the held weapon
 	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
@@ -102,19 +103,7 @@ public:
 	//Check if player can tune. -1 if cannot tune, else returns tuning
 	int CanTune(int tuning);
 
-	//When returning -1, there is no active tuning
-	UFUNCTION(BlueprintCallable)
-	void SendCurrentTuningTolerance();
-
-	//Raises tuning tolerance
-	void RaiseTuningTolerance();
-
-	void LowerTuningTolerance();
-
-	//When returning -1, there is no active tuning
-	float GetCurrentTuningTolerance();
-
-	void GiveWeaponTuningInfo();
+	void GiveTuningInfo();
 #pragma endregion
 
 

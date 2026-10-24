@@ -27,10 +27,12 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 #pragma region Weapons
 //Spawns in the weapons
-void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
+void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* thisPlayer)
 {
 	if (!IsValid(inventory))
 		return;
+
+	player = thisPlayer;
 
 	//Collect the inventory weapon
 	FS_WeaponInfo* weaponOne = inventory->GetWeapon();
@@ -59,22 +61,8 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 	equippedTunings = inventory->GetEquippedTunings();
 
 	currentTuning = &baseTuning;
-	
-	//Set up UI tolerance bar
-	SendCurrentWeaponTolerance();
-	//Start timer for allowing tuning
-	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 3, false);
-}
-
-//Send weapon tolerance
-void UWeaponsSystemComponent::SendCurrentWeaponTolerance()
-{
-	if (currentTuning == &baseTuning)
-		return;
-
-	//Broadcast tolerance
-	OnWeaponToleranceChange.Broadcast(currentTuning->toleranceMeter);
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentWeaponTolerance);
+	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
+	GiveTuningInfo();
 }
 #pragma endregion
 
@@ -85,14 +73,13 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 	if (tuning == -1)
 	{
 		currentTuning = &baseTuning;
-		canBroadcastTolerance = false;
 	}
 	else
 	{
 		currentTuning = &equippedTunings[tuning];
-		canBroadcastTolerance = true;
-		SendCurrentTuningTolerance();
 	}
+
+	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
 
 	canSwapTuning = false;
 	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 1, false);
@@ -101,44 +88,24 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 //Check if can tune. -1 return to basic tuning. -2 no tuning
 int UWeaponsSystemComponent::CanTune(int tuning)
 {
-	if (equippedTunings.Num() >= tuning || currentTuning == &equippedTunings[tuning])
-		return -1;
-
 	if (!canSwapTuning)
 		return -2;
+
+	if (tuning < 0 || equippedTunings.Num() >= tuning || currentTuning == &equippedTunings[tuning])
+		return -1;
 
 	return tuning;
 }
 
-//When returning -1, there is no active tuning
-void UWeaponsSystemComponent::SendCurrentTuningTolerance()
+void UWeaponsSystemComponent::GiveTuningInfo()
 {
-	//Send tuning tolerance if tuning is active
-	if (canBroadcastTolerance)
-	{
-		OnTuningToleranceChange.Broadcast(GetCurrentTuningTolerance());
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentTuningTolerance);
-	}
-}
+	int level = FMath::Clamp(currentHeldWeapon->GetWeaponInfo().level, 0, currentTuning->statsTable->GetRowNames().Num());
 
-void UWeaponsSystemComponent::RaiseTuningTolerance()
-{
+	FS_Stats* stats = currentTuning->statsTable->FindRow<FS_Stats>(FName(*FString::FromInt(level)), "", true);
 
-}
+	currentHeldWeapon->ChangeWeaponStats(stats);
 
-void UWeaponsSystemComponent::LowerTuningTolerance()
-{
-
-}
-
-float UWeaponsSystemComponent::GetCurrentTuningTolerance()
-{
-	return currentTuning->toleranceMeter;
-}
-
-void UWeaponsSystemComponent::GiveWeaponTuningInfo()
-{
-
+	player->UpdateWalkSpeeds(stats->speeds);
 }
 #pragma endregion
 

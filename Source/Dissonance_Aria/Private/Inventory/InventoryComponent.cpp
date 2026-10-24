@@ -11,6 +11,21 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
+
+// Called when the game starts
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
+// Called every frame
+void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+}
+
 void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
 {
 	weapon = updatedInfo;
@@ -42,20 +57,6 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 		info->level++;
 		OnWeaponLevelUp.Broadcast(*info);
 	}
-}
-
-// Called when the game starts
-void UInventoryComponent::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 }
 
 FS_InventorySave UInventoryComponent::SaveInventory()

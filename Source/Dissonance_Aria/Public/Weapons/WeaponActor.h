@@ -136,7 +136,7 @@ public:
 	int GetMaxHealth() { return stats.maxHP; }
 
 	//Changes the weapons stats
-	void ChangeWeaponStats();
+	void ChangeWeaponStats(FS_Stats* newStats);
 
 	//Gets stats of weapon
 	FS_Stats GetStats() { return stats; }
