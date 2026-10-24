@@ -30,10 +30,6 @@ void APlayerCharacterExploration::BeginPlay()
 	UDAGameInstance* instance = GameInfoUtilities::GetDAGameInstance(this);
 	if (!instance || instance->GetLastCamera().IsEmpty())
 	{
-		if (GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Bad"));
-		}
 		float distance;
 
 		SetCurrentCamera(Cast<AFixedCamera>(UGameplayStatics::FindNearestActor(GetActorLocation(), cameras, distance))->GetCamera());

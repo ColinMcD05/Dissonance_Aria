@@ -53,21 +53,21 @@ public:
 
 #pragma region Position
 	//Get the current time of the song
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetCurrentSongTime();
 
 	//Get the position of the beat
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetPositionOfBeat();
 
 	//Get how close the the beat at current time
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetHowCloseToBeat();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetFocusedBeat();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	int GetBeatInTimeSig();
 #pragma endregion
 
@@ -84,7 +84,7 @@ public:
 	UFUNCTION()
 	void ChangeChannel(int newChannel);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetBPM() { return bpm; }
 #pragma region OnBeat
 	//Runs on every beat to check and/or change

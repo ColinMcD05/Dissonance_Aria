@@ -2,6 +2,7 @@
 
 
 #include "GameInfo/DAGameStateCombat.h"
+#include "Enemies/LockOnInterface.h"
 
 void ADAGameStateCombat::BeginPlay()
 {
@@ -33,6 +34,11 @@ void ADAGameStateCombat::EnemyDead_Implementation(AActor* newEnemy)
 
 AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 {
+	if (currentIndex >= 0 && enemies.Num() > 0)
+	{
+		UnsendLockedOn(enemies[currentIndex]);
+	}
+
 	if (enemies.Num() == 0)
 	{
 		currentIndex = -1;
@@ -44,11 +50,22 @@ AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 	{
 		currentIndex = 0;
 	}
+
+	if (currentIndex >= 0 && enemies.Num() > 0)
+	{
+		SendLockedOn(enemies[currentIndex]);
+	}
+
 	return enemies[currentIndex];
 }
 
 AActor* ADAGameStateCombat::GetPreviousEnemy(int& currentIndex)
 {
+	if (currentIndex >= 0 && enemies.Num() > 0)
+	{
+		UnsendLockedOn(enemies[currentIndex]);
+	}
+
 	if (enemies.Num() == 0)
 	{
 		currentIndex = -1;
@@ -61,5 +78,32 @@ AActor* ADAGameStateCombat::GetPreviousEnemy(int& currentIndex)
 		currentIndex = enemies.Num() - 1;
 	}
 
+	if (currentIndex >= 0 && enemies.Num() > 0)
+	{
+		SendLockedOn(enemies[currentIndex]);
+	}
+
 	return enemies[currentIndex];
+}
+
+void ADAGameStateCombat::SendLockedOn(AActor* newEnemy)
+{
+	if (!IsValid(newEnemy))
+		return;
+
+	if (newEnemy->GetClass()->ImplementsInterface(ULockOnInterface::StaticClass()))
+	{
+		ILockOnInterface::Execute_LockedOn(newEnemy);
+	}
+}
+
+void ADAGameStateCombat::UnsendLockedOn(AActor* newEnemy)
+{
+	if (!IsValid(newEnemy))
+		return;
+
+	if (newEnemy->GetClass()->ImplementsInterface(ULockOnInterface::StaticClass()))
+	{
+		ILockOnInterface::Execute_LockedOff(newEnemy);
+	}
 }

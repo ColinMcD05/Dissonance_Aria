@@ -36,6 +36,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Enemies")
 	void EnemyDead(AActor* newEnemy);
 
+	void SendLockedOn(AActor* newEnemy);
+	void UnsendLockedOn(AActor* newEnemy);
+
 #pragma region Delegates
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnEnemyDeath OnEnemyDeath;
