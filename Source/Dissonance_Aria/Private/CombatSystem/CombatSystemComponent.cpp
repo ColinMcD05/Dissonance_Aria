@@ -74,20 +74,14 @@ bool UCombatSystemComponent::ReadInput()
 //Performs the input
 void UCombatSystemComponent::PerformInput()
 {
-	int randomInt = 0;
+	if (!IsValid(musicManager))
+		return;
 
-	//Get random new attack direction 
-	do
-	{
-		randomInt = UKismetMathLibrary::RandomInteger(4);
-	} while (randomInt == static_cast<uint8>(previousDirection));
+	int beatPosition = musicManager->GetBeatInTimeSig();
 
 	//Perform new combat directions
-	switch (randomInt)
+	switch (beatPosition)
 	{
-		case 0:
-			previousDirection = E_CombatDirections::Up;
-			break;
 		case 1:
 			previousDirection = E_CombatDirections::Down;
 			break;
@@ -96,6 +90,9 @@ void UCombatSystemComponent::PerformInput()
 			break;
 		case 3:
 			previousDirection = E_CombatDirections::Left;
+			break;
+		case 4:
+			previousDirection = E_CombatDirections::Up;
 			break;
 	}
 

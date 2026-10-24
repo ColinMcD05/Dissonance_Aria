@@ -44,6 +44,11 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (AllowPrivateAccess = "true"))
 	E_Directions direction;
+
+	UPROPERTY(EditAnywhere, Category = "Movement", meta = (AllowPrivateAccess = "true", ClampMin = "100"))
+	float snapSpeed = 300;
+
+	FVector endPoint;
 #pragma endregion
 
 	//Needed components and actors
@@ -203,6 +208,9 @@ public:
 
 	UFUNCTION()
 	void ListenToDodge(E_Directions moveDirection);
+
+	//Starts player snapping to enemy
+	void StartSnapToEnemy();
 
 	//Snaps to the focused enemy
 	void SnapToEnemy();

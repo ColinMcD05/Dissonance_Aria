@@ -118,6 +118,11 @@ int AMusicManagerCombat::GetFocusedBeat()
 {
 	return currentBeat + FMath::RoundToInt(GetHowCloseToBeat());
 }
+
+int AMusicManagerCombat::GetBeatInTimeSig()
+{
+	return (FMath::RoundToInt(GetPositionOfBeat()) % 4) + 1;
+}
 #pragma endregion
 
 #pragma region OnBeat
