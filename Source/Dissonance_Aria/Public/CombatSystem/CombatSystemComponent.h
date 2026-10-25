@@ -56,9 +56,6 @@ private:
 
 	E_CombatDirections previousDirection = E_CombatDirections::None;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
-	int combo;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.15"))
 	float critRange = 0.1f;
 
@@ -66,6 +63,11 @@ private:
 	float critDamage = 2;
 
 	float musicMult;
+#pragma endregion
+
+#pragma region Combo
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	int combo = 0;
 #pragma endregion
 
 #pragma region Timer
