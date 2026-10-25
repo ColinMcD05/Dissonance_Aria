@@ -99,6 +99,10 @@ void UCombatSystemComponent::PerformInput()
 	musicMult = MusicalMultiplier();
 
 	combo++;
+
+	float comboBarMult = FMath::Clamp(combo/5, 1, maxBarMult);
+
+	RaiseBar(baseBarFill * comboBarMult * musicMult);
 }
 #pragma endregion
 
@@ -130,7 +134,10 @@ bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
 
 	//Check song position
 	if (beatPosition > preBeatLeniency && beatPosition < 1 - postBeatLeniency)
+	{
+		DepleteBar(beatPosition * depletionMult);
 		return false;
+	}
 
 	//Set lastAttackBeat to the focus beat
 	lastAttackBeat = musicManager->GetFocusedBeat();
@@ -189,16 +196,19 @@ float UCombatSystemComponent::MusicalMultiplier_Implementation()
 }
 #pragma endregion
 
-void UCombatSystemComponent::SetIsDodging(E_Directions directions)
+#pragma region Combos
+void UCombatSystemComponent::RaiseBar(float raiseAmount)
 {
-	if (directions == E_Directions::None)
-	{
-		lastAttackBeat = musicManager->GetFocusedBeat();
-		isDodging = false;
-	}
-	else
-		isDodging = true;
+	comboBar = FMath::Clamp(comboBar + raiseAmount, 0, 1);
+	OnComboBarChange.Broadcast(comboBar);
 }
+
+void UCombatSystemComponent::DepleteBar(float depleteAmount)
+{
+	comboBar = FMath::Clamp(comboBar - depleteAmount, 0, 1);
+	OnComboBarChange.Broadcast(comboBar);
+}
+#pragma endregion
 
 #pragma region Downbeat
 //Looks at down beat
@@ -214,6 +224,19 @@ void UCombatSystemComponent::DownBeat()
 
 	//If last attack is different, set a timer to reset inputs
 	GetWorld()->GetTimerManager().SetTimer(resetAttackInfoTimer, this, &UCombatSystemComponent::ResetAttackInfo, resetTime);
+}
+#pragma endregion
+
+#pragma region SetDodging
+void UCombatSystemComponent::SetIsDodging(E_Directions directions)
+{
+	if (directions == E_Directions::None)
+	{
+		lastAttackBeat = musicManager->GetFocusedBeat();
+		isDodging = false;
+	}
+	else
+		isDodging = true;
 }
 #pragma endregion
 
