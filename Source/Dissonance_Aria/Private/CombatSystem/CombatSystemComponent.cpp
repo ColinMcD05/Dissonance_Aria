@@ -99,10 +99,7 @@ void UCombatSystemComponent::PerformInput()
 	musicMult = MusicalMultiplier();
 
 	combo++;
-
-	float comboBarMult = FMath::Clamp(combo/5, 1, maxBarMult);
-
-	RaiseBar(baseBarFill * comboBarMult * musicMult);
+	OnComboChange.Broadcast(combo);
 }
 #pragma endregion
 
@@ -117,6 +114,7 @@ void UCombatSystemComponent::ResetAttackInfo()
 
 	//Sets combo to 0
 	combo = 0;
+	OnComboChange.Broadcast(0);
 }
 
 //Returns if the player can attack this turn
@@ -175,6 +173,9 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit, FS_DamageInfo& damage
 		changedDamage.damageAmount *= 1.2f;
 	}
 	*/
+	float comboBarMult = FMath::Clamp(combo / 5, 1, maxBarMult);
+
+	RaiseBar(baseBarFill * comboBarMult * musicMult);
 
 	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
 }
