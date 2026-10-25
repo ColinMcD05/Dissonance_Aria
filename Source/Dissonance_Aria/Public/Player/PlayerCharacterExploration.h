@@ -37,12 +37,20 @@ public:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+#pragma region Movement
+	//Set the new forward
+	void SetNewForward();
+
+	//Set the new rotation
+	void SetRotation(FVector2D moveVector);
+#pragma endregion
+
+#pragma region Camera
+	//Set current camera
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentCamera(UCameraComponent* newCamera);
 
-	void SetNewForward();
-
-	void SetRotation(FVector2D moveVector);
-
-	AFixedCamera* FindNearestActor(UWorld* World, const FVector& FromLocation);
+	//Get the nearest camera
+	AFixedCamera* FindNearestCamera();
+#pragma endregion
 };

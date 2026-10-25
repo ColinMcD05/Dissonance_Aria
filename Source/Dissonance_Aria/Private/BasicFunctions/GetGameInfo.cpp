@@ -11,4 +11,12 @@ namespace GameInfoUtilities
 	{
 		return Cast<UDAGameInstance>(actor->GetGameInstance());
 	}
+
+	void PrintToScreen(FString string)
+	{
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, string);
+		}
+	}
 }

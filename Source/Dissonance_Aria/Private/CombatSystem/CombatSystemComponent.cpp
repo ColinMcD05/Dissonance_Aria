@@ -3,14 +3,17 @@
 
 #include "CombatSystem/CombatSystemComponent.h"
 #include "Player/PlayerCharacterCombat.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Music/MusicManagerCombat.h"
 
+#pragma region General/Setup
 // Sets default values for this component's properties
 UCombatSystemComponent::UCombatSystemComponent()
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	// ...
 }
 
 
@@ -26,17 +29,196 @@ void UCombatSystemComponent::BeginPlay()
 	if (owner)
 	{
 		world = owner->GetWorld();
+		OnComboDrop.AddDynamic(owner, &APlayerCharacterCombat::ResetCanMove);
 	}
 	
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
+
+	if (musicManager)
+	{
+		musicManager->OnBeat.AddDynamic(this, &UCombatSystemComponent::DownBeat);
+	}
 }
+#pragma endregion
 
-
-// Called every frame
-void UCombatSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+#pragma region Input
+//Reads player input
+bool UCombatSystemComponent::ReadInput()
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	if (!canReadInput || isDodging)
+		return false;
+
+	//Resets timer incase it was running
+	GetWorld()->GetTimerManager().ClearTimer(resetAttackInfoTimer);
+
+	//Get how close to beat input was
+	float beatPosition = musicManager->GetHowCloseToBeat();
+
+	//Validates attack input
+	if (!CheckIfValidAttack(beatPosition))
+	{
+		ResetAttackInfo();
+		return false;
+	}
+
+	//Performs input
+	PerformInput();
+
+	//Set read input
+	canReadInput = false;
+	GetWorld()->GetTimerManager().SetTimer(readInputTimer, this, &UCombatSystemComponent::ResetReadInputs, 0.01f);
+
+	return true;
 }
 
+//Performs the input
+void UCombatSystemComponent::PerformInput()
+{
+	if (!IsValid(musicManager))
+		return;
+
+	int beatPosition = musicManager->GetBeatInTimeSig();
+
+	//Perform new combat directions
+	switch (beatPosition)
+	{
+		case 1:
+			previousDirection = E_CombatDirections::Down;
+			break;
+		case 2:
+			previousDirection = E_CombatDirections::Right;
+			break;
+		case 3:
+			previousDirection = E_CombatDirections::Left;
+			break;
+		case 4:
+			previousDirection = E_CombatDirections::Up;
+			break;
+	}
+
+	musicMult = MusicalMultiplier();
+
+	combo++;
+}
+#pragma endregion
+
+#pragma region Attack
+//Resets attack intfo
+void UCombatSystemComponent::ResetAttackInfo()
+{
+	OnComboDrop.Broadcast();
+
+	//Sets previous direction to none
+	previousDirection = E_CombatDirections::None;
+
+	//Sets combo to 0
+	combo = 0;
+}
+
+//Returns if the player can attack this turn
+bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
+{
+	//Check if music manager exits
+	if (musicManager == nullptr)
+		return false;
+
+	//If currently has attacked this beat, do not allow another attack
+	if (lastAttackBeat == musicManager->GetFocusedBeat())
+	{
+		return false;
+	}
+
+	//Check song position
+	if (beatPosition > preBeatLeniency && beatPosition < 1 - postBeatLeniency)
+		return false;
+
+	//Set lastAttackBeat to the focus beat
+	lastAttackBeat = musicManager->GetFocusedBeat();
+
+	return true;
+}
+
+//Deals damage to hit actor
+void UCombatSystemComponent::DealDamage(AActor*& actorHit, FS_DamageInfo& damageInfo)
+{
+	//Gets damage actor and execute TakeDamage
+	if (!actorHit || !actorHit->Implements<UDamageableInterface>())
+	{
+		return;
+	}
+
+	FS_DamageInfo changedDamage = damageInfo;
+
+	//changedDamage.damageAmount *= powerMult;
+	if (musicMult > 0)
+	{
+		changedDamage.damageAmount *= musicMult;
+	}
+	if (combo > 0)
+	{
+		changedDamage.damageAmount += combo * 0.2f;
+	}
+	/*
+	if (damageMults.Num() >= previousActions.Num())
+	{
+		//changedDamage.damageAmount *= damageMults[previousActions.Num() - 1];
+	}
+	if (previousActions.Num() && previousActions[previousActions.Num() - 1] == E_CombatActionType::HeavyAttack)
+	{
+		changedDamage.damageAmount *= 1.2f;
+	}
+	*/
+
+	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
+}
+
+//Calculates multiplier for combos
+float UCombatSystemComponent::MusicalMultiplier_Implementation()
+{
+	if (musicManager == nullptr)
+		return 1;
+
+	float multiplier = FMath::Abs(0.5f - musicManager->GetHowCloseToBeat());
+
+	if (multiplier >= 0.5 - critRange)
+	{
+		return critDamage;
+	}
+
+	return multiplier + 0.8f;
+}
+#pragma endregion
+
+void UCombatSystemComponent::SetIsDodging(E_Directions directions)
+{
+	if (directions == E_Directions::None)
+	{
+		lastAttackBeat = musicManager->GetFocusedBeat();
+		isDodging = false;
+	}
+	else
+		isDodging = true;
+}
+
+#pragma region Downbeat
+//Looks at down beat
+void UCombatSystemComponent::DownBeat()
+{
+	//Check if music manager exists
+	if (musicManager == nullptr)
+		return;
+
+	//Check if last attack equals the "focused" beat
+	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging)
+		return;
+
+	//If last attack is different, set a timer to reset inputs
+	GetWorld()->GetTimerManager().SetTimer(resetAttackInfoTimer, this, &UCombatSystemComponent::ResetAttackInfo, resetTime);
+}
+#pragma endregion
+
+#pragma region Old
+/*
 //Adds action type to combat queue
 void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 {
@@ -55,6 +237,7 @@ void UCombatSystemComponent::AddToCombatQueue(E_CombatActionType action)
 				musicMults.Add(owner->MusicalMultiplier());
 			}
 
+			timeBetweenInput = 0;
 			canReadInput = false;
 			world->GetTimerManager().SetTimer(readInputOnlyTimer, this, &UCombatSystemComponent::ResetReadInputsOnly, 0.1f, false);
 		}
@@ -68,12 +251,11 @@ void UCombatSystemComponent::ReadCombatQueue()
 	if (!canAttack)
 	{
 		//Ensures that the timer has started or not. If it hasn't, start the timer.
-		/*if (world->GetTimerManager().IsTimerActive(combatTimer))
+		if (world->GetTimerManager().IsTimerActive(combatTimer))
 		{
 			return;
 		}
 		world->GetTimerManager().SetTimer(combatTimer, this, &UCombatSystemComponent::ResetCanAttack, 0.1f, false);
-		*/
 
 		return;
 	}
@@ -84,6 +266,8 @@ void UCombatSystemComponent::ReadCombatQueue()
 		return;
 	}
 
+	tickUp = false;
+
 	//Inizialize some variables
 	IAttacksInterface* attacker = Cast<IAttacksInterface>(owner);
 	E_CombatActionType nextAction;
@@ -93,7 +277,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 	switch (nextAction)
 	{
 		case E_CombatActionType::HeavyAttack:
-			
+
 			if (attacker)
 			{
 
@@ -108,7 +292,14 @@ void UCombatSystemComponent::ReadCombatQueue()
 					switch (prev)
 					{
 						case E_CombatActionType::HeavyAttack:
-							upSwing = true;
+							if(previousActions.Num() == 2 && previousActions[0] == E_CombatActionType::HeavyAttack)
+							{
+								downSwing = true;
+							}
+							else
+							{
+								upSwing = true;
+							}
 							break;
 						case E_CombatActionType::LightAttack:
 							downSwing = true;
@@ -141,7 +332,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 							{
 								rightSwing = true;
 							}
-							else 
+							else
 							{
 								leftSwing = true;
 							}
@@ -149,7 +340,7 @@ void UCombatSystemComponent::ReadCombatQueue()
 					}
 				}
 
-				previousActions.Add(E_CombatActionType::LightAttack);	
+				previousActions.Add(E_CombatActionType::LightAttack);
 
 			}
 			break;
@@ -195,34 +386,35 @@ void UCombatSystemComponent::StopCharge()
 		isCharging = false;
 	}
 }
-
-//Deals damage to hit actor
-void UCombatSystemComponent::DealDamage(AActor*& actorHit,  FS_DamageInfo& damageInfo)
+*/
+/*
+//Resets ability to read inputs
+void UCombatSystemComponent::ResetReadInputs()
 {
-	//Gets damage actor and execute TakeDamage
-	if (!actorHit || !actorHit->Implements<UDamageableInterface>())
-	{
-		return;
-	}
+	//Allows player to attack
+	canReadInput = true;
+	canAttack = true;
+	didCharge = false;
 
-	FS_DamageInfo changedDamage = damageInfo;
+	//Empty queue
+	combatQueue.Empty();
+	queueCount = 0;
+	previousActions.Empty();
+	powerMult = 1;
+	musicMults.Empty();
+}
 
-	//changedDamage.damageAmount *= powerMult;
-	if (musicMults.Num() >= previousActions.Num())
+void UCombatSystemComponent::QueueCountUp()
+{
+	if (timeBetweenInput < maxTimeBetweenInput && tickUp)
 	{
-		changedDamage.damageAmount *= musicMults[queueCount - 1];
+		timeBetweenInput += world->DeltaTimeSeconds;
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombatSystemComponent::QueueCountUp);
 	}
-	if (damageMults.Num() >= previousActions.Num())
+	else if (tickUp)
 	{
-		changedDamage.damageAmount *= damageMults[queueCount - 1];
+		ResetQueue(0.1f);
 	}
-	if (previousActions.Num() && previousActions[previousActions.Num() -1] == E_CombatActionType::HeavyAttack)
-	{
-		changedDamage.damageAmount *= 1.2f;
-	}
-
-
-	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
 }
 
 //Resets the can attack variable to true
@@ -230,12 +422,14 @@ void UCombatSystemComponent::ResetCanAttack()
 {
 	//Lets player attack and recall read combat
 	canAttack = true;
-	ReadCombatQueue();
+	//ReadCombatQueue();
 }
+*/
 
 /*Emptys the queue and waits to let players attack
-* @param waitTime The time the animation takes to play before player can attack again 
-*/ 
+* @param waitTime The time the animation takes to play before player can attack again
+*/
+/*
 void UCombatSystemComponent::ResetQueue(float waitTime)
 {
 	//Clears timer
@@ -259,6 +453,7 @@ void UCombatSystemComponent::ResetQueue(float waitTime)
 
 void UCombatSystemComponent::AttackFinished()
 {
+	//Set all bool values for animation to 0
 	upSwing = false;
 	downSwing = false;
 	leftSwing = false;
@@ -267,11 +462,11 @@ void UCombatSystemComponent::AttackFinished()
 	if (previousActions.Num() >= MAX_COMBO_LENGTH)
 	{
 		//Prevents player from attack of inpit reading
-		
 
 		canReadInput = false;
 		canAttack = false;
 
+		/*
 		world->GetTimerManager().ClearTimer(readInputOnlyTimer);
 		world->GetTimerManager().ClearTimer(queueTimer);
 		world->GetTimerManager().SetTimer(queueTimer, this, &UCombatSystemComponent::ResetReadInputs, .5f, false);
@@ -279,36 +474,12 @@ void UCombatSystemComponent::AttackFinished()
 	else
 	{
 		canAttack = true;
-		ReadCombatQueue();
+		//ReadCombatQueue();
+		//timeBetweenInput = 0; 
+		//tickUp = true;
+		//QueueCountUp();
 	}
 	didCharge = false;
 }
-
-//Resets ability to read inputs
-void UCombatSystemComponent::ResetReadInputs()
-{
-	//Allows player to attack
-	canReadInput = true;
-	canAttack = true;
-	didCharge = false;
-
-	//Empty queue
-	combatQueue.Empty();
-	queueCount = 0;
-	previousActions.Empty();
-	powerMult = 1;
-	musicMults.Empty();
-}
-
-void UCombatSystemComponent::QueueCountUp()
-{
-	if (timeBetweenInput < maxTimeBetweenInput)
-	{
-		timeBetweenInput += world->DeltaTimeSeconds;
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombatSystemComponent::QueueCountUp);
-	}
-	else
-	{
-		ResetQueue(0.1f);
-	}
-}
+*/
+#pragma endregion

@@ -2,6 +2,8 @@
 
 
 #include "Cameras/FixedCamera.h"
+#include "BasicFunctions/GetGameInfo.h"
+#include "GameInfo/DAGameInstance.h"
 
 // Sets default values
 AFixedCamera::AFixedCamera()
@@ -19,4 +21,9 @@ void AFixedCamera::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void AFixedCamera::SetName()
+{
+	GameInfoUtilities::GetDAGameInstance(this)->SetLastCamera(GetName());
 }

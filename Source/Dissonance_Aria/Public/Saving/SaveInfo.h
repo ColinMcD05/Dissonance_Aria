@@ -23,9 +23,6 @@ public:
 	float toleranceMeter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	E_WeaponType weaponType;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
 	FS_Experience experience;
 };
 

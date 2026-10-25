@@ -9,18 +9,27 @@ UInventoryComponent::UInventoryComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-	
-	weapons.Reserve(MAX_WEAPONS_AMOUNT);
+}
+
+
+// Called when the game starts
+void UInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+}
+
+// Called every frame
+void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 }
 
 void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
 {
-	FS_WeaponInfo* updated = GetWeaponByType(updatedInfo.weaponType);
-	*updated = updatedInfo;
-	if (updated)
-	{
-		LevelUp(updated, maxLevel);
-	}
+	weapon = updatedInfo;
+	LevelUp(&weapon, maxLevel);
 }
 
 bool UInventoryComponent::CheckLevelUp(FS_WeaponInfo* info, int maxLevel)
@@ -50,20 +59,31 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 	}
 }
 
-// Called when the game starts
-void UInventoryComponent::BeginPlay()
+FS_InventorySave UInventoryComponent::SaveInventory()
 {
-	Super::BeginPlay();
-	
+	FS_InventorySave newSave;
+
+	FS_WeaponSave weaponSave;
+	weaponSave.level = weapon.level;
+	weaponSave.experience = weapon.exp;
+
+	newSave.weapons.Add(weaponSave);
+
+	return newSave;
 }
 
-
-// Called every frame
-void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UInventoryComponent::LoadInventory(const FS_InventorySave& loadedInventory)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	for (FS_WeaponSave currentInfo : loadedInventory.weapons)
+	{
+		weapon.level = FMath::Clamp(currentInfo.level, 1, levelsTable->GetRowNames().Num());
+		weapon.exp = currentInfo.experience;
+		break;
+	}
 }
+
+#pragma region Old
+/*
 
 void UInventoryComponent::AddNewWeapon(const FS_WeaponInfo newWeapon)
 {
@@ -199,46 +219,5 @@ int UInventoryComponent::GetIndexByWeaponType(E_WeaponType weaponType)
 	}
 	return -1;
 }
-
-FS_InventorySave UInventoryComponent::SaveInventory()
-{
-	FS_InventorySave newSave;
-
-	for (FS_WeaponInfo currentInfo : weapons)
-	{
-		FS_WeaponSave weaponSave;
-		weaponSave.level = currentInfo.level;
-		weaponSave.experience = currentInfo.exp;
-		weaponSave.isAcquired = currentInfo.acquired;
-		weaponSave.toleranceMeter = currentInfo.toleranceMeter;
-		weaponSave.weaponType = currentInfo.weaponType;
-
-		newSave.weapons.Add(weaponSave);
-	}
-
-	newSave.weaponOneIndex = weaponOneIndex;
-	newSave.weaponTwoIndex = weaponTwoIndex;
-
-	return newSave;
-}
-
-void UInventoryComponent::LoadInventory(const FS_InventorySave& loadedInventory)
-{
-	weaponOneIndex = loadedInventory.weaponOneIndex;
-	weaponTwoIndex = loadedInventory.weaponTwoIndex;
-
-	for (FS_WeaponSave currentInfo : loadedInventory.weapons)
-	{
-		for (FS_WeaponInfo& currentWeapon : weapons)
-		{
-			if (currentWeapon.weaponType == currentInfo.weaponType)
-			{
-				currentWeapon.level = FMath::Clamp(currentInfo.level, 1, levelsTable->GetRowNames().Num());
-				currentWeapon.exp = currentInfo.experience;
-				currentWeapon.acquired = currentInfo.isAcquired;
-				currentWeapon.toleranceMeter = currentInfo.toleranceMeter;
-				break;
-			}
-		}
-	}
-}
+*/
+#pragma endregion

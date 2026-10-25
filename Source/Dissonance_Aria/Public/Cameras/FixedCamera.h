@@ -26,4 +26,7 @@ public:
 	AFixedCamera();
 
 	UCameraComponent* GetCamera() { return camera; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetName();
 };

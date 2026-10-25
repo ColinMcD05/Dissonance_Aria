@@ -40,4 +40,6 @@ namespace GameInfoUtilities
 	{
 		return Cast<T>(actor->GetWorld()->GetAuthGameMode());
 	}
+
+	void PrintToScreen(FString string);
 }

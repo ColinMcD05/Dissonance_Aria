@@ -10,7 +10,7 @@
 #include "WeaponsSystemComponent.generated.h"
 
 class AWeaponActor;
-class PlayerCharacterCombat;
+class APlayerCharacterCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
@@ -24,20 +24,57 @@ class DISSONANCE_ARIA_API UWeaponsSystemComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-#pragma region Weapon
-	//Weapon references
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-	AWeaponActor* currentHeldWeapon;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
-	AWeaponActor* storedWeapon;
+#pragma region References
+	APlayerCharacterCombat* player;
 #pragma endregion
 
-	bool canSwapWeapon = true;
+#pragma region Weapon
+	//Weapon references
+
+	//Weapon that's currently held
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	AWeaponActor* currentHeldWeapon;
+#pragma endregion
+
+#pragma region Tunings
+	//Tuning that is always equipped and considered the base weapon
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tunings", meta = (AllowPrivateAccess = "true"))
+	FS_Tuning baseTuning;
+
+	TArray<FS_Tuning> equippedTunings;
+
+	FS_Tuning* currentTuning;
+
+	//Checks for swapping weapons and tunings
 	bool canSwapTuning = false;
+#pragma endregion
+
+#pragma region Tolerance
+	//Bool for if tolerance should be broadcasted
 	bool canBroadcastTolerance = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float timeToDrainTolerance = 90;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
+	float timeToFillTolerance = 45;
+#pragma endregion
+
+#pragma region Timers
+	//Timers
 	FTimerHandle swapWeaponsTimer;
 	FTimerHandle swapTuningTimer;
+#pragma endregion
+
+#pragma region Old
+/* 
+	//Weapon that's stored for fighting
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Weapons", meta = (AllowPrivateAccess = "true"))
+	AWeaponActor* storedWeapon;
+
+	bool canSwapWeapon = true;
+*/
+#pragma endregion
 
 protected:
 	// Called when the game starts
@@ -50,45 +87,66 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	//Getters
-	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
-	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
-
-	//Set/Swap Weapons
+#pragma region Weapons
+	//Spawn and initialize weapon
 	void SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player);
-	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
-	void ResetCanSwapWeapon();
-	UFUNCTION(BlueprintCallable)
-	void SendCurrentWeaponTolerance();
 
-	UFUNCTION(BlueprintCallable)
-	E_WeaponType GetCurrentWeaponType();
+	//Getters
+	//Get the held weapon
+	AWeaponActor* GetCurrentHeldWeapon() { return currentHeldWeapon; }
+#pragma endregion 
 
+#pragma region Tunings
 	//Swap tunings
 	void SwapTunings(int tuning);
-	void ResetCanSwapTuning();
+
+	//Check if player can tune. -1 if cannot tune, else returns tuning
 	int CanTune(int tuning);
-	//When returning -1, there is no active tuning
-	UFUNCTION(BlueprintCallable)
-	void SendCurrentTuningTolerance();
-	UFUNCTION()
-	void BroadCastTuningTolerance(int whichTuning);
+
+	void GiveTuningInfo();
+#pragma endregion
+
+
+#pragma region Resetters
+	//Resets if player can swap tuning
+	void ResetCanSwapTuning();
+#pragma endregion
 
 #pragma region Delegates
 	//Delegate that gets broadcasted once weapons spawn
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FWeaponsSwapped OnWeaponSwapped;
 
+	//Delegate that gets broadcasted once tunings spawn
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FTuningSwapped OnTuningSwapped;
 
+	////Delegate that gets broadcasted once music changes
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnChangeMusic OnChangeMusic;
 
+	//Delegate that gets broadcasted once weapon tolerance changes
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnWeaponToleranceChange OnWeaponToleranceChange;
 
+	//Delegate that gets broadcasted once tuning tolerance changes
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnTuningToleranceChange OnTuningToleranceChange;
+#pragma endregion
+
+	void CopyTunings(UInventoryComponent* inventory);
+
+#pragma region Old
+/*
+	//Swap held weapon and stored weapon
+	bool SwapWeapons(AWeaponActor*& swapTo, int whichWeapon);
+
+	//Get which weapon is held
+	UFUNCTION(BlueprintCallable)
+	E_WeaponType GetCurrentWeaponType();
+
+	//Get the current stored weapon
+	AWeaponActor* GetStoredWeapon() { return storedWeapon; }
+*/
 #pragma endregion
 };

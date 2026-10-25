@@ -16,8 +16,6 @@ UWeaponsSystemComponent::UWeaponsSystemComponent()
 void UWeaponsSystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	OnTuningSwapped.AddDynamic(this, &UWeaponsSystemComponent::BroadCastTuningTolerance);
 }
 
 
@@ -27,64 +25,154 @@ void UWeaponsSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
 
-
-void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* player)
+#pragma region Weapons
+//Spawns in the weapons
+void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlayerCharacterCombat* thisPlayer)
 {
-	const UEnum* Enum = StaticEnum<E_WeaponType>();
+	if (!IsValid(inventory))
+		return;
 
-	FS_WeaponInfo* weaponOne = inventory->GetWeaponOne();
+	player = thisPlayer;
+
+	//Collect the inventory weapon
+	FS_WeaponInfo* weaponOne = inventory->GetWeapon();
+	//Create first weapon
 	if (weaponOne)
 	{
+		//Create the spawn parameters
 		FActorSpawnParameters spawnParams;
 		spawnParams.Owner = player;
 		spawnParams.Instigator = player->GetInstigator();
 
+		//Spawn and initialize weapons
 		if (weaponOne->weaponActor)
 		{
 			currentHeldWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponOne->weaponActor, player->GetActorTransform(), spawnParams);
 			currentHeldWeapon->InitializeWeapon(player, *weaponOne);
 
-
-			FString enumName = Enum->GetDisplayNameTextByValue(static_cast<int64>(currentHeldWeapon->GetWeaponInfo().weaponType)).ToString();
-
-			currentHeldWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(*enumName));
+			//Attach to component
+			currentHeldWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, "Weapon");
 			currentHeldWeapon->Activate();
 			player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
 		}
 	}
 
-	FS_WeaponInfo* weaponTwo = inventory->GetWeaponTwo();
-	if (weaponTwo)
-	{
-		FActorSpawnParameters spawnParams;
-		spawnParams.Owner = player;
-		spawnParams.Instigator = player->GetInstigator();
+	//Setup Tunings
+	equippedTunings = inventory->GetEquippedTunings();
 
-		storedWeapon = GetWorld()->SpawnActor<AWeaponActor>(weaponTwo->weaponActor, player->GetActorTransform(), spawnParams);
-		storedWeapon->InitializeWeapon(player, *weaponTwo);
+	currentTuning = &baseTuning;
+	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
+	GiveTuningInfo();
 
-		FString enumName = Enum->GetDisplayNameTextByValue(static_cast<int64>(storedWeapon->GetWeaponInfo().weaponType)).ToString();
-
-		storedWeapon->AttachToComponent(player->GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName(*enumName));
-		storedWeapon->Deactivate();
-	}
-
-	SendCurrentWeaponTolerance();
 	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 3, false);
 }
+#pragma endregion
 
+#pragma region Tuning
+//Swap weapon tunings
+void UWeaponsSystemComponent::SwapTunings(int tuning)
+{
+	if (tuning == -1)
+	{
+		currentTuning = &baseTuning;
+	}
+	else
+	{
+		currentTuning = &equippedTunings[tuning];
+	}
 
+	//GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(static_cast<int8>(currentTuning->genre)));
+	//GameInfoUtilities::PrintToScreen(currentTuning->name);
+
+	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
+
+	canSwapTuning = false;
+	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 1, false);
+}
+
+//Check if can tune. -1 return to basic tuning. -2 no tuning
+int UWeaponsSystemComponent::CanTune(int tuning)
+{
+	if (!canSwapTuning)
+		return -2;
+
+	if (tuning < 0)
+	{
+		return -1;
+	}
+	if (equippedTunings.Num() <= tuning)
+	{
+		return -1;
+	}
+	if (currentTuning == &equippedTunings[tuning])
+	{
+		return -1;
+	}
+
+	return tuning;
+}
+
+void UWeaponsSystemComponent::GiveTuningInfo()
+{
+	int level = FMath::Clamp(currentHeldWeapon->GetWeaponInfo().level, 0, currentTuning->statsTable->GetRowNames().Num());
+
+	FS_Stats* stats = currentTuning->statsTable->FindRow<FS_Stats>(FName(*FString::FromInt(level)), "", true);
+
+	currentHeldWeapon->ChangeWeaponStats(stats);
+
+	player->UpdateWalkSpeeds(stats->speeds);
+}
+#pragma endregion
+
+#pragma region Resetters
+//Resets if tuning can swap
+void  UWeaponsSystemComponent::ResetCanSwapTuning()
+{
+	canSwapTuning = true;
+}
+#pragma endregion
+
+void UWeaponsSystemComponent::CopyTunings(UInventoryComponent* inventory)
+{
+	TArray <FS_Tuning>& tunings = inventory->GetEquippedTunings();
+
+	for (int i = 0; i < inventory->GetEquippedTunings().Num(); i++)
+	{
+
+	}
+}
+
+#pragma region Old
+/*
+//Get current weapon type
+E_WeaponType UWeaponsSystemComponent::GetCurrentWeaponType()
+{
+	if (currentHeldWeapon)
+	{
+		return currentHeldWeapon->GetWeaponInfo().weaponType;
+	}
+	else
+	{
+		return E_WeaponType::Greatsword;
+	}
+}
+
+//Swaps weapons
 bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon)
 {
+	//Check if can swap weapon
 	if (canSwapWeapon)
 	{
+		//Check if weapon to swap to is not current weapon
 		if (swapTo != currentHeldWeapon)
 		{
-
+			//Temporarily hold info
 			AWeaponActor* tempWeapon = currentHeldWeapon;
 
+			//swap weapons
 			currentHeldWeapon = storedWeapon;
 			currentHeldWeapon->Activate();
+			//change stats
 			if (APlayerCharacterCombat* player = Cast<APlayerCharacterCombat>(GetOwner()))
 			{
 				player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
@@ -94,8 +182,10 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 			storedWeapon->Deactivate();
 			canSwapWeapon = false;
 
+			//Timer to hold swap weapons
 			GetWorld()->GetTimerManager().SetTimer(swapWeaponsTimer, this, &UWeaponsSystemComponent::ResetCanSwapWeapon, 2, false);
 
+			//Broadcast tuning and weapons
 			OnWeaponSwapped.Broadcast(whichWeapon);
 			OnTuningSwapped.Broadcast(0);
 			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre));
@@ -107,93 +197,5 @@ bool UWeaponsSystemComponent::SwapWeapons(AWeaponActor*& swapTo, int whichWeapon
 
 	return false;
 }
-
-void UWeaponsSystemComponent::SendCurrentWeaponTolerance()
-{
-	float weaponTolerance = currentHeldWeapon->GetCurrentWeaponTolerance();
-
-	OnWeaponToleranceChange.Broadcast(weaponTolerance);
-	GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentWeaponTolerance);
-}
-
-void UWeaponsSystemComponent::SwapTunings(int tuning)
-{
-	if (canSwapTuning && currentHeldWeapon)
-	{
-		int swap = currentHeldWeapon->SwapTuning(tuning);
-		if (swap != -1)
-		{
-			canSwapTuning = false;
-
-			OnTuningSwapped.Broadcast(swap);
-			OnChangeMusic.Broadcast(static_cast<int32>(currentHeldWeapon->GetWeaponInfo().genre) + currentHeldWeapon->GetCurrentTuning());
-			if (APlayerCharacterCombat* player = Cast<APlayerCharacterCombat>(GetOwner()))
-			{
-				player->UpdateWalkSpeeds(currentHeldWeapon->GetStats().speeds);
-			}
-		}
-		GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 2, false);
-	}
-	else 
-	{
-	}
-}
-
-
-int UWeaponsSystemComponent::CanTune(int tuning)
-{
-	if (!canSwapTuning)
-	{
-		return -1;
-	}
-	return currentHeldWeapon->CanTune(tuning);
-}
-
-
-//When returning -1, there is no active tuning
-void UWeaponsSystemComponent::SendCurrentTuningTolerance()
-{
-	if (canBroadcastTolerance)
-	{
-		OnTuningToleranceChange.Broadcast(currentHeldWeapon->GetCurrentTuningTolerance());
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UWeaponsSystemComponent::SendCurrentTuningTolerance);
-	}
-}
-
-void UWeaponsSystemComponent::BroadCastTuningTolerance(int whichTuning)
-{
-	if (whichTuning <= 0 )
-	{
-		canBroadcastTolerance = false;
-	}
-	else
-	{
-		if (!canBroadcastTolerance)
-		{
-			canBroadcastTolerance = true;
-			SendCurrentTuningTolerance();
-		}
-	}
-}
-
-void UWeaponsSystemComponent::ResetCanSwapWeapon()
-{
-	canSwapWeapon = true;
-}
-
-void  UWeaponsSystemComponent::ResetCanSwapTuning()
-{
-	canSwapTuning = true;
-}
-
-E_WeaponType UWeaponsSystemComponent::GetCurrentWeaponType()
-{ 
-	if (currentHeldWeapon)
-	{
-		return currentHeldWeapon->GetWeaponInfo().weaponType;
-	}
-	else
-	{
-		return E_WeaponType::Greatsword;
-	}
-}
+*/
+#pragma endregion

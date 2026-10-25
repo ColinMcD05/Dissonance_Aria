@@ -10,7 +10,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "GameInfo/DAGameModeBase.h"
+#include "CombatSystem/DodgeComponent.h"
+#include "Music/MusicManagerCombat.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -54,6 +57,9 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 	}
 
 	camera->SetupAttachment(springArm, USpringArmComponent::SocketName);
+
+	//Setup Dodge Component
+	dodgeComponent = CreateDefaultSubobject<UDodgeComponent>(TEXT("DodgeComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -69,8 +75,7 @@ void APlayerCharacterCombat::BeginPlay()
 	{
 		weaponsSystem->SpawnWeapons(inventory, this);
 
-		weapon1 = weaponsSystem->GetCurrentHeldWeapon();
-		weapon2 = weaponsSystem->GetStoredWeapon();
+		weapon = weaponsSystem->GetCurrentHeldWeapon();
 	}
 
 	if (damageSystem)
@@ -90,12 +95,13 @@ void APlayerCharacterCombat::BeginPlay()
 
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
-}
 
-// Called every frame
-void APlayerCharacterCombat::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
+
+	if (IsValid(dodgeComponent))
+	{
+		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+	}
 }
 
 #pragma region Inputs
@@ -111,7 +117,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
 		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
-		inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
+		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
 		PlayerInputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &APlayerCharacterCombat::ReadAnyKey);
@@ -123,7 +129,14 @@ void APlayerCharacterCombat::ReadLightAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->AddToCombatQueue(E_CombatActionType::LightAttack);
+		if (combatSystem->ReadInput())
+		{
+			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
+			StartSnapToEnemy();
+
+			if (canMove)
+				canMove = false;
+		}
 	}
 }
 
@@ -132,7 +145,10 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 {
 	if (combatSystem)
 	{
-		combatSystem->AddToCombatQueue(E_CombatActionType::HeavyAttack);
+		if (combatSystem->ReadInput())
+		{
+			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
+		}
 		/*
 		if (combatSystem->GetPreviousActionsAmount() > 0)
 		{
@@ -149,43 +165,41 @@ void APlayerCharacterCombat::ReadHeavyAttack()
 //Read the side step input
 void APlayerCharacterCombat::ReadSidestep()
 {
+	if (!IsValid(dodgeComponent))
+		return;
 
-}
+	dodgeComponent->StartDodge(direction);
 
-//Read Swap Input
-void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
-{
-	bool didSwap = false;
-	int swapValue = value.Get<float>();
-	if (weaponsSystem)
+	switch (direction)
 	{
-		switch (swapValue)
-		{
-			case 1:
-				didSwap = weaponsSystem->SwapWeapons(weapon1, 1);
-				break;
-			case 2:
-				didSwap = weaponsSystem->SwapWeapons(weapon2, 2);
-				break;
-		}
-	}
-
-	if (didSwap && damageSystem)
-	{
-		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+		case E_Directions::Backward:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Backward"));
+			break;
+		case E_Directions::Left:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Left"));
+			break;
+		case E_Directions::Right:
+			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Right"));
+			break;
+		case E_Directions::Forward:
+		default:
+			break;
 	}
 }
 
 void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
-	float tuning = weaponsSystem->CanTune(value.Get<float>());
-	if (tuning == 1)
+	float inputValue = value.Get<float>() - 2;
+
+	float tuning = weaponsSystem->CanTune(inputValue);
+
+	if (tuning > -1)
 	{
-		StartTuning(value.Get<float>());
+		StartTuning(inputValue);
 	}
-	else if (tuning == 0)
+	else if (tuning == -1)
 	{
-		weaponsSystem->SwapTunings(value.Get<float>());
+		weaponsSystem->SwapTunings(-1);
 	}
 }
 
@@ -224,6 +238,82 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 }
 #pragma endregion
 
+#pragma region Movement
+void APlayerCharacterCombat::Move_Implementation(const FInputActionValue& value)
+{
+	if (canMove)
+	{
+		Super::Move_Implementation(value);
+	}
+
+	direction = CalculateDirection(value.Get<FVector>());
+}
+
+void APlayerCharacterCombat::StartSnapToEnemy()
+{
+	if (IsValid(lockedOnEnemy))
+	{
+		endPoint = lockedOnEnemy->GetActorLocation() - GetActorLocation();
+		endPoint.Normalize();
+
+		FVector endPosition = GetActorLocation() + (endPoint * snapDistance);
+
+		FHitResult result;
+
+		UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPosition,
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon}, EDrawDebugTrace::Persistent, result, true);
+
+		if (result.GetActor() == lockedOnEnemy)
+		{
+			endPoint = GetActorLocation() + endPoint * (result.Distance - paddingDistance);
+			SnapToEnemy();
+		}
+	}
+}
+
+void APlayerCharacterCombat::SnapToEnemy()
+{
+	if(GetActorLocation().Equals(endPoint, 0.1f))
+	{
+		SetActorLocation(endPoint);
+		return;
+	}
+	else
+	{
+		FVector newPosition = FMath::VInterpConstantTo(GetActorLocation(), endPoint, GetWorld()->DeltaTimeSeconds, snapSpeed);
+
+		//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(newPosition.X).Append(FString::SanitizeFloat(newPosition.Y)).Append(FString::SanitizeFloat(newPosition.Z)));
+
+		SetActorLocation(newPosition);
+
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayerCharacterCombat::SnapToEnemy);
+	}
+}
+
+E_Directions APlayerCharacterCombat::CalculateDirection(FVector vector2)
+{
+	vector2.Normalize();
+
+	//Calculate angle
+	float angle = FMath::RadiansToDegrees(FMath::Atan2(vector2.Y, vector2.X));
+	angle += 270;
+
+	//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(angle));
+
+	//Return direction based on angle
+	if (angle == 0 || (angle <= 240 && angle >= 120))
+		return E_Directions::Backward;
+
+	if (angle > 240 && angle < 360)
+		return E_Directions::Right;
+
+	if (angle > 0 && angle < 120)
+		return E_Directions::Left;
+
+	else return E_Directions::Backward;
+}
+#pragma endregion
+
 E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
 {
 	if (pressedKey.IsGamepadKey())
@@ -238,6 +328,15 @@ E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
 	{
 		return E_ControllerType::Keyboard;
 	}
+}
+
+void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
+{
+	if (moveDirection == E_Directions::None)
+	{
+		canMove = true;
+	}
+	else canMove = false;
 }
 
 #pragma region Tuning
@@ -299,20 +398,17 @@ void APlayerCharacterCombat::RotatePlayer()
 #pragma region HeavyAttack
 void APlayerCharacterCombat::StartChargedAttack_Implementation()
 {
-	if (combatSystem->StartCharge())
-	{
-		weaponsSystem->GetCurrentHeldWeapon()->StartChargeAttack();
-	}
+
 }
 
 void APlayerCharacterCombat::ChargeReady()
 {
-	combatSystem->Charge();
+	//combatSystem->Charge();
 }
 
 void APlayerCharacterCombat::StopChargedAttack_Implementation()
 {
-	combatSystem->StopCharge();
+	
 }
 #pragma endregion
 
@@ -411,3 +507,32 @@ void APlayerCharacterCombat::CombatEnded(int exp)
 {
 	combatEnd = true;
 }
+
+#pragma region Old
+/*
+
+//Read Swap Input
+void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
+{
+	bool didSwap = false;
+	int swapValue = value.Get<float>();
+	if (weaponsSystem)
+	{
+		switch (swapValue)
+		{
+			case 1:
+				didSwap = weaponsSystem->SwapWeapons(weapon1, 1);
+				break;
+			case 2:
+				didSwap = weaponsSystem->SwapWeapons(weapon2, 2);
+				break;
+		}
+	}
+
+	if (didSwap && damageSystem)
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+}
+*/
+#pragma endregion

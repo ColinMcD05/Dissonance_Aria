@@ -10,24 +10,26 @@ enum class E_Genre : uint8
 {
 	None = 0 UMETA(DisplayName = "None"),
 	Classical = 1 UMETA(DisplayName = "Orchestral"),
-	Folk = 3 UMETA(DisplayName = "Folk"), 
-	Jazz = 7 UMETA(DisplayName = "Jazz"),
-	Metal = 10 UMETA(DisplayName = "Metal")
+	Choral = 2 UMETA(DisplayName = "Choral"),
+	Folk = 3 UMETA(DisplayName = "Folk"),
+	Celtic = 4 UMETA(DisplayName = "Celtic"),
+	//Jazz = 7 UMETA(DisplayName = "Jazz"),
+	//Metal = 10 UMETA(DisplayName = "Metal")
 };
 
+/*
 UENUM(BlueprintType)
 enum class E_SubGenre : uint8
 {
-	None = 0 UMETA(DisplayName = "None"),
-	Choral = 1 UMETA(DisplayName = "Choral"),
-	Brass = 2 UMETA(DisplayName = "Brass"),
-	Banjo = 1 UMETA(DisplayName = "Banjo"),
-	Celtic = 2 UMETA(DisplayName = "Irish"),
-	Bebop = 1 UMETA(DisplayName = "Bebop"),
-	Blues = 2 UMETA(DisplayName = "Blues"),
-	Heavy = 1 UMETA(DisplayName = "Heavy"),
-	Gothic = 2 UMETA(DisplayName = "Gothic")
+	//None = 0 UMETA(DisplayName = "None"),
+	//Brass = 2 UMETA(DisplayName = "Brass"),
+	//Banjo = 1 UMETA(DisplayName = "Banjo"),
+	//Bebop = 1 UMETA(DisplayName = "Bebop"),
+	//Blues = 2 UMETA(DisplayName = "Blues"),
+	//Heavy = 1 UMETA(DisplayName = "Heavy"),
+	//Gothic = 2 UMETA(DisplayName = "Gothic")
 };
+*/
 
 USTRUCT(BlueprintType)
 struct FS_SongInfo
