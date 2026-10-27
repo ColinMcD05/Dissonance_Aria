@@ -98,6 +98,13 @@ void APlayerCharacterCombat::BeginPlay()
 
 	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
 
+	if (IsValid(musicManager))
+	{
+		GameInfoUtilities::PrintToScreen("Added");
+
+		musicManager->OnBeat.AddDynamic(this, &APlayerCharacterCombat::CanPauseGame);
+	}
+
 	if (IsValid(dodgeComponent))
 	{
 		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
@@ -235,6 +242,23 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 		controllerType = KeyboardOrGamepad(pressedKey);
 		OnSwapController.Broadcast(controllerType);
 	}
+}
+
+void APlayerCharacterCombat::PauseGame_Implementation()
+{
+	if (canPause)
+	{
+		Super::PauseGame_Implementation();
+	}
+}
+
+void APlayerCharacterCombat::CanPauseGame()
+{
+	GameInfoUtilities::PrintToScreen("Beat");
+
+	canPause = true;
+
+	musicManager->OnBeat.Remove(this, "CanPauseGame");
 }
 #pragma endregion
 

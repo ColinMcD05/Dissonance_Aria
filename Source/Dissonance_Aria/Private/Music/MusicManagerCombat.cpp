@@ -13,10 +13,12 @@ AMusicManagerCombat::AMusicManagerCombat()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bTickEvenWhenPaused = true;
 
 	//Setup audio component
 	audioComponent = CreateDefaultSubobject<UFMODAudioComponent>(TEXT("FMODAudio"));
 	audioComponent->bEnableTimelineCallbacks = true;
+	audioComponent->PrimaryComponentTick.bTickEvenWhenPaused = true;
 }
 
 #pragma region General
@@ -130,7 +132,6 @@ int AMusicManagerCombat::GetBeatInTimeSig()
 #pragma region OnBeat
 void AMusicManagerCombat::OnDownBeat(int bar, int beat, int position, float tempo, int upperTimeSig, int lowerTimeSig)
 {
-
 	currentBeat++;
 
 	OnBeat.Broadcast();

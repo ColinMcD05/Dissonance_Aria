@@ -93,6 +93,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* changeLockon;
+
+	bool canPause = false;
 #pragma endregion
 
 #pragma region Camera
@@ -120,7 +122,9 @@ private:
 	int enemyIndex = -1;
 #pragma endregion
 
+#pragma region Timers
 	FTimerHandle resetLevelTimer;
+#pragma endregion
 
 #pragma region GameInfo
 	ADAGameStateCombat* gameState;
@@ -189,6 +193,11 @@ public:
 	//Read end combat
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Input")
 	void ReadAnyKey(FKey pressedKey);
+
+	virtual void PauseGame_Implementation() override;
+
+	UFUNCTION()
+	void CanPauseGame();
 #pragma endregion
 
 	E_ControllerType KeyboardOrGamepad(FKey pressedKey);
