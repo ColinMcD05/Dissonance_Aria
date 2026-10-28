@@ -99,6 +99,7 @@ void UCombatSystemComponent::PerformInput()
 	musicMult = MusicalMultiplier();
 
 	combo++;
+	OnComboChange.Broadcast(combo);
 }
 #pragma endregion
 
@@ -106,6 +107,9 @@ void UCombatSystemComponent::PerformInput()
 //Resets attack intfo
 void UCombatSystemComponent::ResetAttackInfo()
 {
+	if (isDodging || isCharging)
+		return;
+
 	OnComboDrop.Broadcast();
 
 	//Sets previous direction to none
@@ -113,6 +117,7 @@ void UCombatSystemComponent::ResetAttackInfo()
 
 	//Sets combo to 0
 	combo = 0;
+	OnComboChange.Broadcast(0);
 }
 
 //Returns if the player can attack this turn
@@ -130,7 +135,10 @@ bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
 
 	//Check song position
 	if (beatPosition > preBeatLeniency && beatPosition < 1 - postBeatLeniency)
+	{
+		DepleteBar(beatPosition * depletionMult);
 		return false;
+	}
 
 	//Set lastAttackBeat to the focus beat
 	lastAttackBeat = musicManager->GetFocusedBeat();
@@ -168,6 +176,9 @@ void UCombatSystemComponent::DealDamage(AActor*& actorHit, FS_DamageInfo& damage
 		changedDamage.damageAmount *= 1.2f;
 	}
 	*/
+	float comboBarMult = FMath::Clamp(combo / 5, 1, maxBarMult);
+
+	RaiseBar(baseBarFill * comboBarMult * musicMult);
 
 	IDamageableInterface::Execute_TakeDamage(actorHit, changedDamage);
 }
@@ -189,16 +200,19 @@ float UCombatSystemComponent::MusicalMultiplier_Implementation()
 }
 #pragma endregion
 
-void UCombatSystemComponent::SetIsDodging(E_Directions directions)
+#pragma region Combos
+void UCombatSystemComponent::RaiseBar(float raiseAmount)
 {
-	if (directions == E_Directions::None)
-	{
-		lastAttackBeat = musicManager->GetFocusedBeat();
-		isDodging = false;
-	}
-	else
-		isDodging = true;
+	comboBar = FMath::Clamp(comboBar + raiseAmount, 0, 1);
+	OnComboBarChange.Broadcast(comboBar);
 }
+
+void UCombatSystemComponent::DepleteBar(float depleteAmount)
+{
+	comboBar = FMath::Clamp(comboBar - depleteAmount, 0, 1);
+	OnComboBarChange.Broadcast(comboBar);
+}
+#pragma endregion
 
 #pragma region Downbeat
 //Looks at down beat
@@ -209,11 +223,24 @@ void UCombatSystemComponent::DownBeat()
 		return;
 
 	//Check if last attack equals the "focused" beat
-	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging)
+	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging || isCharging)
 		return;
 
 	//If last attack is different, set a timer to reset inputs
 	GetWorld()->GetTimerManager().SetTimer(resetAttackInfoTimer, this, &UCombatSystemComponent::ResetAttackInfo, resetTime);
+}
+#pragma endregion
+
+#pragma region SetDodging
+void UCombatSystemComponent::SetIsDodging(E_Directions directions)
+{
+	if (directions == E_Directions::None)
+	{
+		lastAttackBeat = musicManager->GetFocusedBeat();
+		isDodging = false;
+	}
+	else
+		isDodging = true;
 }
 #pragma endregion
 

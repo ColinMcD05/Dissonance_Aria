@@ -77,10 +77,10 @@ private:
 
 #pragma region Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
-	UCombatActionBase* lightAttack;
+	UCombatActionBase* normalAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
-	UCombatActionBase* heavyAttack;
+	UCombatActionBase* chargeAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* sideStep;
@@ -93,6 +93,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* changeLockon;
+
+	bool canPause = false;
 #pragma endregion
 
 #pragma region Camera
@@ -120,7 +122,9 @@ private:
 	int enemyIndex = -1;
 #pragma endregion
 
+#pragma region Timers
 	FTimerHandle resetLevelTimer;
+#pragma endregion
 
 #pragma region GameInfo
 	ADAGameStateCombat* gameState;
@@ -172,10 +176,10 @@ public:
 
 #pragma region Input
 	//Read the light attack input
-	void ReadLightAttack();
+	void ReadNormalAttack();
 
 	//Read the heavy attack input
-	void ReadHeavyAttack();
+	void ReadChargeAttack();
 
 	//Read the side step input
 	void ReadSidestep();
@@ -189,6 +193,11 @@ public:
 	//Read end combat
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Input")
 	void ReadAnyKey(FKey pressedKey);
+
+	virtual void PauseGame_Implementation() override;
+
+	UFUNCTION()
+	void CanPauseGame();
 #pragma endregion
 
 	E_ControllerType KeyboardOrGamepad(FKey pressedKey);

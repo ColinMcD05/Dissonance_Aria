@@ -98,6 +98,13 @@ void APlayerCharacterCombat::BeginPlay()
 
 	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
 
+	if (IsValid(musicManager))
+	{
+		GameInfoUtilities::PrintToScreen("Added");
+
+		musicManager->OnBeat.AddDynamic(this, &APlayerCharacterCombat::CanPauseGame);
+	}
+
 	if (IsValid(dodgeComponent))
 	{
 		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
@@ -112,10 +119,10 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	
 	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		inputComponent->BindAction(lightAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadLightAttack);
-		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
-		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
-		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(normalAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadNormalAttack);
+		inputComponent->BindAction(chargeAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChargeAttack);
+		inputComponent->BindAction(chargeAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(chargeAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
@@ -125,7 +132,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 }
 
 //Read the light attack input
-void APlayerCharacterCombat::ReadLightAttack()
+void APlayerCharacterCombat::ReadNormalAttack()
 {
 	if (combatSystem)
 	{
@@ -141,7 +148,7 @@ void APlayerCharacterCombat::ReadLightAttack()
 }
 
 //Read the heavy attack input
-void APlayerCharacterCombat::ReadHeavyAttack()
+void APlayerCharacterCombat::ReadChargeAttack()
 {
 	if (combatSystem)
 	{
@@ -235,6 +242,23 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 		controllerType = KeyboardOrGamepad(pressedKey);
 		OnSwapController.Broadcast(controllerType);
 	}
+}
+
+void APlayerCharacterCombat::PauseGame_Implementation()
+{
+	if (canPause)
+	{
+		Super::PauseGame_Implementation();
+	}
+}
+
+void APlayerCharacterCombat::CanPauseGame()
+{
+	GameInfoUtilities::PrintToScreen("Beat");
+
+	canPause = true;
+
+	musicManager->OnBeat.Remove(this, "CanPauseGame");
 }
 #pragma endregion
 

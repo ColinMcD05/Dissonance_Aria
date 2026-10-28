@@ -14,6 +14,8 @@ class APlayerCharacterCombat;
 class AMusicManagerCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnComboDrop);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComboChange, int, currentCombo);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComboBarChange, float, comboBar);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
@@ -33,7 +35,7 @@ private:
 	bool canReadInput = true;
 
 	bool isDodging = false;
-#pragma
+#pragma endregion
 
 #pragma region Music
 	AMusicManagerCombat* musicManager;
@@ -63,11 +65,25 @@ private:
 	float critDamage = 2;
 
 	float musicMult;
+
+	bool isCharging = false;
 #pragma endregion
 
 #pragma region Combo
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo", meta = (AllowPrivateAccess = "true"))
 	int combo = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "1"))
+	float comboBar = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "0.1"))
+	float baseBarFill = 0.025f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo", meta = (AllowPrivateAccess = "true"))
+	int maxBarMult = 5;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combo", meta = (AllowPrivateAccess = "true", ClampMin = "0", ClampMax = "1"))
+	float depletionMult = 0.25;
 #pragma endregion
 
 #pragma region Timer
@@ -117,6 +133,7 @@ private:
 	TArray<E_CombatActionType> previousActions;
 	*/
 #pragma endregion
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -152,6 +169,12 @@ public:
 	float MusicalMultiplier();
 #pragma endregion
 
+#pragma region Combos
+	void RaiseBar(float raiseAmount);
+
+	void DepleteBar(float depleteAmount);
+#pragma endregion
+
 #pragma region DownBeat
 	UFUNCTION()
 	//Perform behaviour of downbeat of music
@@ -170,7 +193,14 @@ public:
 #pragma endregion
 
 #pragma region Delegates
+	UPROPERTY(BlueprintAssignable)
 	FOnComboDrop OnComboDrop;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnComboChange OnComboChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnComboBarChange OnComboBarChange;
 #pragma endregion
 
 #pragma region Old

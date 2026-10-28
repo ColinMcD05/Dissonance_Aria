@@ -34,10 +34,7 @@ void ADAGameStateCombat::EnemyDead_Implementation(AActor* newEnemy)
 
 AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 {
-	if (currentIndex >= 0 && enemies.Num() > 0)
-	{
-		UnsendLockedOn(enemies[currentIndex]);
-	}
+	int oldIndex = currentIndex;
 
 	if (enemies.Num() == 0)
 	{
@@ -49,6 +46,11 @@ AActor* ADAGameStateCombat::GetNextEnemy(int& currentIndex)
 	if (currentIndex >= enemies.Num())
 	{
 		currentIndex = 0;
+	}
+
+	if (oldIndex >= 0 && enemies.Num() > oldIndex)
+	{
+		UnsendLockedOn(enemies[oldIndex]);
 	}
 
 	if (currentIndex >= 0 && enemies.Num() > 0)
