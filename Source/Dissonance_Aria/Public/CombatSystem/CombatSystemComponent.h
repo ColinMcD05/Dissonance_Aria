@@ -35,6 +35,8 @@ private:
 	bool canReadInput = true;
 
 	bool isDodging = false;
+
+	bool isCharging = false;
 #pragma endregion
 
 #pragma region Music
@@ -66,7 +68,10 @@ private:
 
 	float musicMult;
 
-	bool isCharging = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	int maxChargedBeat = 2;
+
+	int passedChargingBeats = 0;
 #pragma endregion
 
 #pragma region Combo
@@ -90,6 +95,8 @@ private:
 	FTimerHandle resetAttackInfoTimer;
 
 	FTimerHandle readInputTimer;
+
+	FTimerHandle chargeFailedTimer;
 #pragma endregion
 
 #pragma region Old
@@ -172,7 +179,9 @@ public:
 
 	void Charge();
 
-	void StopCharge();
+	bool StopCharge();
+
+	void ChargeFailed();
 #pragma endregion
 
 #pragma region Combos

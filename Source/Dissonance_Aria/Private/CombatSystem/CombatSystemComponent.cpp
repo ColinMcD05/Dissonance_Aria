@@ -46,8 +46,12 @@ void UCombatSystemComponent::BeginPlay()
 bool UCombatSystemComponent::ReadInput()
 {
 	if (!canReadInput || isDodging)
+	{
+		GameInfoUtilities::PrintToScreen("Bad");
 		return false;
+	}
 
+	GameInfoUtilities::PrintToScreen("Good");
 	//Resets timer incase it was running
 	GetWorld()->GetTimerManager().ClearTimer(resetAttackInfoTimer);
 
@@ -201,17 +205,52 @@ float UCombatSystemComponent::MusicalMultiplier_Implementation()
 
 bool UCombatSystemComponent::StartCharge()
 {
-	return false;
+	//Resets timer incase it was running
+	GetWorld()->GetTimerManager().ClearTimer(resetAttackInfoTimer);
+
+	//Get how close to beat input was
+	float beatPosition = musicManager->GetHowCloseToBeat();
+
+	if (isDodging || isCharging || CheckIfValidAttack(beatPosition))
+	{
+		return false;
+	}
+
+	lastAttackBeat = musicManager->GetFocusedBeat();
+
+	passedChargingBeats = 0;
+	Charge();
+
+	return true;
 }
 
 void UCombatSystemComponent::Charge()
 {
+	if (!isCharging)
+		return;
 
+	if (passedChargingBeats >= maxChargedBeat)
+	{
+		passedChargingBeats++;
+	}
+	else
+	{
+		GetWorld()->GetTimerManager().SetTimer(chargeFailedTimer, this, &UCombatSystemComponent::ChargeFailed, postBeatLeniency * (60 / musicManager->GetBPM()));
+	}
 }
 
-void UCombatSystemComponent::StopCharge()
+bool UCombatSystemComponent::StopCharge()
 {
+	return false;
+}
 
+void UCombatSystemComponent::ChargeFailed()
+{
+	GameInfoUtilities::PrintToScreen("Failed");
+	isCharging = false;
+
+	owner->ResetCanMove();
+	owner->ResetIsCharging();
 }
 #pragma endregion
 
@@ -237,8 +276,13 @@ void UCombatSystemComponent::DownBeat()
 	if (musicManager == nullptr)
 		return;
 
+	if (isCharging && lastAttackBeat != musicManager->GetFocusedBeat())
+	{
+		Charge();
+	}
+
 	//Check if last attack equals the "focused" beat
-	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging || isCharging)
+	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging)
 		return;
 
 	//If last attack is different, set a timer to reset inputs

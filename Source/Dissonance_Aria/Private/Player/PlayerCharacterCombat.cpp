@@ -144,6 +144,14 @@ void APlayerCharacterCombat::ReadNormalAttack()
 			if (canMove)
 				canMove = false;
 		}
+		else 
+		{
+			GameInfoUtilities::PrintToScreen("Bad Player");
+		}
+	}
+	else
+	{
+		GameInfoUtilities::PrintToScreen("No Combat");
 	}
 }
 
@@ -420,6 +428,11 @@ void APlayerCharacterCombat::StartChargedAttack_Implementation()
 }
 
 void APlayerCharacterCombat::StopChargedAttack_Implementation()
+{
+	isCharging = false;
+}
+
+void APlayerCharacterCombat::ResetIsCharging()
 {
 	isCharging = false;
 }

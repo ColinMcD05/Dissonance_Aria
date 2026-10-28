@@ -86,6 +86,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetBPM() { return bpm; }
+#pragma endregion
+
 #pragma region OnBeat
 	//Runs on every beat to check and/or change
 	UFUNCTION()

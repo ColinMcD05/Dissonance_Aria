@@ -245,6 +245,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
 	void StopChargedAttack();
+
+	void ResetIsCharging();
 #pragma endregion
 
 #pragma region Tuning
