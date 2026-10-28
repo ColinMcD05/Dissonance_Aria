@@ -34,8 +34,6 @@ private:
 
 	bool canReadInput = true;
 
-	bool isDodging = false;
-
 	bool isCharging = false;
 #pragma endregion
 
@@ -175,11 +173,17 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	float MusicalMultiplier();
 
+	//Functions for charging
+
 	bool StartCharge();
 
 	void Charge();
 
-	bool StopCharge();
+	void StopCharge();
+
+	void ChargeAttack();
+
+	void ChargeFlubbed();
 
 	void ChargeFailed();
 #pragma endregion

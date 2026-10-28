@@ -86,6 +86,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	float GetBPM() { return bpm; }
+
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetSPB() { return secondsPerBeat; }
 #pragma endregion
 
 #pragma region OnBeat

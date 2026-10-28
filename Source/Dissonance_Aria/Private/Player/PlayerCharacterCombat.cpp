@@ -429,6 +429,12 @@ void APlayerCharacterCombat::StartChargedAttack_Implementation()
 
 void APlayerCharacterCombat::StopChargedAttack_Implementation()
 {
+	if (!IsValid(combatSystem) || !isCharging)
+		return;
+
+	combatSystem->StopCharge();
+
+	canMove = true;
 	isCharging = false;
 }
 

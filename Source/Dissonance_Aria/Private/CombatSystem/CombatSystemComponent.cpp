@@ -45,7 +45,7 @@ void UCombatSystemComponent::BeginPlay()
 //Reads player input
 bool UCombatSystemComponent::ReadInput()
 {
-	if (!canReadInput || isDodging)
+	if (!canReadInput || !canAttack)
 	{
 		GameInfoUtilities::PrintToScreen("Bad");
 		return false;
@@ -111,7 +111,7 @@ void UCombatSystemComponent::PerformInput()
 //Resets attack intfo
 void UCombatSystemComponent::ResetAttackInfo()
 {
-	if (isDodging || isCharging)
+	if (!canAttack)
 		return;
 
 	OnComboDrop.Broadcast();
@@ -211,43 +211,89 @@ bool UCombatSystemComponent::StartCharge()
 	//Get how close to beat input was
 	float beatPosition = musicManager->GetHowCloseToBeat();
 
-	if (isDodging || isCharging || CheckIfValidAttack(beatPosition))
+	if (isCharging || !CheckIfValidAttack(beatPosition))
 	{
+		GameInfoUtilities::PrintToScreen("Charging");
 		return false;
 	}
+	if (CheckIfValidAttack(beatPosition))
+	{
+		GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(beatPosition));
+	}
 
+	isCharging = true;
+	canAttack = false;
 	lastAttackBeat = musicManager->GetFocusedBeat();
 
 	passedChargingBeats = 0;
 	Charge();
+
+	GameInfoUtilities::PrintToScreen("Started");
 
 	return true;
 }
 
 void UCombatSystemComponent::Charge()
 {
-	if (!isCharging)
+	if (!isCharging || lastAttackBeat == musicManager->GetFocusedBeat())
 		return;
 
-	if (passedChargingBeats >= maxChargedBeat)
+	if (passedChargingBeats < maxChargedBeat)
 	{
 		passedChargingBeats++;
+		GameInfoUtilities::PrintToScreen("Going");
 	}
 	else
 	{
-		GetWorld()->GetTimerManager().SetTimer(chargeFailedTimer, this, &UCombatSystemComponent::ChargeFailed, postBeatLeniency * (60 / musicManager->GetBPM()));
+		GetWorld()->GetTimerManager().SetTimer(chargeFailedTimer, this, &UCombatSystemComponent::ChargeFailed, postBeatLeniency * musicManager->GetSPB());
 	}
 }
 
-bool UCombatSystemComponent::StopCharge()
+void UCombatSystemComponent::StopCharge()
 {
-	return false;
+	if (!isCharging)
+		return;
+
+	canAttack = true;
+	isCharging = false;
+
+	if (!IsValid(musicManager))
+		return;
+
+	int beatPosition = musicManager->GetBeatInTimeSig();
+
+	if(!CheckIfValidAttack(beatPosition))
+	{
+		GameInfoUtilities::PrintToScreen("Bad Time");
+		ChargeFlubbed();
+	}
+	else
+	{
+		GameInfoUtilities::PrintToScreen("Good Time");
+		ChargeAttack();
+	}
+}
+
+void UCombatSystemComponent::ChargeAttack()
+{
+
+}
+
+void UCombatSystemComponent::ChargeFlubbed()
+{
+
 }
 
 void UCombatSystemComponent::ChargeFailed()
 {
+	if (!isCharging)
+		return;
+
 	GameInfoUtilities::PrintToScreen("Failed");
+	canAttack = true;
 	isCharging = false;
+
+	ResetAttackInfo();
 
 	owner->ResetCanMove();
 	owner->ResetIsCharging();
@@ -279,10 +325,11 @@ void UCombatSystemComponent::DownBeat()
 	if (isCharging && lastAttackBeat != musicManager->GetFocusedBeat())
 	{
 		Charge();
+		return;
 	}
 
 	//Check if last attack equals the "focused" beat
-	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging)
+	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || !canAttack)
 		return;
 
 	//If last attack is different, set a timer to reset inputs
@@ -296,10 +343,10 @@ void UCombatSystemComponent::SetIsDodging(E_Directions directions)
 	if (directions == E_Directions::None)
 	{
 		lastAttackBeat = musicManager->GetFocusedBeat();
-		isDodging = false;
+		canAttack = true;
 	}
 	else
-		isDodging = true;
+		canAttack = false;
 }
 #pragma endregion
 
