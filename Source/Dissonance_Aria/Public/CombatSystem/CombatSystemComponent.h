@@ -167,6 +167,12 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent)
 	float MusicalMultiplier();
+
+	bool StartCharge();
+
+	void Charge();
+
+	void StopCharge();
 #pragma endregion
 
 #pragma region Combos
@@ -210,12 +216,6 @@ public:
 
 	//Reads the combat queue and performs actions based on it
 	//void ReadCombatQueue();
-
-	//bool StartCharge();
-
-	//void Charge();
-
-	//void StopCharge();
 
 	int GetPreviousActionsAmount() { return previousActions.Num(); }
 

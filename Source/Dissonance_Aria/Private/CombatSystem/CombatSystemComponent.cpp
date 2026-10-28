@@ -198,6 +198,21 @@ float UCombatSystemComponent::MusicalMultiplier_Implementation()
 
 	return multiplier + 0.8f;
 }
+
+bool UCombatSystemComponent::StartCharge()
+{
+
+}
+
+void UCombatSystemComponent::Charge()
+{
+
+}
+
+void UCombatSystemComponent::StopCharge()
+{
+
+}
 #pragma endregion
 
 #pragma region Combos
@@ -375,43 +390,6 @@ void UCombatSystemComponent::ReadCombatQueue()
 
 	//Ensures players can no longer attack
 	canAttack = false;
-}
-
-bool UCombatSystemComponent::StartCharge()
-{
-	if(canReadInput && canAttack)
-	{
-		powerMult = 1;
-		canReadInput = false;
-		canAttack = false;
-		isCharging = true;
-		didCharge = true;
-		return true;
-	}
-	return false;
-}
-
-void UCombatSystemComponent::Charge()
-{
-	if (isCharging && maxMult > powerMult)
-	{
-		powerMult += GetWorld()->DeltaTimeSeconds / 2;
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UCombatSystemComponent::Charge);
-	}
-	else if (!isCharging)
-	{
-		canAttack = true;
-		canReadInput = true;
-		AddToCombatQueue(E_CombatActionType::HeavyAttack);
-	}
-}
-
-void UCombatSystemComponent::StopCharge()
-{
-	if (isCharging)
-	{
-		isCharging = false;
-	}
 }
 */
 /*

@@ -150,22 +150,16 @@ void APlayerCharacterCombat::ReadNormalAttack()
 //Read the heavy attack input
 void APlayerCharacterCombat::ReadChargeAttack()
 {
+	if (isCharging)
+		return;
+
 	if (combatSystem)
 	{
-		if (combatSystem->ReadInput())
+		if (combatSystem->StartCharge())
 		{
-			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
-		}
-		/*
-		if (combatSystem->GetPreviousActionsAmount() > 0)
-		{
+			canMove = false;
 
 		}
-		else
-		{
-			StartChargedAttack();
-		}
-		*/
 	}
 }
 
@@ -423,11 +417,6 @@ void APlayerCharacterCombat::RotatePlayer()
 void APlayerCharacterCombat::StartChargedAttack_Implementation()
 {
 
-}
-
-void APlayerCharacterCombat::ChargeReady()
-{
-	//combatSystem->Charge();
 }
 
 void APlayerCharacterCombat::StopChargedAttack_Implementation()

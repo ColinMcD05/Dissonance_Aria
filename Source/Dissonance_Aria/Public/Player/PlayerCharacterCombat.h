@@ -51,6 +51,10 @@ private:
 	FVector endPoint;
 #pragma endregion
 
+#pragma region Attacks
+	bool isCharging = false;
+#pragma endregion
+
 	//Needed components and actors
 #pragma region Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -238,8 +242,6 @@ public:
 #pragma region HeavyAttack
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
 	void StartChargedAttack();
-
-	void ChargeReady();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
 	void StopChargedAttack();
