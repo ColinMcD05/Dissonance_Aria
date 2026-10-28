@@ -65,6 +65,8 @@ private:
 	float critDamage = 2;
 
 	float musicMult;
+
+	bool isCharging = false;
 #pragma endregion
 
 #pragma region Combo

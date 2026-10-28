@@ -77,10 +77,10 @@ private:
 
 #pragma region Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
-	UCombatActionBase* lightAttack;
+	UCombatActionBase* normalAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
-	UCombatActionBase* heavyAttack;
+	UCombatActionBase* chargeAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* sideStep;
@@ -176,10 +176,10 @@ public:
 
 #pragma region Input
 	//Read the light attack input
-	void ReadLightAttack();
+	void ReadNormalAttack();
 
 	//Read the heavy attack input
-	void ReadHeavyAttack();
+	void ReadChargeAttack();
 
 	//Read the side step input
 	void ReadSidestep();

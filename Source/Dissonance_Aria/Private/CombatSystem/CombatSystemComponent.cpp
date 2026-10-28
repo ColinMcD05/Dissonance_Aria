@@ -107,6 +107,9 @@ void UCombatSystemComponent::PerformInput()
 //Resets attack intfo
 void UCombatSystemComponent::ResetAttackInfo()
 {
+	if (isDodging || isCharging)
+		return;
+
 	OnComboDrop.Broadcast();
 
 	//Sets previous direction to none
@@ -220,7 +223,7 @@ void UCombatSystemComponent::DownBeat()
 		return;
 
 	//Check if last attack equals the "focused" beat
-	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging)
+	if (lastAttackBeat == musicManager->GetFocusedBeat() || previousDirection == E_CombatDirections::None || isDodging || isCharging)
 		return;
 
 	//If last attack is different, set a timer to reset inputs

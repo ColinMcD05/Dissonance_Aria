@@ -119,10 +119,10 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	
 	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		inputComponent->BindAction(lightAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadLightAttack);
-		inputComponent->BindAction(heavyAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadHeavyAttack);
-		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
-		//inputComponent->BindAction(heavyAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(normalAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadNormalAttack);
+		inputComponent->BindAction(chargeAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChargeAttack);
+		inputComponent->BindAction(chargeAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(chargeAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
@@ -132,7 +132,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 }
 
 //Read the light attack input
-void APlayerCharacterCombat::ReadLightAttack()
+void APlayerCharacterCombat::ReadNormalAttack()
 {
 	if (combatSystem)
 	{
@@ -148,7 +148,7 @@ void APlayerCharacterCombat::ReadLightAttack()
 }
 
 //Read the heavy attack input
-void APlayerCharacterCombat::ReadHeavyAttack()
+void APlayerCharacterCombat::ReadChargeAttack()
 {
 	if (combatSystem)
 	{
