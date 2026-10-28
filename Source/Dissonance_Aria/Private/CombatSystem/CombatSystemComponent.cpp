@@ -201,7 +201,7 @@ float UCombatSystemComponent::MusicalMultiplier_Implementation()
 
 bool UCombatSystemComponent::StartCharge()
 {
-
+	return false;
 }
 
 void UCombatSystemComponent::Charge()

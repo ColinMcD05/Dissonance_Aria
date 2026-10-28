@@ -24,7 +24,7 @@ private:
 	int currentBeat = 0;
 
 	UPROPERTY(BlueprintReadOnly, Category = "MusicInfo", meta = (AllowPrivateAccess = "true"))
-	float secondsPerBeat;
+	float secondsPerBeat = 0;
 
 	//The spot of the song where bpm most recently changed
 	UPROPERTY(BlueprintReadOnly, Category = "MusicInfo", meta = (AllowPrivateAccess = "true"))

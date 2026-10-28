@@ -158,7 +158,7 @@ void APlayerCharacterCombat::ReadChargeAttack()
 		if (combatSystem->StartCharge())
 		{
 			canMove = false;
-
+			isCharging = true;
 		}
 	}
 }
@@ -421,7 +421,7 @@ void APlayerCharacterCombat::StartChargedAttack_Implementation()
 
 void APlayerCharacterCombat::StopChargedAttack_Implementation()
 {
-	
+	isCharging = false;
 }
 #pragma endregion
 
