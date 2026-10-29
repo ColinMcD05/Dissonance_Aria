@@ -101,7 +101,7 @@ public:
 	void SwapTunings(int tuning);
 
 	//Check if player can tune. -1 if cannot tune, else returns tuning
-	int CanTune(int tuning);
+	int CanTune(int tuning, TArray<E_QTEInput>& qteInputs);
 
 	void GiveTuningInfo();
 #pragma endregion

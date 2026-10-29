@@ -91,7 +91,7 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 }
 
 //Check if can tune. -1 return to basic tuning. -2 no tuning
-int UWeaponsSystemComponent::CanTune(int tuning)
+int UWeaponsSystemComponent::CanTune(int tuning, TArray<E_QTEInput>& qteInputs)
 {
 	if (!canSwapTuning)
 		return -2;
@@ -109,6 +109,7 @@ int UWeaponsSystemComponent::CanTune(int tuning)
 		return -1;
 	}
 
+	qteInputs = equippedTunings[tuning].qteInputs;
 	return tuning;
 }
 

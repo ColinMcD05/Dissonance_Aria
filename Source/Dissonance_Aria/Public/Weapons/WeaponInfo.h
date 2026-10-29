@@ -9,6 +9,15 @@
 
 class AWeaponActor;
 
+UENUM(BlueprintType)
+enum class E_QTEInput : uint8
+{
+	Cancel = 0 UMETA(DisplayName = "Cancel QTE"),
+	Input1 = 1 UMETA(DisplayName = "West Gamepad Button/Left Arrow"),
+	Input2 = 2 UMETA(DisplayName = "North Gamepad Button/Right Arrow"),
+	Input3 = 3 UMETA(DisplayName = "South Gamepad Button/Up Arrow")
+};
+
 //Struct to hold all the experience
 USTRUCT(BlueprintType)
 struct FS_Experience
@@ -57,6 +66,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	UDataTable* statsTable;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
+	TArray<E_QTEInput> qteInputs;
 };
 
 //Struct for all important weapon info. This is what weapons reference

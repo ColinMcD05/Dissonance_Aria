@@ -251,7 +251,7 @@ public:
 
 #pragma region Tuning
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Tunings")
-	void StartTuning(float value);
+	void StartTuning(float value, const TArray<E_QTEInput>& inputs);
 
 	UFUNCTION(BlueprintCallable, Category = "Tunings")
 	void ReadSuccess(bool successful, int tuning);

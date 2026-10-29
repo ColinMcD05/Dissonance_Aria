@@ -200,11 +200,13 @@ void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
 	float inputValue = value.Get<float>() - 2;
 
-	float tuning = weaponsSystem->CanTune(inputValue);
+	TArray<E_QTEInput> qteInputs;
+
+	float tuning = weaponsSystem->CanTune(inputValue, qteInputs);
 
 	if (tuning > -1)
 	{
-		StartTuning(inputValue);
+		StartTuning(inputValue, qteInputs);
 	}
 	else if (tuning == -1)
 	{
