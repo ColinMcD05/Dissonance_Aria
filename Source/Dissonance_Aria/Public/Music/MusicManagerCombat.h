@@ -78,7 +78,7 @@ public:
 
 	//Stop music
 	UFUNCTION()
-	void StopMusic(int exp);
+	void StopMusic(int exp, int gold);
 
 	//Change the music channel
 	UFUNCTION()

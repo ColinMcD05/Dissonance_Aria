@@ -34,6 +34,15 @@ private:
 	TArray<FS_Tuning*> allTunings;
 #pragma endregion
 
+#pragma region Gold
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	int gold;
+#pragma endregion
+
+#pragma region Equipment
+
+#pragma endregion
+
 #pragma region Old
 /*
 	UPROPERTY(EditAnywhere)
@@ -78,6 +87,18 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnWeaponLevelUp OnWeaponLevelUp;
+
+#pragma region Gold
+	int GetGold() { return gold; }
+
+	UFUNCTION(BlueprintCallable, Category = "Gold")
+	void AddGold(int addAmount) { gold += addAmount; }
+
+	UFUNCTION(BlueprintCallable, Category = "Gold")
+	bool SpendGold(int spendAmount);
+
+	bool CanBuy(int spendAmount);
+#pragma endregion
 
 #pragma region Old
 /*

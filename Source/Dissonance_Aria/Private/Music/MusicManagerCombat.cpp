@@ -60,7 +60,7 @@ void AMusicManagerCombat::StartMusic()
 }
 
 //Stops music
-void AMusicManagerCombat::StopMusic(int exp)
+void AMusicManagerCombat::StopMusic(int exp, int gold)
 {
 	if (audioComponent)
 		audioComponent->Stop();

@@ -13,7 +13,7 @@ void ADAGameStateCombat::BeginPlay()
 void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
 {
 	enemies.Add(newEnemy);
-	IncreaseTotalExp(newEnemy);
+	IncreaseTotalExpAndGold(newEnemy);
 
 	if (enemies.Num() == 1)
 	{
@@ -28,7 +28,7 @@ void ADAGameStateCombat::EnemyDead_Implementation(AActor* newEnemy)
 	if (enemies.Num() <= 0 && !finished)
 	{
 		finished = true;
-		OnCombatEnd.Broadcast(totalEnemyExp);
+		OnCombatEnd.Broadcast(totalEnemyExp, totalEnemyGold);
 	}
 }
 

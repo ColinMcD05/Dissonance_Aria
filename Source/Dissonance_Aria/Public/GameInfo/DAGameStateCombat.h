@@ -8,7 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyDeath, AActor*, enemy);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnemySpawned);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatEnd, int, gainedExp);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnCombatEnd, int, gainedExp, int, gainedGold);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatStart);
 
 UCLASS()
@@ -19,6 +19,9 @@ class DISSONANCE_ARIA_API ADAGameStateCombat : public AGameStateBase
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Experience", meta = (AllowPrivateAccess = "true"))
 	int totalEnemyExp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Experience", meta = (AllowPrivateAccess = "true"))
+	int totalEnemyGold;
 
 	TArray<AActor*> enemies;
 
@@ -31,7 +34,7 @@ public:
 	void AddEnemies(AActor* newEnemy);
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Enemies")
-	void IncreaseTotalExp(AActor* newEnemy);
+	void IncreaseTotalExpAndGold(AActor* newEnemy);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Enemies")
 	void EnemyDead(AActor* newEnemy);

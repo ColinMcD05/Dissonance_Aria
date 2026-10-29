@@ -144,7 +144,7 @@ public:
 
 #pragma region EndCombat
 	UFUNCTION()
-	void CombatEnd(int gainedExp);
+	void CombatEnd(int gainedExp, int gold);
 #pragma endregion
 
 #pragma region AttackInterface

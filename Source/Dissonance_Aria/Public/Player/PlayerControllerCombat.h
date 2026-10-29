@@ -28,6 +28,6 @@ public:
 	void SetUpUI();
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
-	void DisconnentPlayerInput(int exp);
+	void DisconnentPlayerInput(int exp, int gold);
 #pragma endregion
 };

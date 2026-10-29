@@ -59,6 +59,23 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 	}
 }
 
+#pragma region Gold
+bool UInventoryComponent::SpendGold(int spendAmount)
+{
+	if (!CanBuy(spendAmount))
+		return false;
+
+	gold -= FMath::Max(spendAmount, 0);
+	return true;
+}
+
+bool UInventoryComponent::CanBuy(int spendAmount)
+{
+	return gold >= spendAmount;
+}
+#pragma endregion
+
+#pragma region Save
 FS_InventorySave UInventoryComponent::SaveInventory()
 {
 	FS_InventorySave newSave;
@@ -81,6 +98,7 @@ void UInventoryComponent::LoadInventory(const FS_InventorySave& loadedInventory)
 		break;
 	}
 }
+#pragma endregion
 
 #pragma region Old
 /*

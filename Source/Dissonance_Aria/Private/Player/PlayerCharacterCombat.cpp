@@ -119,6 +119,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 	
 	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
+		inputComponent->BindAction(GetMove(), ETriggerEvent::Canceled, this, &APlayerCharacterCombat::MovementStoped);
 		inputComponent->BindAction(normalAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadNormalAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChargeAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
@@ -326,16 +327,24 @@ E_Directions APlayerCharacterCombat::CalculateDirection(FVector vector2)
 	float angle = FMath::RadiansToDegrees(FMath::Atan2(vector2.Y, vector2.X));
 	angle += 270;
 
-	//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, FString::SanitizeFloat(angle));
+	if (angle > 360)
+	{
+		angle -= 360;
+	}
+
+	//GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(angle));
 
 	//Return direction based on angle
-	if (angle == 0 || (angle <= 240 && angle >= 120))
+	if (angle <= 60 || angle >= 330)
+		return E_Directions::Forward;
+
+	if (angle <= 240 && angle >= 120)
 		return E_Directions::Backward;
 
-	if (angle > 240 && angle < 360)
+	if (angle > 240 && angle < 330)
 		return E_Directions::Right;
 
-	if (angle > 0 && angle < 120)
+	if (angle > 60 && angle < 120)
 		return E_Directions::Left;
 
 	else return E_Directions::Backward;
@@ -537,7 +546,7 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 	UGameplayStatics::OpenLevel(GetWorld(), FName(*CurrentMap));
 }
 
-void APlayerCharacterCombat::CombatEnded(int exp)
+void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 {
 	combatEnd = true;
 }

@@ -182,7 +182,7 @@ void AWeaponActor::ChangeWeaponStats(FS_Stats* newStats)
 #pragma endregion
 
 #pragma region EndCombat
-void AWeaponActor::CombatEnd(int gainedExp)
+void AWeaponActor::CombatEnd(int gainedExp, int gold)
 {
 	/*
 	weaponInfo.exp.currentExperience += gainedExp;

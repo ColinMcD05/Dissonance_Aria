@@ -56,6 +56,9 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 
 	switch (direction)
 	{
+		case E_Directions::Forward:
+			endPoint = player->GetActorForwardVector();
+			break;
 		case E_Directions::Left:
 			endPoint = player->GetActorRightVector() * -1;
 			break;

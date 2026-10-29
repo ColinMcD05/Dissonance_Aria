@@ -33,7 +33,7 @@ void  APlayerControllerCombat::AcknowledgePossession(APawn* InPawn)
 
 #pragma region Setup and down
 //Clears all mappings
-void APlayerControllerCombat::DisconnentPlayerInput(int exp)
+void APlayerControllerCombat::DisconnentPlayerInput(int exp, int gold)
 {
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{

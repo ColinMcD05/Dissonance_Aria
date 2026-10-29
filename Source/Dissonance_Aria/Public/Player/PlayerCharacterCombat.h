@@ -155,7 +155,7 @@ public:
 	void ResetCurrentLevel();
 
 	UFUNCTION()
-	void CombatEnded(int exp);
+	void CombatEnded(int exp, int gold);
 
 #pragma region Getters
 	//Get the combat system
@@ -224,6 +224,8 @@ public:
 
 	//Calculates the direction the player is going
 	E_Directions CalculateDirection(FVector vector2);
+
+	void MovementStoped() { direction = E_Directions::None; }
 #pragma endregion
 
 #pragma region Camera
