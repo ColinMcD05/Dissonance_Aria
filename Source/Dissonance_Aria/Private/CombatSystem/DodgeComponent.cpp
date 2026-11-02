@@ -71,6 +71,7 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 		default:
 		case E_Directions::None:
 			dodging = false;
+			return;
 			break;
 	}
 

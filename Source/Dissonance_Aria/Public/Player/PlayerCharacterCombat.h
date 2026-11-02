@@ -225,7 +225,7 @@ public:
 	//Calculates the direction the player is going
 	E_Directions CalculateDirection(FVector vector2);
 
-	void MovementStoped() { direction = E_Directions::None; }
+	void MovementStoped() { direction = E_Directions::Backward; }
 #pragma endregion
 
 #pragma region Camera
