@@ -85,6 +85,7 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 	//GameInfoUtilities::PrintToScreen(currentTuning->name);
 
 	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
+	GiveTuningInfo();
 
 	canSwapTuning = false;
 	GetWorld()->GetTimerManager().SetTimer(swapTuningTimer, this, &UWeaponsSystemComponent::ResetCanSwapTuning, 1, false);
@@ -121,6 +122,7 @@ void UWeaponsSystemComponent::GiveTuningInfo()
 
 	currentHeldWeapon->ChangeWeaponStats(stats);
 
+	player->UpdateHealth(stats->maxHP);
 	player->UpdateWalkSpeeds(stats->speeds);
 }
 #pragma endregion
