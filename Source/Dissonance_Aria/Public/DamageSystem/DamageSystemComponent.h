@@ -72,6 +72,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void SetMaxHealthAndCurrent(int newMaxHealth);
 
+	void IncreaseMaxHealth(int increasedAmount);
+
 #pragma region Delegates
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnTakeDamage OnTakeDamage;

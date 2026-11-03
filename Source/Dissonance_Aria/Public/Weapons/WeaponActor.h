@@ -55,6 +55,11 @@ private:
 	E_Genre currentGenre;
 #pragma endregion
 
+#pragma region Stat Increase
+	int damageIncrease;
+	float expMult;
+#pragma endregion
+
 #pragma region Tolerance Info
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon", meta = (AllowPrivateAccess = "true"))
 	float depletionAmount = 0.75;
@@ -140,6 +145,8 @@ public:
 
 	//Gets stats of weapon
 	FS_Stats GetStats() { return stats; }
+
+	void SetDamageIncrease(int newDamageIncrease) { damageIncrease = newDamageIncrease; }
 #pragma endregion
 
 #pragma region EndCombat

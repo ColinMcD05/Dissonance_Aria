@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Weapons/WeaponInfo.h"
+#include "Inventory/PDA_Equipment.h"
 #include "SaveInfo.generated.h"
 
 //Information about weapons that need to be saved
@@ -15,12 +16,6 @@ struct FS_WeaponSave
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
 	int level;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	bool isAcquired;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	float toleranceMeter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
 	FS_Experience experience;
@@ -37,8 +32,17 @@ public:
 	TArray<FS_WeaponSave> weapons;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	int weaponOneIndex;
+	int gold;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	int weaponTwoIndex;
+	TArray<FS_Tuning> equppiedTunings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
+	TArray<FS_Tuning> allTunings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
+	TArray<UPDA_Equipment*> gainedEquipment;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
+	TArray<UPDA_Equipment*> equipedEquipment;
 };

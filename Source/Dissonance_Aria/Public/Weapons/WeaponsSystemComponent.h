@@ -12,7 +12,6 @@
 class AWeaponActor;
 class APlayerCharacterCombat;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWeaponsSwapped, int, whichWeapon);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTuningSwapped, int, whichTuning);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnChangeMusic, int, musicChannel);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponToleranceChange, float, newWeaponTolerance);
@@ -106,17 +105,12 @@ public:
 	void GiveTuningInfo();
 #pragma endregion
 
-
 #pragma region Resetters
 	//Resets if player can swap tuning
 	void ResetCanSwapTuning();
 #pragma endregion
 
 #pragma region Delegates
-	//Delegate that gets broadcasted once weapons spawn
-	UPROPERTY(BlueprintCallable, BlueprintAssignable)
-	FWeaponsSwapped OnWeaponSwapped;
-
 	//Delegate that gets broadcasted once tunings spawn
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FTuningSwapped OnTuningSwapped;

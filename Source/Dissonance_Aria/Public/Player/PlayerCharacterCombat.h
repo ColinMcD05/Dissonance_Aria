@@ -55,6 +55,12 @@ private:
 	bool isCharging = false;
 #pragma endregion
 
+
+#pragma region Equipment Affects
+	int healthIncrease;
+	float damageIncrease;
+#pragma endregion
+
 	//Needed components and actors
 #pragma region Components
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
@@ -258,6 +264,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Tunings")
 	void ReadSuccess(bool successful, int tuning);
 #pragma
+	
+	void UpdateHealth(int weaponHealth);
 
 #pragma region SetUp
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
@@ -266,6 +274,10 @@ public:
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnSwapController OnSwapController;
 #pragma
+
+#pragma region Equipment
+	void GetEquipmentInfo();
+#pragma endregion
 
 	//Implementation of Attack interface
 #pragma region AttackInterface

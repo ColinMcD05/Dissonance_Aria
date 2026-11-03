@@ -59,6 +59,67 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 	}
 }
 
+void UInventoryComponent::CombatEnd(int gainedExp, int gainedGold)
+{
+	weapon.exp.currentExperience += gainedExp * expMult;
+	LevelUp(&weapon, 10);
+	AddGold(gold);
+}
+
+#pragma region Equipment
+void UInventoryComponent::GainEquipment(UPDA_Equipment* newEquipment)
+{
+	if (equipedEquipment.Num() < MAX_EQUIPMENT)
+	{
+		equipedEquipment.Add(newEquipment);
+	}
+	else 
+		gainedEquipment.Add(newEquipment);
+}
+
+bool UInventoryComponent::SwapEquipment(UPDA_Equipment* newlyEquipped, UPDA_Equipment* removed)
+{
+	if (!equipedEquipment.Contains(removed))
+		return false;
+
+	int i = 0;
+	for (i = 0; i < equipedEquipment.Num(); i++)
+	{
+		if (equipedEquipment[i] == removed)
+		{
+			break;
+		}
+
+		i++;
+	}
+
+	gainedEquipment.Add(removed);
+	equipedEquipment[i] = newlyEquipped;
+
+	CheckForEquipmentMults();
+	return true;
+}
+
+void UInventoryComponent::CheckForEquipmentMults()
+{
+	goldMult = 1;
+	expMult = 1;
+
+	for (UPDA_Equipment* equipment : equipedEquipment)
+	{
+		switch (equipment->affectedStat)
+		{
+			case E_StatType::Gold:
+				goldMult += equipment->affectedAmount;
+				break;
+			case E_StatType::Experience:
+				expMult += equipment->affectedAmount;
+				break;
+		}
+	}
+}
+#pragma endregion
+
 #pragma region Gold
 bool UInventoryComponent::SpendGold(int spendAmount)
 {
@@ -83,20 +144,41 @@ FS_InventorySave UInventoryComponent::SaveInventory()
 	FS_WeaponSave weaponSave;
 	weaponSave.level = weapon.level;
 	weaponSave.experience = weapon.exp;
-
 	newSave.weapons.Add(weaponSave);
+
+	newSave.allTunings = allTunings;
+	newSave.equppiedTunings = equppiedTunings;
+	newSave.gainedEquipment = gainedEquipment;
+	newSave.equipedEquipment = equipedEquipment;
+	newSave.gold = gold;
 
 	return newSave;
 }
 
 void UInventoryComponent::LoadInventory(const FS_InventorySave& loadedInventory)
 {
+	gold = loadedInventory.gold;
+
 	for (FS_WeaponSave currentInfo : loadedInventory.weapons)
 	{
 		weapon.level = FMath::Clamp(currentInfo.level, 1, levelsTable->GetRowNames().Num());
 		weapon.exp = currentInfo.experience;
 		break;
 	}
+
+	if(loadedInventory.allTunings.Num() != 0)
+		allTunings = loadedInventory.allTunings;
+
+	if (loadedInventory.equppiedTunings.Num() != 0)
+		equppiedTunings = loadedInventory.equppiedTunings;
+
+	if (loadedInventory.gainedEquipment.Num() != 0)
+		gainedEquipment = loadedInventory.gainedEquipment;
+
+	if (loadedInventory.equipedEquipment.Num() != 0)
+		equipedEquipment = loadedInventory.equipedEquipment;
+
+	CheckForEquipmentMults();
 }
 #pragma endregion
 
