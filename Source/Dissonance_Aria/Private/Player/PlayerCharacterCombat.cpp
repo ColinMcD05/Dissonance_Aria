@@ -14,6 +14,7 @@
 #include "GameInfo/DAGameModeBase.h"
 #include "CombatSystem/DodgeComponent.h"
 #include "Music/MusicManagerCombat.h"
+#include "Inventory/PDA_Equipment.h"
 
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
@@ -76,6 +77,8 @@ void APlayerCharacterCombat::BeginPlay()
 		weaponsSystem->SpawnWeapons(inventory, this);
 
 		weapon = weaponsSystem->GetCurrentHeldWeapon();
+
+		GetEquipmentInfo();
 	}
 
 	if (damageSystem)
@@ -388,6 +391,13 @@ void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
 }
 #pragma endregion
 
+void APlayerCharacterCombat::UpdateHealth(int weaponHealth)
+{
+	if (!damageSystem) return;
+
+	damageSystem->SetMaxHealthAndCurrent(weaponHealth + healthIncrease);
+}
+
 #pragma region Camera
 //Relook for a valid enemy when one dies
 void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
@@ -453,6 +463,39 @@ void APlayerCharacterCombat::StopChargedAttack_Implementation()
 void APlayerCharacterCombat::ResetIsCharging()
 {
 	isCharging = false;
+}
+#pragma endregion
+
+#pragma region Equipment
+void APlayerCharacterCombat::GetEquipmentInfo()
+{
+	healthIncrease = 0;
+	damageIncrease = 0;
+
+	TArray<UPDA_Equipment*> equipment = inventory->GetEquippedEquipment();
+
+	for (UPDA_Equipment* equip : equipment)
+	{
+		switch (equip->affectedStat)
+		{
+		case E_StatType::Health:
+			healthIncrease += equip->affectedAmount;
+			break;
+		case E_StatType::Damage:
+			damageIncrease += equip->affectedAmount;
+			break;
+		}
+	}
+
+	if (damageSystem)
+	{
+		damageSystem->IncreaseMaxHealth(healthIncrease);
+	}
+
+	if (weaponsSystem)
+	{
+		weaponsSystem->GetCurrentHeldWeapon()->SetDamageIncrease(damageIncrease);
+	}
 }
 #pragma endregion
 
@@ -550,6 +593,7 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 {
 	combatEnd = true;
+	inventory->CombatEnd(exp, gold);
 }
 
 #pragma region Old

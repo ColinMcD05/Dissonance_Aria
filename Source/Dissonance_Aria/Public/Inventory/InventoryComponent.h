@@ -8,8 +8,11 @@
 #include "Saving/SaveInfo.h"
 #include "InventoryComponent.generated.h"
 
+class UPDA_Equipment;
+
 #define MAX_TUNING_AMOUNT 4
-#define MAX_LEVEL 4
+#define MAX_LEVEL 10
+#define MAX_EQUIPMENT 2
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponLevelUp, FS_WeaponInfo, weapon);
 
@@ -31,7 +34,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<FS_Tuning> equppiedTunings;
 
-	TArray<FS_Tuning*> allTunings;
+	TArray<FS_Tuning> allTunings;
 #pragma endregion
 
 #pragma region Gold
@@ -40,7 +43,14 @@ private:
 #pragma endregion
 
 #pragma region Equipment
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<UPDA_Equipment*> gainedEquipment;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Equipment", meta = (AllowPrivateAccess = "true"))
+	TArray<UPDA_Equipment*> equipedEquipment;
+
+	float expMult = 1;
+	float goldMult = 1;
 #pragma endregion
 
 #pragma region Old
@@ -64,19 +74,23 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetupInventory();
-
+#pragma region Weapon and Tunings
 	void UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel);
-
-	bool CheckLevelUp(FS_WeaponInfo* info, int maxLevel);
-
-	void LevelUp(FS_WeaponInfo* info, int maxLevel);
 
 	void SetWeapon(FS_WeaponInfo* newWeapon) { weapon = *newWeapon; }
 
 	FS_WeaponInfo* GetWeapon() { return &weapon; }
 
 	TArray<FS_Tuning>& GetEquippedTunings() { return equppiedTunings; }
+#pragma endregion
 
+#pragma region Levelup
+	bool CheckLevelUp(FS_WeaponInfo* info, int maxLevel);
+
+	void LevelUp(FS_WeaponInfo* info, int maxLevel);
+#pragma endregion
+
+#pragma region Saving and Loading
 	//Returns an InventorySace struct for saving.
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	FS_InventorySave SaveInventory();
@@ -84,15 +98,39 @@ public:
 	//Takes an InventorySace struct for loading
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void LoadInventory(const FS_InventorySave& loadedInventory);
+#pragma endregion
 
+#pragma region Equipment
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	TArray<UPDA_Equipment*> GetEquippedEquipment() { return equipedEquipment; }
+
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	TArray<UPDA_Equipment*> GetGainedEquipment() { return gainedEquipment; }
+
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	void GainEquipment(UPDA_Equipment* newEquipment);
+
+	UFUNCTION(BlueprintCallable, Category = "Equipment")
+	bool SwapEquipment(UPDA_Equipment* newlyEquipped, UPDA_Equipment* removed);
+
+	void CheckForEquipmentMults();
+#pragma endregion
+
+#pragma region Delegate
 	UPROPERTY(BlueprintAssignable)
 	FOnWeaponLevelUp OnWeaponLevelUp;
+#pragma endregion
+
+#pragma region EXP
+	UFUNCTION()
+	void CombatEnd(int gainedExp, int gainedGold);
+#pragma endregion
 
 #pragma region Gold
 	int GetGold() { return gold; }
 
 	UFUNCTION(BlueprintCallable, Category = "Gold")
-	void AddGold(int addAmount) { gold += addAmount; }
+	void AddGold(int addAmount) { gold += addAmount * goldMult; }
 
 	UFUNCTION(BlueprintCallable, Category = "Gold")
 	bool SpendGold(int spendAmount);

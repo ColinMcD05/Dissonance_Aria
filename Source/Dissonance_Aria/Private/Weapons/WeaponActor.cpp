@@ -217,7 +217,7 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 	damageInfo.damageCauser = GetOwner();
 	damageInfo.genreAttack = currentGenre;
 
-	damageInfo.damageAmount = stats.damage;
+	damageInfo.damageAmount = stats.damage + damageIncrease;
 
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
 
