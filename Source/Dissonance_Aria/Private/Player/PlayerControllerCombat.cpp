@@ -24,11 +24,12 @@ void APlayerControllerCombat::BeginPlay()
 void  APlayerControllerCombat::AcknowledgePossession(APawn* InPawn)
 {
 	Super::AcknowledgePossession(InPawn);
-
+/*
 	if (APlayerCharacterCombat* playerCharacter = Cast<APlayerCharacterCombat>(InPawn))
 	{
 		playerCharacter->OnPlayerSetUpDone.AddDynamic(this, &APlayerControllerCombat::SetUpUI);
 	}
+	*/
 }
 
 #pragma region Setup and down

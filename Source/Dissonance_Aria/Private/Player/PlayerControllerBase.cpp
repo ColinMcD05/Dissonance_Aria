@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameInfo/DAGameStateCombat.h"
+#include "GameInfo/DAGameModeBase.h"
 #include "Player/PlayerCharacterBase.h"
 #include "BasicFunctions/GetGameInfo.h"
 
@@ -19,6 +20,11 @@ void APlayerControllerBase::BeginPlay()
 	{
 		gameState->OnCombatStart.AddDynamic(this, &APlayerControllerBase::CombatStart);
 		gameState->OnCombatEnd.AddDynamic(this, &APlayerControllerBase::DisconnentPlayerInput);
+	}
+
+	if (ADAGameModeBase* gameMode = Cast<ADAGameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		gameMode->OnGameTypeChange.AddDynamic(this, &APlayerControllerBase::SwapUI);
 	}
 
 	//Add basic mapping
@@ -46,7 +52,7 @@ void APlayerControllerBase::CombatStart()
 {
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
-		subsystem->AddMappingContext(combatMapping, 1);
+		subsystem->AddMappingContext(combatMapping, 2);
 	}
 }
 

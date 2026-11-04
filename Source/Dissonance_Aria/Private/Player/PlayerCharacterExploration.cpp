@@ -113,7 +113,7 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 {
 	//Sets the new camera
 	currentCamera = newCamera;
-	if (APlayerControllerExploration* controller = Cast<APlayerControllerExploration>(GetController()))
+	if (APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController()))
 	{
 		controller->SetCurrentCamera(newCamera);
 	}

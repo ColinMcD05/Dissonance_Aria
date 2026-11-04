@@ -43,6 +43,10 @@ void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
 		musicManager->OnBeat.AddDynamic(this, &UCombatSystemComponent::DownBeat);
 		GameInfoUtilities::PrintToScreen("Got It");
 	}
+	else
+	{
+		GameInfoUtilities::PrintToScreen("Nope.");
+	}
 }
 
 void UCombatSystemComponent::TearDown()

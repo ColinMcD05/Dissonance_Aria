@@ -47,7 +47,7 @@ public:
 	void CombatStart();
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
-	void SetUpUI();
+	void SwapUI(E_GameStateType newState);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DisconnentPlayerInput(int exp, int gold);

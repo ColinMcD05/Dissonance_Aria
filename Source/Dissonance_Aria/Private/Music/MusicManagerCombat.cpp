@@ -48,6 +48,7 @@ void AMusicManagerCombat::BindEvents()
 	if (character)
 	{
 		character->GetWeaponsSystem()->OnChangeMusic.AddDynamic(this, &AMusicManagerCombat::ChangeChannel);
+		character->SetMusicManager(this);
 	}
 }
 #pragma endregion

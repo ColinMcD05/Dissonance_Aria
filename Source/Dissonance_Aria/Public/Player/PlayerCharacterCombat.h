@@ -270,6 +270,8 @@ public:
 
 	void UpdateHealth(int weaponHealth);
 
+	void SetMusicManager(AMusicManagerCombat* music);
+
 #pragma region SetUp
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnPlayerSetUpDone OnPlayerSetUpDone;

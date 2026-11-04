@@ -9,12 +9,14 @@
 class APlayerCharacterBase;
 class APlayerControllerBase;
 
-UENUM()
+UENUM(BlueprintType)
 enum class E_GameStateType : uint8
 {
 	Exploration UMETA(DisplayName = "Exploration"),
 	Combat UMETA(DisplayName = "Combat")
 };
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameTypeChange, E_GameStateType, newState);
 
 /**
  * 
@@ -61,6 +63,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "SwapLogic")
 	void SwapGameState(E_GameStateType gameStateSwapped);
 
+	void StartCombat();
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SwapLogic")
 	void LoadCombat();
 
@@ -72,4 +76,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
 	void SetupExplorerCharacter(APlayerControllerBase* newController, APlayerCharacterBase* newExploringCharacter);
+
+	UPROPERTY(BlueprintAssignable)
+	FGameTypeChange OnGameTypeChange;
 };

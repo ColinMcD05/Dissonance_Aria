@@ -114,6 +114,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
+	GameInfoUtilities::PrintToScreen("Attack");
 	if (combatSystem)
 	{
 		if (combatSystem->ReadInput())
@@ -594,8 +595,8 @@ void APlayerCharacterCombat::CombatStarted_Implementation()
 
 	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
 
-	if (combatSystem)
-		combatSystem->SetUp(musicManager);
+	if (IsValid(musicManager))
+		GameInfoUtilities::PrintToScreen("MusicManager");
 
 	OnPlayerSetUpDone.Broadcast();
 }
@@ -617,6 +618,14 @@ void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 	{
 		dodgeComponent->OnDodge.RemoveDynamic(this, &APlayerCharacterCombat::ListenToDodge);
 	}
+}
+
+void APlayerCharacterCombat::SetMusicManager(AMusicManagerCombat* music)
+{
+	musicManager = music;
+
+	if (combatSystem)
+		combatSystem->SetUp(musicManager);
 }
 
 #pragma region Old
