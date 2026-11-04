@@ -77,13 +77,6 @@ void APlayerCharacterCombat::BeginPlay()
 		weaponsSystem->SpawnWeapons(inventory, this);
 
 		weapon = weaponsSystem->GetCurrentHeldWeapon();
-
-		GetEquipmentInfo();
-	}
-
-	if (damageSystem)
-	{
-		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
 	}
 
 	//Get game state
@@ -92,25 +85,7 @@ void APlayerCharacterCombat::BeginPlay()
 	{
 		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
 		gameState->OnCombatEnd.AddDynamic(this, &APlayerCharacterCombat::CombatEnded);
-	}
-
-	OnPlayerSetUpDone.Broadcast();
-
-	CameraEnemySearch(nullptr);
-	FocusOnEnemy();
-
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
-
-	if (IsValid(musicManager))
-	{
-		GameInfoUtilities::PrintToScreen("Added");
-
-		musicManager->OnBeat.AddDynamic(this, &APlayerCharacterCombat::CanPauseGame);
-	}
-
-	if (IsValid(dodgeComponent))
-	{
-		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+		gameState->OnCombatStart.AddDynamic(this, &APlayerCharacterCombat::CombatStarted);
 	}
 }
 
@@ -243,7 +218,7 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 
 	if (combatEnd && gameModeBase)
 	{
-		gameModeBase->TransitionToLevel("None");
+		gameModeBase->LoadExploration();
 	}
 
 	if (KeyboardOrGamepad(pressedKey) != controllerType)
@@ -590,10 +565,58 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 	UGameplayStatics::OpenLevel(GetWorld(), FName(*CurrentMap));
 }
 
+
+void APlayerCharacterCombat::CombatStarted_Implementation()
+{
+
+	if (IsValid(musicManager))
+	{
+		GameInfoUtilities::PrintToScreen("Added");
+
+		musicManager->OnBeat.AddDynamic(this, &APlayerCharacterCombat::CanPauseGame);
+	}
+
+	if (IsValid(dodgeComponent))
+	{
+		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+	}
+
+	CameraEnemySearch(nullptr);
+	FocusOnEnemy();
+
+
+	if (damageSystem)
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+
+	GetEquipmentInfo();
+
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
+
+	if (combatSystem)
+		combatSystem->SetUp(musicManager);
+
+	OnPlayerSetUpDone.Broadcast();
+}
+
 void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 {
 	combatEnd = true;
 	inventory->CombatEnd(exp, gold);
+
+	if (IsValid(combatSystem))
+		combatSystem->TearDown();
+
+	if (IsValid(musicManager))
+	{
+		musicManager->OnBeat.RemoveDynamic(this, &APlayerCharacterCombat::CanPauseGame);
+	}
+
+	if (IsValid(dodgeComponent))
+	{
+		dodgeComponent->OnDodge.RemoveDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+	}
 }
 
 #pragma region Old
