@@ -31,15 +31,29 @@ void UCombatSystemComponent::BeginPlay()
 		world = owner->GetWorld();
 		OnComboDrop.AddDynamic(owner, &APlayerCharacterCombat::ResetCanMove);
 	}
-	
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
+}
+#pragma endregion
+
+void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
+{
+	musicManager = music;
 
 	if (musicManager)
 	{
 		musicManager->OnBeat.AddDynamic(this, &UCombatSystemComponent::DownBeat);
+		GameInfoUtilities::PrintToScreen("Got It");
 	}
 }
-#pragma endregion
+
+void UCombatSystemComponent::TearDown()
+{
+	if (musicManager)
+	{
+		musicManager->OnBeat.RemoveDynamic(this, &UCombatSystemComponent::DownBeat);
+	}
+	
+	musicManager = nullptr;
+}
 
 #pragma region Input
 //Reads player input

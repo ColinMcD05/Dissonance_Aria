@@ -146,6 +146,10 @@ protected:
 public:	
 #pragma region General/Setup
 	UCombatSystemComponent();
+
+	void SetUp(AMusicManagerCombat* music);
+
+	void TearDown();
 #pragma endregion
 
 #pragma region Input

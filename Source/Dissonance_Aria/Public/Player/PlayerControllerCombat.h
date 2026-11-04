@@ -14,8 +14,7 @@ class DISSONANCE_ARIA_API APlayerControllerCombat : public APlayerControllerBase
 
 protected:
 #pragma region Inputs
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UInputMappingContext* combatMapping;
+
 #pragma endregion
 
 public:
@@ -23,6 +22,7 @@ public:
 
 	virtual void AcknowledgePossession(APawn* InPawn) override;
 
+	/*
 #pragma region Setup and down
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
 	void SetUpUI();
@@ -30,4 +30,5 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DisconnentPlayerInput(int exp, int gold);
 #pragma endregion
+*/
 };

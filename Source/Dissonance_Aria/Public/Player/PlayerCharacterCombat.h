@@ -265,6 +265,9 @@ public:
 	void ReadSuccess(bool successful, int tuning);
 #pragma
 	
+	UFUNCTION(BlueprintNativeEvent)
+	void CombatStarted();
+
 	void UpdateHealth(int weaponHealth);
 
 #pragma region SetUp

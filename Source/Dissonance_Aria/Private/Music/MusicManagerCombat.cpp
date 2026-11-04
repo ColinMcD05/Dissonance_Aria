@@ -26,6 +26,7 @@ void AMusicManagerCombat::BeginPlay()
 {
 	Super::BeginPlay();
 	audioComponent->OnTimelineBeat.AddDynamic(this, &AMusicManagerCombat::OnDownBeat);
+
 	BindEvents();
 }
 
@@ -56,7 +57,9 @@ void AMusicManagerCombat::BindEvents()
 void AMusicManagerCombat::StartMusic()
 {
 	if (audioComponent)
+	{
 		audioComponent->Play();
+	}
 }
 
 //Stops music

@@ -16,5 +16,5 @@ class DISSONANCE_ARIA_API APlayerControllerExploration : public APlayerControlle
 	GENERATED_BODY()
 public:
 	//Set the current camera
-	void SetCurrentCamera(UCameraComponent* newCamera);
+	//void SetCurrentCamera(UCameraComponent* newCamera);
 };
