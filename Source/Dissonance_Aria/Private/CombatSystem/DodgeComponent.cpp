@@ -24,8 +24,11 @@ void UDodgeComponent::BeginPlay()
 	Super::BeginPlay();
 
 	player = Cast<APlayerCharacterCombat>(GetOwner());
+}
 
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
+void UDodgeComponent::SetUp(AMusicManagerCombat* music)
+{
+	musicManager = music;
 }
 
 void UDodgeComponent::StartDodge(E_Directions direction)

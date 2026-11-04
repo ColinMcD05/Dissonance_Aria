@@ -24,15 +24,19 @@ void ADAGameModeBase::SwapGameState(E_GameStateType gameStateSwapped)
 	{
 		case E_GameStateType::Combat:
 			LoadCombat();
-			if (ADAGameStateCombat* gameState = Cast<ADAGameStateCombat>(GameState))
-			{
-				GameInfoUtilities::PrintToScreen("CombatStart");
-				gameState->OnCombatStart.Broadcast();
-			}
 			break;
 		case E_GameStateType::Exploration:
 			LoadExploration();
 			break;
+	}
+	OnGameTypeChange.Broadcast(gameStateSwapped);
+}
+
+void ADAGameModeBase::StartCombat()
+{
+	if (ADAGameStateCombat* state = Cast<ADAGameStateCombat>(GameState))
+	{
+		state->OnCombatStart.Broadcast();
 	}
 }
 

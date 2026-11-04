@@ -25,7 +25,7 @@ AMusicManagerCombat::AMusicManagerCombat()
 void AMusicManagerCombat::BeginPlay()
 {
 	Super::BeginPlay();
-	audioComponent->OnTimelineBeat.AddDynamic(this, &AMusicManagerCombat::OnDownBeat);
+	audioComponent->OnTimelineBeat.AddUniqueDynamic(this, &AMusicManagerCombat::OnDownBeat);
 
 	BindEvents();
 }
@@ -38,8 +38,8 @@ void AMusicManagerCombat::BindEvents()
 	//Setup game state events
 	if (combat)
 	{
-		combat->OnCombatStart.AddDynamic(this, &AMusicManagerCombat::StartMusic);
-		combat->OnCombatEnd.AddDynamic(this, &AMusicManagerCombat::StopMusic);
+		combat->OnCombatStart.AddUniqueDynamic(this, &AMusicManagerCombat::StartMusic);
+		combat->OnCombatEnd.AddUniqueDynamic(this, &AMusicManagerCombat::StopMusic);
 	}
 
 	//Get player character
@@ -47,7 +47,8 @@ void AMusicManagerCombat::BindEvents()
 
 	if (character)
 	{
-		character->GetWeaponsSystem()->OnChangeMusic.AddDynamic(this, &AMusicManagerCombat::ChangeChannel);
+		character->GetWeaponsSystem()->OnChangeMusic.AddUniqueDynamic(this, &AMusicManagerCombat::ChangeChannel);
+		character->SetMusicManager(this);
 	}
 }
 #pragma endregion

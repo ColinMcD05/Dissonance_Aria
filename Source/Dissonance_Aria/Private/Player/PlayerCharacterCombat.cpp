@@ -83,9 +83,9 @@ void APlayerCharacterCombat::BeginPlay()
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
 	{
-		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
-		gameState->OnCombatEnd.AddDynamic(this, &APlayerCharacterCombat::CombatEnded);
-		gameState->OnCombatStart.AddDynamic(this, &APlayerCharacterCombat::CombatStarted);
+		gameState->OnEnemyDeath.AddUniqueDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
+		gameState->OnCombatEnd.AddUniqueDynamic(this, &APlayerCharacterCombat::CombatEnded);
+		gameState->OnCombatStart.AddUniqueDynamic(this, &APlayerCharacterCombat::CombatStarted);
 	}
 }
 
@@ -114,6 +114,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
+	GameInfoUtilities::PrintToScreen("Attack");
 	if (combatSystem)
 	{
 		if (combatSystem->ReadInput())
@@ -386,14 +387,6 @@ void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
 	}
 }
 
-void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
-{
-	if (inventory)
-	{
-		inventory->UpdateWeaponInfo(updatedInfo, maxLevel);
-	}
-}
-
 void APlayerCharacterCombat::FocusOnEnemy()
 {
 	if (lockedOnEnemy && enemyIndex > -1)
@@ -405,7 +398,7 @@ void APlayerCharacterCombat::FocusOnEnemy()
 
 void APlayerCharacterCombat::RotatePlayer()
 {
-	if (camera)
+	if (camera && IsValid(Controller))
 	{
 		//Get angle
 		FRotator rotator = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), lockedOnEnemy->GetActorLocation());
@@ -417,6 +410,13 @@ void APlayerCharacterCombat::RotatePlayer()
 }
 #pragma endregion
 
+void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
+{
+	if (inventory)
+	{
+		inventory->UpdateWeaponInfo(updatedInfo, maxLevel);
+	}
+}
 //Logic specifically for heavy attacks
 #pragma region HeavyAttack
 void APlayerCharacterCombat::StartChargedAttack_Implementation()
@@ -568,17 +568,9 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 
 void APlayerCharacterCombat::CombatStarted_Implementation()
 {
-
-	if (IsValid(musicManager))
-	{
-		GameInfoUtilities::PrintToScreen("Added");
-
-		musicManager->OnBeat.AddDynamic(this, &APlayerCharacterCombat::CanPauseGame);
-	}
-
 	if (IsValid(dodgeComponent))
 	{
-		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+		dodgeComponent->OnDodge.AddUniqueDynamic(this, &APlayerCharacterCombat::ListenToDodge);
 	}
 
 	CameraEnemySearch(nullptr);
@@ -591,11 +583,6 @@ void APlayerCharacterCombat::CombatStarted_Implementation()
 	}
 
 	GetEquipmentInfo();
-
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
-
-	if (combatSystem)
-		combatSystem->SetUp(musicManager);
 
 	OnPlayerSetUpDone.Broadcast();
 }
@@ -616,6 +603,24 @@ void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 	if (IsValid(dodgeComponent))
 	{
 		dodgeComponent->OnDodge.RemoveDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+	}
+}
+
+void APlayerCharacterCombat::SetMusicManager(AMusicManagerCombat* music)
+{
+	musicManager = music;
+
+	if (combatSystem)
+		combatSystem->SetUp(musicManager);
+
+	if (dodgeComponent)
+		dodgeComponent->SetUp(musicManager);
+
+	if (IsValid(musicManager))
+	{
+		GameInfoUtilities::PrintToScreen("Added");
+
+		musicManager->OnBeat.AddUniqueDynamic(this, &APlayerCharacterCombat::CanPauseGame);
 	}
 }
 

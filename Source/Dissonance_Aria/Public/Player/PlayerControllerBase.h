@@ -32,6 +32,10 @@ protected:
 
 	APlayerCharacterBase* playerBase;
 
+	bool canGoBack;
+
+	FTimerHandle canGoBackTimer;
+
 public:
 	virtual void BeginPlay() override;
 
@@ -47,9 +51,13 @@ public:
 	void CombatStart();
 
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
-	void SetUpUI();
+	void SwapUI(E_GameStateType newState);
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DisconnentPlayerInput(int exp, int gold);
 #pragma endregion
+
+	void CanGoBackToLevel();
+
+	void BackToLevel();
 };

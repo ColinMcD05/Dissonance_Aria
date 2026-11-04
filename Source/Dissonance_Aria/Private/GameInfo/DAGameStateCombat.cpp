@@ -4,10 +4,15 @@
 #include "GameInfo/DAGameStateCombat.h"
 #include "Enemies/LockOnInterface.h"
 
+void ADAGameStateCombat::BeginPlay()
+{
+	Super::BeginPlay();
+	OnEnemyDeath.AddUniqueDynamic(this, &ADAGameStateCombat::EnemyDead);
+}
+
 void ADAGameStateCombat::CombatStarted()
 {
 	finished = false;
-	OnEnemyDeath.AddDynamic(this, &ADAGameStateCombat::EnemyDead);
 }
 
 void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)
@@ -29,7 +34,6 @@ void ADAGameStateCombat::EnemyDead_Implementation(AActor* newEnemy)
 	{
 		finished = true;
 		OnCombatEnd.Broadcast(totalEnemyExp, totalEnemyGold);
-		OnEnemyDeath.RemoveDynamic(this, &ADAGameStateCombat::EnemyDead);
 	}
 }
 
