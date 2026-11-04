@@ -32,7 +32,7 @@ void AWeaponActor::BeginPlay()
 
 	if (ADAGameStateCombat* gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this))
 	{
-		gameState->OnCombatEnd.AddDynamic(this, &AWeaponActor::CombatEnd);
+		gameState->OnCombatEnd.AddUniqueDynamic(this, &AWeaponActor::CombatEnd);
 	}
 }
 

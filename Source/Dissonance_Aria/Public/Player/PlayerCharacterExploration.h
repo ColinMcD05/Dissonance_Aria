@@ -50,6 +50,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentCamera(UCameraComponent* newCamera);
 
+	UFUNCTION(BlueprintCallable)
+	void SetBestCamera();
+
 	//Get the nearest camera
 	AFixedCamera* FindNearestCamera();
 #pragma endregion

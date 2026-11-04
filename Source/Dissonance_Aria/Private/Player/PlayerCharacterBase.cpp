@@ -5,6 +5,7 @@
 #include "Player/PlayerControllerBase.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BasicFunctions/GetGameInfo.h"
 
 // Sets default values
 APlayerCharacterBase::APlayerCharacterBase()
@@ -94,6 +95,7 @@ void APlayerCharacterBase::Look_Implementation(const FInputActionValue& value)
 void APlayerCharacterBase::PauseGame_Implementation()
 {
 	Cast<APlayerControllerBase>(GetController())->PausedGame();
+	GameInfoUtilities::PrintToScreen("Paused");
 }
 
 void APlayerCharacterBase::SetSpeedByType(E_SpeedTypes speedType)

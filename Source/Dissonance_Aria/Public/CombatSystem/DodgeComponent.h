@@ -48,6 +48,8 @@ public:
 	// Sets default values for this component's properties
 	UDodgeComponent();
 
+	void SetUp(AMusicManagerCombat* music);
+
 	UFUNCTION(BlueprintCallable, Category = "Dodge")
 	void StartDodge(E_Directions direction = E_Directions::None);
 

@@ -2,10 +2,10 @@
 
 
 #include "Player/PlayerCharacterExploration.h"
+#include "Player/PlayerControllerBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Cameras/FixedCamera.h"
 #include "EnhancedInputComponent.h"
-#include "Player/PlayerControllerExploration.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "BasicFunctions/GetGameInfo.h"
@@ -24,27 +24,7 @@ void APlayerCharacterExploration::BeginPlay()
 	if (rotationSpeed < 100)
 		rotationSpeed *= 100;
 
-	TArray<AActor*> cameras;
-	UGameplayStatics::GetAllActorsOfClass(this, AFixedCamera::StaticClass(), cameras);
-
-	UDAGameInstance* instance = GameInfoUtilities::GetDAGameInstance(this);
-	if (!instance || instance->GetLastCamera().IsEmpty())
-	{
-		float distance;
-
-		SetCurrentCamera(Cast<AFixedCamera>(UGameplayStatics::FindNearestActor(GetActorLocation(), cameras, distance))->GetCamera());
-	}
-	else
-	{
-		for (AActor* actor : cameras)
-		{
-			if (actor->GetName() == instance->GetLastCamera())
-			{
-				SetCurrentCamera(Cast<AFixedCamera>(actor)->GetCamera());
-				break;
-			}
-		}
-	}
+	SetBestCamera();
 
 	SetNewForward();
 }
@@ -109,6 +89,32 @@ void APlayerCharacterExploration::SetRotation(FVector2D moveVector)
 #pragma endregion
 
 #pragma region Camera
+void APlayerCharacterExploration::SetBestCamera()
+{
+
+	TArray<AActor*> cameras;
+	UGameplayStatics::GetAllActorsOfClass(this, AFixedCamera::StaticClass(), cameras);
+
+	UDAGameInstance* instance = GameInfoUtilities::GetDAGameInstance(this);
+	if (!instance || instance->GetLastCamera().IsEmpty())
+	{
+		float distance;
+
+		SetCurrentCamera(Cast<AFixedCamera>(UGameplayStatics::FindNearestActor(GetActorLocation(), cameras, distance))->GetCamera());
+	}
+	else
+	{
+		for (AActor* actor : cameras)
+		{
+			if (actor->GetName() == instance->GetLastCamera())
+			{
+				SetCurrentCamera(Cast<AFixedCamera>(actor)->GetCamera());
+				break;
+			}
+		}
+	}
+}
+
 void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 {
 	//Sets the new camera

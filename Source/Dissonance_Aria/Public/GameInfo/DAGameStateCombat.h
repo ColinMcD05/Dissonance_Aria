@@ -27,6 +27,9 @@ private:
 
 	bool finished;
 
+protected:
+	virtual void BeginPlay() override;
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Combat")
 	void CombatStarted();

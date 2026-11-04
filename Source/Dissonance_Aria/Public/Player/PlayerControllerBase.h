@@ -32,6 +32,10 @@ protected:
 
 	APlayerCharacterBase* playerBase;
 
+	bool canGoBack;
+
+	FTimerHandle canGoBackTimer;
+
 public:
 	virtual void BeginPlay() override;
 
@@ -52,4 +56,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DisconnentPlayerInput(int exp, int gold);
 #pragma endregion
+
+	void CanGoBackToLevel();
+
+	void BackToLevel();
 };

@@ -29,7 +29,7 @@ void UCombatSystemComponent::BeginPlay()
 	if (owner)
 	{
 		world = owner->GetWorld();
-		OnComboDrop.AddDynamic(owner, &APlayerCharacterCombat::ResetCanMove);
+		OnComboDrop.AddUniqueDynamic(owner, &APlayerCharacterCombat::ResetCanMove);
 	}
 }
 #pragma endregion
@@ -40,7 +40,7 @@ void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
 
 	if (musicManager)
 	{
-		musicManager->OnBeat.AddDynamic(this, &UCombatSystemComponent::DownBeat);
+		musicManager->OnBeat.AddUniqueDynamic(this, &UCombatSystemComponent::DownBeat);
 		GameInfoUtilities::PrintToScreen("Got It");
 	}
 	else

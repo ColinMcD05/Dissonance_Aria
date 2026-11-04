@@ -24,7 +24,6 @@ void ADAGameModeBase::SwapGameState(E_GameStateType gameStateSwapped)
 	{
 		case E_GameStateType::Combat:
 			LoadCombat();
-			GetWorld()->GetTimerManager().SetTimerForNextTick(this, &ADAGameModeBase::StartCombat);
 			break;
 		case E_GameStateType::Exploration:
 			LoadExploration();
