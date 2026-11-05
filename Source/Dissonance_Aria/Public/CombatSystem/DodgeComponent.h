@@ -41,6 +41,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<AMusicManagerCombat> musicManager;
 
+	FTimerHandle dodgeTimer;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -60,6 +62,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Dodge")
 	void ResetDodge();
+
+	void CalculateDodgeDistance(float& distance, FVector tempEndPoint);
 
 #pragma region Delegates
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)

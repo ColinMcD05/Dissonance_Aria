@@ -74,7 +74,7 @@ void AMusicManagerCombat::ChangeChannel(int newChannel)
 {
 	//New channels
 	currentChannel = newChannel;
-	GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(newChannel));
+	//GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(newChannel));
 	UFMODBlueprintStatics::SetGlobalParameterByName("EquippedWeapon", newChannel);
 }
 #pragma endregion
