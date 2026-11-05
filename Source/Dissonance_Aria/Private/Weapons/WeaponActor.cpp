@@ -5,6 +5,7 @@
 #include "GameInfo/DAGameStateCombat.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Engine/CollisionProfile.h"
 
 // Sets default values
 AWeaponActor::AWeaponActor()
@@ -32,7 +33,7 @@ void AWeaponActor::BeginPlay()
 
 	if (ADAGameStateCombat* gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this))
 	{
-		gameState->OnCombatEnd.AddDynamic(this, &AWeaponActor::CombatEnd);
+		gameState->OnCombatEnd.AddUniqueDynamic(this, &AWeaponActor::CombatEnd);
 	}
 }
 
@@ -152,11 +153,12 @@ void AWeaponActor::PerformSphereTrace_Implementation()
 
 		//Do spheretrace
 		if (UKismetSystemLibrary::SphereTraceSingle(GetWorld(), startLocation, endLocation, radius,
-			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {playerOwner}, EDrawDebugTrace::ForOneFrame, hit, true))
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel3), false, {playerOwner}, EDrawDebugTrace::ForOneFrame, hit, true))
 		{
 			if (hit.GetActor())
 			{
 				Execute_OverlappedActor(this, hit.GetActor());
+				GameInfoUtilities::PrintToScreen("Hit");
 			}
 		}
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::PerformSphereTrace);

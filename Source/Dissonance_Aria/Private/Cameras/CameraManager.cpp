@@ -30,7 +30,7 @@ void ACameraManager::BeginPlay()
 		}
 	}
 
-	OnCameraChange.AddDynamic(this, &ACameraManager::SwitchCamera);
+	OnCameraChange.AddUniqueDynamic(this, &ACameraManager::SwitchCamera);
 }
 
 void ACameraManager::SwitchCamera(AFixedCamera* newCamera)

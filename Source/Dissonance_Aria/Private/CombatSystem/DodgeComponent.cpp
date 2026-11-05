@@ -24,8 +24,11 @@ void UDodgeComponent::BeginPlay()
 	Super::BeginPlay();
 
 	player = Cast<APlayerCharacterCombat>(GetOwner());
+}
 
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
+void UDodgeComponent::SetUp(AMusicManagerCombat* music)
+{
+	musicManager = music;
 }
 
 void UDodgeComponent::StartDodge(E_Directions direction)
@@ -88,7 +91,7 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 
 	FHitResult hit;
 
-	UKismetSystemLibrary::LineTraceSingle(this, player->GetActorLocation(), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_Visibility), 
+	UKismetSystemLibrary::LineTraceSingle(this, player->GetActorLocation(), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
 		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
 
 	if (hit.bBlockingHit)

@@ -13,6 +13,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameInfo/DAGameModeBase.h"
 #include "CombatSystem/DodgeComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Music/MusicManagerCombat.h"
 #include "Inventory/PDA_Equipment.h"
 
@@ -77,40 +78,21 @@ void APlayerCharacterCombat::BeginPlay()
 		weaponsSystem->SpawnWeapons(inventory, this);
 
 		weapon = weaponsSystem->GetCurrentHeldWeapon();
-
-		GetEquipmentInfo();
 	}
 
-	if (damageSystem)
+	if (IsValid(dodgeComponent) && IsValid(combatSystem))
 	{
-		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+		dodgeComponent->OnDodge.AddUniqueDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+		dodgeComponent->OnDodge.AddUniqueDynamic(combatSystem, &UCombatSystemComponent::SetIsDodging);
 	}
 
 	//Get game state
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
 	{
-		gameState->OnEnemyDeath.AddDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
-		gameState->OnCombatEnd.AddDynamic(this, &APlayerCharacterCombat::CombatEnded);
-	}
-
-	OnPlayerSetUpDone.Broadcast();
-
-	CameraEnemySearch(nullptr);
-	FocusOnEnemy();
-
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
-
-	if (IsValid(musicManager))
-	{
-		GameInfoUtilities::PrintToScreen("Added");
-
-		musicManager->OnBeat.AddDynamic(this, &APlayerCharacterCombat::CanPauseGame);
-	}
-
-	if (IsValid(dodgeComponent))
-	{
-		dodgeComponent->OnDodge.AddDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+		gameState->OnEnemyDeath.AddUniqueDynamic(this, &APlayerCharacterCombat::CameraEnemySearch);
+		gameState->OnCombatEnd.AddUniqueDynamic(this, &APlayerCharacterCombat::CombatEnded);
+		gameState->OnCombatStart.AddUniqueDynamic(this, &APlayerCharacterCombat::CombatStarted);
 	}
 }
 
@@ -139,6 +121,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
+	GameInfoUtilities::PrintToScreen("Attack");
 	if (combatSystem)
 	{
 		if (combatSystem->ReadInput())
@@ -179,7 +162,7 @@ void APlayerCharacterCombat::ReadChargeAttack()
 //Read the side step input
 void APlayerCharacterCombat::ReadSidestep()
 {
-	if (!IsValid(dodgeComponent))
+	if (!IsValid(dodgeComponent) || GetCharacterMovement()->IsFalling())
 		return;
 
 	dodgeComponent->StartDodge(direction);
@@ -243,7 +226,7 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 
 	if (combatEnd && gameModeBase)
 	{
-		gameModeBase->TransitionToLevel("None");
+		gameModeBase->LoadExploration();
 	}
 
 	if (KeyboardOrGamepad(pressedKey) != controllerType)
@@ -411,14 +394,6 @@ void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
 	}
 }
 
-void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
-{
-	if (inventory)
-	{
-		inventory->UpdateWeaponInfo(updatedInfo, maxLevel);
-	}
-}
-
 void APlayerCharacterCombat::FocusOnEnemy()
 {
 	if (lockedOnEnemy && enemyIndex > -1)
@@ -430,7 +405,7 @@ void APlayerCharacterCombat::FocusOnEnemy()
 
 void APlayerCharacterCombat::RotatePlayer()
 {
-	if (camera)
+	if (camera && IsValid(Controller))
 	{
 		//Get angle
 		FRotator rotator = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), lockedOnEnemy->GetActorLocation());
@@ -442,6 +417,13 @@ void APlayerCharacterCombat::RotatePlayer()
 }
 #pragma endregion
 
+void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
+{
+	if (inventory)
+	{
+		inventory->UpdateWeaponInfo(updatedInfo, maxLevel);
+	}
+}
 //Logic specifically for heavy attacks
 #pragma region HeavyAttack
 void APlayerCharacterCombat::StartChargedAttack_Implementation()
@@ -590,10 +572,58 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 	UGameplayStatics::OpenLevel(GetWorld(), FName(*CurrentMap));
 }
 
+
+void APlayerCharacterCombat::CombatStarted_Implementation()
+{
+	CameraEnemySearch(nullptr);
+	FocusOnEnemy();
+
+
+	if (damageSystem)
+	{
+		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+
+	GetEquipmentInfo();
+
+	OnPlayerSetUpDone.Broadcast();
+}
+
 void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 {
 	combatEnd = true;
 	inventory->CombatEnd(exp, gold);
+
+	if (IsValid(combatSystem))
+		combatSystem->TearDown();
+
+	if (IsValid(musicManager))
+	{
+		musicManager->OnBeat.RemoveDynamic(this, &APlayerCharacterCombat::CanPauseGame);
+	}
+
+	if (IsValid(dodgeComponent))
+	{
+		dodgeComponent->OnDodge.RemoveDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+	}
+}
+
+void APlayerCharacterCombat::SetMusicManager(AMusicManagerCombat* music)
+{
+	musicManager = music;
+
+	if (combatSystem)
+		combatSystem->SetUp(musicManager);
+
+	if (dodgeComponent)
+		dodgeComponent->SetUp(musicManager);
+
+	if (IsValid(musicManager))
+	{
+		GameInfoUtilities::PrintToScreen("Added");
+
+		musicManager->OnBeat.AddUniqueDynamic(this, &APlayerCharacterCombat::CanPauseGame);
+	}
 }
 
 #pragma region Old

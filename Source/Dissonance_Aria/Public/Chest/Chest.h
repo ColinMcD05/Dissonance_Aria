@@ -24,5 +24,5 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void Interact() override;
+	virtual void Interact_Implementation() override;
 };

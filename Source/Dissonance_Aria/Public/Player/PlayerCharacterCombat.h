@@ -265,7 +265,12 @@ public:
 	void ReadSuccess(bool successful, int tuning);
 #pragma
 	
+	UFUNCTION(BlueprintNativeEvent)
+	void CombatStarted();
+
 	void UpdateHealth(int weaponHealth);
+
+	void SetMusicManager(AMusicManagerCombat* music);
 
 #pragma region SetUp
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)

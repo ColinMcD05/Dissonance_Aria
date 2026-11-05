@@ -29,17 +29,35 @@ void UCombatSystemComponent::BeginPlay()
 	if (owner)
 	{
 		world = owner->GetWorld();
-		OnComboDrop.AddDynamic(owner, &APlayerCharacterCombat::ResetCanMove);
-	}
-	
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(GetWorld(), AMusicManagerCombat::StaticClass()));
-
-	if (musicManager)
-	{
-		musicManager->OnBeat.AddDynamic(this, &UCombatSystemComponent::DownBeat);
+		OnComboDrop.AddUniqueDynamic(owner, &APlayerCharacterCombat::ResetCanMove);
 	}
 }
 #pragma endregion
+
+void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
+{
+	musicManager = music;
+
+	if (musicManager)
+	{
+		musicManager->OnBeat.AddUniqueDynamic(this, &UCombatSystemComponent::DownBeat);
+		GameInfoUtilities::PrintToScreen("Got It");
+	}
+	else
+	{
+		GameInfoUtilities::PrintToScreen("Nope.");
+	}
+}
+
+void UCombatSystemComponent::TearDown()
+{
+	if (musicManager)
+	{
+		musicManager->OnBeat.RemoveDynamic(this, &UCombatSystemComponent::DownBeat);
+	}
+	
+	musicManager = nullptr;
+}
 
 #pragma region Input
 //Reads player input
@@ -340,13 +358,19 @@ void UCombatSystemComponent::DownBeat()
 #pragma region SetDodging
 void UCombatSystemComponent::SetIsDodging(E_Directions directions)
 {
+	previousDirection = E_CombatDirections::None;
+
 	if (directions == E_Directions::None)
 	{
 		lastAttackBeat = musicManager->GetFocusedBeat();
 		canAttack = true;
+		owner->ableToJump = true;
 	}
 	else
+	{
 		canAttack = false;
+		owner->ableToJump = false;
+	}
 }
 #pragma endregion
 

@@ -27,8 +27,12 @@ private:
 
 	bool finished;
 
-public:
+protected:
 	virtual void BeginPlay() override;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Combat")
+	void CombatStarted();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Enemies")
 	void AddEnemies(AActor* newEnemy);

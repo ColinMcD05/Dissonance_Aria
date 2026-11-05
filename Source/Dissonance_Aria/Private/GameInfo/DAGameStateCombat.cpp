@@ -7,7 +7,12 @@
 void ADAGameStateCombat::BeginPlay()
 {
 	Super::BeginPlay();
-	OnEnemyDeath.AddDynamic(this, &ADAGameStateCombat::EnemyDead);
+	OnEnemyDeath.AddUniqueDynamic(this, &ADAGameStateCombat::EnemyDead);
+}
+
+void ADAGameStateCombat::CombatStarted()
+{
+	finished = false;
 }
 
 void ADAGameStateCombat::AddEnemies_Implementation(AActor* newEnemy)

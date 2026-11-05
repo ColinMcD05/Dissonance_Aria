@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
 #include "InputMappingContext.h"
+#include "Camera/CameraComponent.h"
 #include "PlayerControllerBase.generated.h"
 
 class APlayerCharacterBase;
@@ -24,9 +25,16 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* freeLookMapping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UInputMappingContext* combatMapping;
 #pragma endregion
 
 	APlayerCharacterBase* playerBase;
+
+	bool canGoBack;
+
+	FTimerHandle canGoBackTimer;
 
 public:
 	virtual void BeginPlay() override;
@@ -34,4 +42,22 @@ public:
 	//Pause the game
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void PausedGame();
+
+	//Set the current camera
+	void SetCurrentCamera(UCameraComponent* newCamera);
+
+#pragma region Setup and down Combat Character
+	UFUNCTION()
+	void CombatStart();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "SetUp")
+	void SwapUI(E_GameStateType newState);
+
+	UFUNCTION(BlueprintCallable, Category = "Input")
+	void DisconnentPlayerInput(int exp, int gold);
+#pragma endregion
+
+	void CanGoBackToLevel();
+
+	void BackToLevel();
 };
