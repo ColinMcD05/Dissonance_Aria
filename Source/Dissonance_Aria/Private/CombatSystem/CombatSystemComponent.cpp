@@ -358,13 +358,19 @@ void UCombatSystemComponent::DownBeat()
 #pragma region SetDodging
 void UCombatSystemComponent::SetIsDodging(E_Directions directions)
 {
+	previousDirection = E_CombatDirections::None;
+
 	if (directions == E_Directions::None)
 	{
 		lastAttackBeat = musicManager->GetFocusedBeat();
 		canAttack = true;
+		owner->ableToJump = true;
 	}
 	else
+	{
 		canAttack = false;
+		owner->ableToJump = false;
+	}
 }
 #pragma endregion
 
