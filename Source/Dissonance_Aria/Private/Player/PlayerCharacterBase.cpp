@@ -73,6 +73,9 @@ void APlayerCharacterBase::SprintCancel_Implementation()
 
 void APlayerCharacterBase::PlayerJump_Implementation()
 {
+	if (!ableToJump)
+		return;
+
 	Jump();
 }
 

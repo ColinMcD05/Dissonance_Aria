@@ -91,7 +91,7 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 
 	FHitResult hit;
 
-	UKismetSystemLibrary::LineTraceSingle(this, player->GetActorLocation(), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_Visibility), 
+	UKismetSystemLibrary::LineTraceSingle(this, player->GetActorLocation(), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
 		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
 
 	if (hit.bBlockingHit)

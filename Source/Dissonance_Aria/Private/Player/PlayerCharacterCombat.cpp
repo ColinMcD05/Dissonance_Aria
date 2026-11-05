@@ -13,6 +13,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "GameInfo/DAGameModeBase.h"
 #include "CombatSystem/DodgeComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Music/MusicManagerCombat.h"
 #include "Inventory/PDA_Equipment.h"
 
@@ -77,6 +78,12 @@ void APlayerCharacterCombat::BeginPlay()
 		weaponsSystem->SpawnWeapons(inventory, this);
 
 		weapon = weaponsSystem->GetCurrentHeldWeapon();
+	}
+
+	if (IsValid(dodgeComponent) && IsValid(combatSystem))
+	{
+		dodgeComponent->OnDodge.AddUniqueDynamic(this, &APlayerCharacterCombat::ListenToDodge);
+		dodgeComponent->OnDodge.AddUniqueDynamic(combatSystem, &UCombatSystemComponent::SetIsDodging);
 	}
 
 	//Get game state
@@ -155,7 +162,7 @@ void APlayerCharacterCombat::ReadChargeAttack()
 //Read the side step input
 void APlayerCharacterCombat::ReadSidestep()
 {
-	if (!IsValid(dodgeComponent))
+	if (!IsValid(dodgeComponent) || GetCharacterMovement()->IsFalling())
 		return;
 
 	dodgeComponent->StartDodge(direction);
@@ -568,11 +575,6 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 
 void APlayerCharacterCombat::CombatStarted_Implementation()
 {
-	if (IsValid(dodgeComponent))
-	{
-		dodgeComponent->OnDodge.AddUniqueDynamic(this, &APlayerCharacterCombat::ListenToDodge);
-	}
-
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
 

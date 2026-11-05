@@ -48,6 +48,10 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping")
+	bool ableToJump = true;
+
 	// Sets default values for this character's properties
 	APlayerCharacterBase();
 
