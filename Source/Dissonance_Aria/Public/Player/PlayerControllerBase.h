@@ -55,6 +55,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Input")
 	void DisconnentPlayerInput(int exp, int gold);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Death")
+	void PlayerDeath();
 #pragma endregion
 
 	void CanGoBackToLevel();

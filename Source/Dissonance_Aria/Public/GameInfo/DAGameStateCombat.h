@@ -23,6 +23,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Experience", meta = (AllowPrivateAccess = "true"))
 	int totalEnemyGold;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Experience", meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> enemies;
 
 	bool finished;

@@ -72,6 +72,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void SetMaxHealthAndCurrent(int newMaxHealth);
 
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void SetInitialHealth(int newHealth);
+
 	void IncreaseMaxHealth(int increasedAmount);
 
 #pragma region Delegates

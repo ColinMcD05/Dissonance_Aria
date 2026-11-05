@@ -76,6 +76,15 @@ void APlayerControllerBase::CanGoBackToLevel()
 	canGoBack = true;
 }
 
+void APlayerControllerBase::PlayerDeath_Implementation()
+{
+	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
+	{
+		subsystem->RemoveMappingContext(combatMapping);
+	}
+	UnPossess();
+}
+
 void APlayerControllerBase::BackToLevel()
 {
 	if (canGoBack)
