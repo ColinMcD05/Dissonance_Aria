@@ -61,6 +61,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Dodge")
 	void ResetDodge();
 
+	void CalculateDodgeDistance(float& distance, FVector tempEndPoint);
+
 #pragma region Delegates
 	UPROPERTY(BlueprintAssignable, BlueprintCallable)
 	FOnDodge OnDodge;

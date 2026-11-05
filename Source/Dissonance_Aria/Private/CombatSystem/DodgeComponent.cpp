@@ -89,13 +89,7 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 
 	FVector tempEndPoint = player->GetActorLocation() + distance * endPoint;
 
-	FHitResult hit;
-
-	UKismetSystemLibrary::LineTraceSingle(this, player->GetActorLocation(), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
-		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
-
-	if (hit.bBlockingHit)
-		distance = hit.Distance - 50;
+	CalculateDodgeDistance(distance, tempEndPoint);
 
 	endPoint = player->GetActorLocation() + distance * endPoint;
 
@@ -127,6 +121,30 @@ void UDodgeComponent::Dodge()
 		
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &UDodgeComponent::Dodge);
 	}
+}
+
+void UDodgeComponent::CalculateDodgeDistance(float& distance, FVector tempEndPoint)
+{
+
+	FHitResult hit;
+
+	UKismetSystemLibrary::LineTraceSingle(this, player->GetActorLocation(), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
+		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
+
+	if (hit.bBlockingHit)
+		distance = hit.Distance - 50;
+
+	UKismetSystemLibrary::LineTraceSingle(this, player->GetMesh()->GetSocketLocation("Top"), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
+		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
+
+	if (hit.bBlockingHit && distance > hit.Distance)
+		distance = hit.Distance - 50;
+
+	UKismetSystemLibrary::LineTraceSingle(this, player->GetMesh()->GetSocketLocation("Bottom"), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
+		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
+
+	if (hit.bBlockingHit && distance > hit.Distance)
+		distance = hit.Distance - 50;
 }
 
 void UDodgeComponent::EndDodge()
