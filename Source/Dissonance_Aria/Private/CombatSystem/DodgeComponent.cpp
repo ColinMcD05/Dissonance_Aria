@@ -95,7 +95,7 @@ void UDodgeComponent::StartDodge(E_Directions direction)
 		false, {}, EDrawDebugTrace::ForOneFrame, hit, true);
 
 	if (hit.bBlockingHit)
-		distance = hit.Distance - 0.5;
+		distance = hit.Distance - 50;
 
 	endPoint = player->GetActorLocation() + distance * endPoint;
 
