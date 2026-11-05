@@ -2,6 +2,7 @@
 
 
 #include "Player/PlayerCharacterCombat.h"
+#include "Player/PlayerControllerBase.h"
 #include "GameInfo/DAGameInstance.h"
 #include "Input/InputActions/CombatActionBase.h"
 #include "InputAction.h"
@@ -554,14 +555,16 @@ bool APlayerCharacterCombat::TakeDamage_Implementation(FS_DamageInfo damageInfo)
 
 void APlayerCharacterCombat::HandleDeath_Implementation(AActor* killer)
 {
-	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
+	if (APlayerControllerBase* playerController = Cast<APlayerControllerBase>(GetController()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))
 		{
 			subsystem->ClearAllMappings();
 		}
+
+		playerController->PlayerDeath();
 	}
-	GetWorld()->GetTimerManager().SetTimer(resetLevelTimer, this, &APlayerCharacterCombat::ResetCurrentLevel, 3, false);
+	//GetWorld()->GetTimerManager().SetTimer(resetLevelTimer, this, &APlayerCharacterCombat::ResetCurrentLevel, 3, false);
 }
 #pragma endregion
 
@@ -581,7 +584,7 @@ void APlayerCharacterCombat::CombatStarted_Implementation()
 
 	if (damageSystem)
 	{
-		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+		damageSystem->SetInitialHealth(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
 	}
 
 	GetEquipmentInfo();

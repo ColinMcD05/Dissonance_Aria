@@ -94,6 +94,16 @@ void UDamageSystemComponent::SetMaxHealthAndCurrent(int newMaxHealth)
 	OnHealthChange.Broadcast(maxHealth, currentHealth);
 }
 
+void UDamageSystemComponent::SetInitialHealth(int newHealth)
+{
+	maxHealth = newHealth;
+	currentHealth = newHealth;
+
+	OnHealthChange.Broadcast(maxHealth, currentHealth);
+
+	isDead = false;
+}
+
 void UDamageSystemComponent::IncreaseMaxHealth(int increasedAmount)
 {
 	SetMaxHealthAndCurrent(maxHealth + increasedAmount);
