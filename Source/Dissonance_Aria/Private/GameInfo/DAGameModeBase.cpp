@@ -51,11 +51,11 @@ void ADAGameModeBase::LoadCombat_Implementation()
 {
 	if (!IsValid(combatCharacter))
 	{
-		GameInfoUtilities::PrintToScreen("Not there.");
+		//GameInfoUtilities::PrintToScreen("Not there.");
 		return;
 	}
 
-	GameInfoUtilities::PrintToScreen("Is there.");
+	//GameInfoUtilities::PrintToScreen("Is there.");
 	controller->Possess(combatCharacter);
 }
 

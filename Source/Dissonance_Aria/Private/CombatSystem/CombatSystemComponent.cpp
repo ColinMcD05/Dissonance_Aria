@@ -41,11 +41,11 @@ void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
 	if (musicManager)
 	{
 		musicManager->OnBeat.AddUniqueDynamic(this, &UCombatSystemComponent::DownBeat);
-		GameInfoUtilities::PrintToScreen("Got It");
+		//GameInfoUtilities::PrintToScreen("Got It");
 	}
 	else
 	{
-		GameInfoUtilities::PrintToScreen("Nope.");
+		//GameInfoUtilities::PrintToScreen("Nope.");
 	}
 }
 
@@ -65,11 +65,11 @@ bool UCombatSystemComponent::ReadInput()
 {
 	if (!canReadInput || !canAttack)
 	{
-		GameInfoUtilities::PrintToScreen("Bad");
+		//ameInfoUtilities::PrintToScreen("Bad");
 		return false;
 	}
 
-	GameInfoUtilities::PrintToScreen("Good");
+	//GameInfoUtilities::PrintToScreen("Good");
 	//Resets timer incase it was running
 	GetWorld()->GetTimerManager().ClearTimer(resetAttackInfoTimer);
 
@@ -282,12 +282,12 @@ void UCombatSystemComponent::StopCharge()
 
 	if(!CheckIfValidAttack(beatPosition))
 	{
-		GameInfoUtilities::PrintToScreen("Bad Time");
+		//GameInfoUtilities::PrintToScreen("Bad Time");
 		ChargeFlubbed();
 	}
 	else
 	{
-		GameInfoUtilities::PrintToScreen("Good Time");
+		//GameInfoUtilities::PrintToScreen("Good Time");
 		ChargeAttack();
 	}
 }

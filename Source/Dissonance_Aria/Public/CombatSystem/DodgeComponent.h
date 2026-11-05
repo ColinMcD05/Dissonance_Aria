@@ -41,6 +41,8 @@ private:
 	UPROPERTY()
 	TObjectPtr<AMusicManagerCombat> musicManager;
 
+	FTimerHandle dodgeTimer;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

@@ -98,7 +98,7 @@ void APlayerCharacterBase::Look_Implementation(const FInputActionValue& value)
 void APlayerCharacterBase::PauseGame_Implementation()
 {
 	Cast<APlayerControllerBase>(GetController())->PausedGame();
-	GameInfoUtilities::PrintToScreen("Paused");
+	//GameInfoUtilities::PrintToScreen("Paused");
 }
 
 void APlayerCharacterBase::SetSpeedByType(E_SpeedTypes speedType)

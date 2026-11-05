@@ -158,7 +158,7 @@ void AWeaponActor::PerformSphereTrace_Implementation()
 			if (hit.GetActor())
 			{
 				Execute_OverlappedActor(this, hit.GetActor());
-				GameInfoUtilities::PrintToScreen("Hit");
+				//GameInfoUtilities::PrintToScreen("Hit");
 			}
 		}
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::PerformSphereTrace);

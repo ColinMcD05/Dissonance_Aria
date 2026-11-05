@@ -122,7 +122,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
-	GameInfoUtilities::PrintToScreen("Attack");
+	//GameInfoUtilities::PrintToScreen("Attack");
 	if (combatSystem)
 	{
 		if (combatSystem->ReadInput())
@@ -135,12 +135,12 @@ void APlayerCharacterCombat::ReadNormalAttack()
 		}
 		else 
 		{
-			GameInfoUtilities::PrintToScreen("Bad Player");
+			//GameInfoUtilities::PrintToScreen("Bad Player");
 		}
 	}
 	else
 	{
-		GameInfoUtilities::PrintToScreen("No Combat");
+		//GameInfoUtilities::PrintToScreen("No Combat");
 	}
 }
 
@@ -171,13 +171,13 @@ void APlayerCharacterCombat::ReadSidestep()
 	switch (direction)
 	{
 		case E_Directions::Backward:
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Backward"));
+			//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Backward"));
 			break;
 		case E_Directions::Left:
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Left"));
+			//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Left"));
 			break;
 		case E_Directions::Right:
-			GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Right"));
+			//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Yellow, TEXT("Right"));
 			break;
 		case E_Directions::Forward:
 		default:
@@ -247,7 +247,7 @@ void APlayerCharacterCombat::PauseGame_Implementation()
 
 void APlayerCharacterCombat::CanPauseGame()
 {
-	GameInfoUtilities::PrintToScreen("Beat");
+	//GameInfoUtilities::PrintToScreen("Beat");
 
 	canPause = true;
 
@@ -278,7 +278,7 @@ void APlayerCharacterCombat::StartSnapToEnemy()
 		FHitResult result;
 
 		UKismetSystemLibrary::LineTraceSingle(this, GetActorLocation(), endPosition,
-			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel4), false, {weapon}, EDrawDebugTrace::Persistent, result, true);
+			UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel3), false, {weapon}, EDrawDebugTrace::Persistent, result, true);
 
 		if (result.GetActor() == lockedOnEnemy)
 		{
@@ -624,7 +624,7 @@ void APlayerCharacterCombat::SetMusicManager(AMusicManagerCombat* music)
 
 	if (IsValid(musicManager))
 	{
-		GameInfoUtilities::PrintToScreen("Added");
+		//GameInfoUtilities::PrintToScreen("Added");
 
 		musicManager->OnBeat.AddUniqueDynamic(this, &APlayerCharacterCombat::CanPauseGame);
 	}
