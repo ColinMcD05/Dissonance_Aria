@@ -557,12 +557,10 @@ void APlayerCharacterCombat::HandleDeath_Implementation(AActor* killer)
 {
 	if (APlayerControllerBase* playerController = Cast<APlayerControllerBase>(GetController()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(playerController->GetLocalPlayer()))
-		{
-			subsystem->ClearAllMappings();
-		}
+		canMove = false;
 
 		playerController->PlayerDeath();
+		GetCharacterMovement()->StopActiveMovement();
 	}
 	//GetWorld()->GetTimerManager().SetTimer(resetLevelTimer, this, &APlayerCharacterCombat::ResetCurrentLevel, 3, false);
 }
@@ -580,20 +578,23 @@ void APlayerCharacterCombat::CombatStarted_Implementation()
 {
 	CameraEnemySearch(nullptr);
 	FocusOnEnemy();
+	canMove = true;
 
+	GetEquipmentInfo();
 
 	if (damageSystem)
 	{
 		damageSystem->SetInitialHealth(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
 	}
 
-	GetEquipmentInfo();
-
 	OnPlayerSetUpDone.Broadcast();
 }
 
 void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 {
+	canMove = false;
+	GetCharacterMovement()->StopActiveMovement();
+
 	combatEnd = true;
 	inventory->CombatEnd(exp, gold);
 
