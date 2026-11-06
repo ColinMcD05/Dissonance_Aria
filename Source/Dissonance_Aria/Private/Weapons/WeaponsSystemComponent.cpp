@@ -85,6 +85,7 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 	//GameInfoUtilities::PrintToScreen(currentTuning->name);
 
 	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
+	OnTuningSwapped.Broadcast(tuning);
 	GiveTuningInfo();
 
 	canSwapTuning = false;
