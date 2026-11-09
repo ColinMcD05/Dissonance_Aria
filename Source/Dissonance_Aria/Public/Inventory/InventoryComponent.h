@@ -124,6 +124,9 @@ public:
 #pragma region EXP
 	UFUNCTION()
 	void CombatEnd(int gainedExp, int gainedGold);
+
+	UFUNCTION(BlueprintCallable, Category = "EXP")
+	int GetEXP() { return weapon.exp.currentExperience; }
 #pragma endregion
 
 #pragma region Gold

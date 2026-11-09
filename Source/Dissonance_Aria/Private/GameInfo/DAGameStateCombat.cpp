@@ -3,6 +3,7 @@
 
 #include "GameInfo/DAGameStateCombat.h"
 #include "Enemies/LockOnInterface.h"
+#include "BasicFunctions/GetGameInfo.h"
 
 void ADAGameStateCombat::BeginPlay()
 {
