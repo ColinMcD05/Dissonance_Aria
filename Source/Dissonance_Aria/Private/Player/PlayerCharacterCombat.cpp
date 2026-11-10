@@ -612,9 +612,9 @@ void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 	}
 }
 
-void APlayerCharacterCombat::SetMusicManager(AMusicManagerCombat* music)
+void APlayerCharacterCombat::SetMusicManager()
 {
-	musicManager = music;
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
 
 	if (combatSystem)
 		combatSystem->SetUp(musicManager);

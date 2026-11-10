@@ -270,7 +270,8 @@ public:
 
 	void UpdateHealth(int weaponHealth);
 
-	void SetMusicManager(AMusicManagerCombat* music);
+	UFUNCTION(BlueprintCallable)
+	void SetMusicManager();
 
 #pragma region SetUp
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)

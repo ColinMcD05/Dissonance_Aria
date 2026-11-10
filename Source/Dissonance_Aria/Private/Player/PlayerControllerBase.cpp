@@ -22,11 +22,6 @@ void APlayerControllerBase::BeginPlay()
 		gameState->OnCombatEnd.AddUniqueDynamic(this, &APlayerControllerBase::DisconnentPlayerInput);
 	}
 
-	if (ADAGameModeBase* gameMode = Cast<ADAGameModeBase>(GetWorld()->GetAuthGameMode()))
-	{
-		gameMode->OnGameTypeChange.AddUniqueDynamic(this, &APlayerControllerBase::SwapUI);
-	}
-
 	//Add basic mapping
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{

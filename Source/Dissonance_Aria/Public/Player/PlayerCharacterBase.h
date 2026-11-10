@@ -48,6 +48,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+	bool canReadInput = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping")
 	bool ableToJump = true;

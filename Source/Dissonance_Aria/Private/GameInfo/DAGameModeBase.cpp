@@ -23,9 +23,11 @@ void ADAGameModeBase::SwapGameState(E_GameStateType gameStateSwapped)
 	switch (gameStateSwapped)
 	{
 		case E_GameStateType::Combat:
+			exploringCharacter->canReadInput = false;
 			LoadCombat();
 			break;
 		case E_GameStateType::Exploration:
+			exploringCharacter->canReadInput = true;
 			LoadExploration();
 			break;
 	}
@@ -46,6 +48,11 @@ void ADAGameModeBase::SetupExplorerCharacter(APlayerControllerBase* newControlle
 	exploringCharacter = newExploringCharacter; 
 }
 
+void ADAGameModeBase::PossessCombat()
+{
+	controller->Possess(combatCharacter);
+}
+
 #pragma region Swapping
 void ADAGameModeBase::LoadCombat_Implementation()
 {
@@ -56,7 +63,6 @@ void ADAGameModeBase::LoadCombat_Implementation()
 	}
 
 	//GameInfoUtilities::PrintToScreen("Is there.");
-	controller->Possess(combatCharacter);
 }
 
 void ADAGameModeBase::LoadExploration_Implementation()
