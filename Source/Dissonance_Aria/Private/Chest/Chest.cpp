@@ -41,8 +41,8 @@ void AChest::Interact_Implementation(APlayerCharacterExploration* player)
 	if (pickedUp || !IsValid(player) || !IsValid(equipment))
 		return;
 
+	pickedUp = true;
 	GameInfoUtilities::GetDAGameInstance(this)->GetInventory()->GainEquipment(equipment);
-	GameInfoUtilities::PrintToScreen(equipment->name);
 }
 
 void AChest::StartedOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,

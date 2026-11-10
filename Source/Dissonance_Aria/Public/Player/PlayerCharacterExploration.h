@@ -31,7 +31,7 @@ private:
 
 #pragma region Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
-	UInputAction* interact;
+	UInputAction* interactInput;
 #pragma endregion
 
 #pragma region Interaction
