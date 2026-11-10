@@ -55,6 +55,9 @@ void APlayerCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 void APlayerCharacterBase::Move_Implementation(const FInputActionValue& value)
 {
+	if (!canReadInput)
+		return;
+
 	FVector2D moveVector = value.Get<FVector2D>();
 	
 	AddMovementInput(GetActorRightVector(), moveVector.X);
@@ -63,6 +66,9 @@ void APlayerCharacterBase::Move_Implementation(const FInputActionValue& value)
 
 void APlayerCharacterBase::Sprint_Implementation()
 {
+	if (!canReadInput)
+		return;
+
 	SetSpeedByType(E_SpeedTypes::Running);
 }
 
@@ -73,6 +79,9 @@ void APlayerCharacterBase::SprintCancel_Implementation()
 
 void APlayerCharacterBase::PlayerJump_Implementation()
 {
+	if (!canReadInput)
+		return;
+
 	if (!ableToJump)
 		return;
 

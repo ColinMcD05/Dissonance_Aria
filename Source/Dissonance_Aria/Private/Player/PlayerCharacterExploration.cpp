@@ -45,6 +45,9 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 //Move player
 void APlayerCharacterExploration::Move_Implementation(const FInputActionValue& value)
 {
+	if (!canReadInput)
+		return;
+
 	if (currentCamera)
 	{
 		//Move based on camera forward

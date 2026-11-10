@@ -48,7 +48,6 @@ void AMusicManagerCombat::BindEvents()
 	if (character)
 	{
 		character->GetWeaponsSystem()->OnChangeMusic.AddUniqueDynamic(this, &AMusicManagerCombat::ChangeChannel);
-		character->SetMusicManager(this);
 	}
 }
 #pragma endregion
@@ -84,7 +83,10 @@ void AMusicManagerCombat::ChangeChannel(int newChannel)
 int AMusicManagerCombat::GetCurrentSongTime()
 {
 	//Check if audio is playing
-	if (audioComponent == nullptr && !audioComponent->IsPlaying())
+	if (audioComponent == nullptr || !IsValid(audioComponent))
+		return -1;
+
+	if (!audioComponent->IsPlaying())
 		return -1;
 
 	//Return timeline position

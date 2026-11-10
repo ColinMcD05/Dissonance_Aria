@@ -65,6 +65,9 @@ public:
 
 	void StartCombat();
 
+	UFUNCTION(BlueprintCallable, Category = "SwapLogic")
+	void PossessCombat();
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "SwapLogic")
 	void LoadCombat();
 
