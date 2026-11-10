@@ -42,8 +42,11 @@ public:
 	void SetUp(bool newPickedUp);
 
 #pragma region Overlap
+	UFUNCTION()
 	void StartedOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 		UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult);
+
+	UFUNCTION()
 	void EndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
 		UPrimitiveComponent* otherComp, int32 otherBodyIndex);
 #pragma endregion

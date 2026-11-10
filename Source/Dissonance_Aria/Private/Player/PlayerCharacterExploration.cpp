@@ -37,7 +37,7 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		inputComponent->BindAction(GetMove(), ETriggerEvent::Completed, this, &APlayerCharacterExploration::SetNewForward);
-
+		inputComponent->BindAction(interactInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::Interact);
 	}
 }
 
@@ -93,7 +93,12 @@ void APlayerCharacterExploration::SetRotation(FVector2D moveVector)
 #pragma region Interact
 void APlayerCharacterExploration::Interact_Implementation()
 {
+	if (!IsValid(interactingActor) || !interactingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
+	{
+		return;
+	}
 
+	IInteractableInterface::Execute_Interact(interactingActor, this);
 }
 
 void APlayerCharacterExploration::SetInteractingObject(AActor* newInteractingActor)
@@ -101,10 +106,14 @@ void APlayerCharacterExploration::SetInteractingObject(AActor* newInteractingAct
 	if (!IsValid(newInteractingActor) || !newInteractingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
 	{
 		interactingActor = nullptr;
+
+		GameInfoUtilities::PrintToScreen("None");
 	}
 	else
 	{
 		interactingActor = newInteractingActor;
+
+		GameInfoUtilities::PrintToScreen(newInteractingActor->GetName());
 	}
 }
 #pragma endregion
