@@ -22,10 +22,20 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float rotationSpeed = 6;
 
-	FVector forward;
-	FVector right;
 #pragma region Camera
 	UCameraComponent* currentCamera;
+
+	FVector forward;
+	FVector right;
+#pragma endregion
+
+#pragma region Inputs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* interactInput;
+#pragma endregion
+
+#pragma region Interaction
+	AActor* interactingActor;
 #pragma endregion
 
 protected:
@@ -45,6 +55,14 @@ public:
 	void SetRotation(FVector2D moveVector);
 #pragma endregion
 
+#pragma region Interaction
+	UFUNCTION(BlueprintNativeEvent, Category = "Interact")
+	void Interact();
+
+	UFUNCTION(BlueprintCallable, Category = "Interact")
+	void SetInteractingObject(AActor* newInteractingActor);
+#pragma endregion
+
 #pragma region Camera
 	//Set current camera
 	UFUNCTION(BlueprintCallable)
@@ -54,6 +72,6 @@ public:
 	void SetBestCamera();
 
 	//Get the nearest camera
-	AFixedCamera* FindNearestCamera();
+	//AFixedCamera* FindNearestCamera();
 #pragma endregion
 };

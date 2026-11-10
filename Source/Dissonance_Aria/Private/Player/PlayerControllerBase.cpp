@@ -31,6 +31,7 @@ void APlayerControllerBase::BeginPlay()
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		subsystem->AddMappingContext(basicMapping, 1);
+		subsystem->AddMappingContext(explorationMapping, 1);
 
 		if (playerBase && playerBase->GetUseFreeCamera())
 		{

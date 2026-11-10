@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "InteractableInterface.generated.h"
 
+class APlayerCharacterExploration;
+
 UINTERFACE(MinimalAPI)
 class UInteractableInterface : public UInterface
 {
@@ -18,5 +20,5 @@ class DISSONANCE_ARIA_API IInteractableInterface
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "DamageableInterface")
-	void Interact();
+	void Interact(APlayerCharacterExploration* player);
 };

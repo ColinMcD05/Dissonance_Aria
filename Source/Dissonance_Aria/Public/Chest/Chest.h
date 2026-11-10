@@ -7,14 +7,26 @@
 #include "Interactable/InteractableInterface.h"
 #include "Chest.generated.h"
 
+class UBoxComponent;
+class UStaticMeshComponent;
+class UPDA_Equipment;
+
 UCLASS()
 class DISSONANCE_ARIA_API AChest : public AActor, public IInteractableInterface
 {
 	GENERATED_BODY()
 	
 private:
-	bool pickedUp;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
+	UStaticMeshComponent* chestMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh", meta = (AllowPrivateAccess = "true"))
+	UBoxComponent* boxComponent;
+
+	bool pickedUp = false;
+
+	UPROPERTY(EditAnywhere)
+	UPDA_Equipment* equipment;
 public:	
 	// Sets default values for this actor's properties
 	AChest();
@@ -24,5 +36,18 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void Interact_Implementation() override;
+	virtual void Interact_Implementation(APlayerCharacterExploration* player) override;
+
+	UFUNCTION(BlueprintCallable, Category = "SetUp")
+	void SetUp(bool newPickedUp);
+
+#pragma region Overlap
+	UFUNCTION()
+	void StartedOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+		UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& sweepResult);
+
+	UFUNCTION()
+	void EndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,
+		UPrimitiveComponent* otherComp, int32 otherBodyIndex);
+#pragma endregion
 };
