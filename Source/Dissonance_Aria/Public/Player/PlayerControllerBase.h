@@ -27,6 +27,9 @@ protected:
 	UInputMappingContext* freeLookMapping;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
+	UInputMappingContext* explorationMapping;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* combatMapping;
 #pragma endregion
 
