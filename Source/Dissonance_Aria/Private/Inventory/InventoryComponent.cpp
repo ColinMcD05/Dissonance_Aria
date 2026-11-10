@@ -17,6 +17,8 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
+	expMult = 1;
+	goldMult = 1;
 }
 
 // Called every frame
@@ -62,8 +64,8 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 void UInventoryComponent::CombatEnd(int gainedExp, int gainedGold)
 {
 	weapon.exp.currentExperience += gainedExp * expMult;
-	LevelUp(&weapon, 10);
-	AddGold(gold);
+	LevelUp(&weapon, MAX_LEVEL);
+	AddGold(gainedGold);
 }
 
 #pragma region Equipment
