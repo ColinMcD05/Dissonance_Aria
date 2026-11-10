@@ -43,7 +43,7 @@ void AMusicManagerCombat::BindEvents()
 	}
 
 	//Get player character
-	APlayerCharacterCombat* character = Cast<APlayerCharacterCombat>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+	APlayerCharacterCombat* character = Cast<APlayerCharacterCombat>(UGameplayStatics::GetActorOfClass(this, APlayerCharacterCombat::StaticClass()));
 
 	if (character)
 	{
