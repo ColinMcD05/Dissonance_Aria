@@ -38,6 +38,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Stats", meta = (ClampMin = "0.0", ClampMax = "1.0"))
 	float defense;
 
+	bool invincible;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Invincibility")
+	float iFrameTime = 0.001f;
+
+	FTimerHandle iFrameTimer;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -53,12 +60,15 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+#pragma region Damage
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	bool HandleIncomingDamage(FS_DamageInfo damageInfo, int& damageAmount);
 
 	UFUNCTION(BlueprintCallable, Category = "Damage")
 	void HandleIncomingHeal(float healAmount, AActor* healer);
+#pragma endregion
 
+#pragma region Health
 	// Getters
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Health")
 	float GetCurrentHealth() const { return currentHealth; }
@@ -76,6 +86,20 @@ public:
 	void SetInitialHealth(int newHealth);
 
 	void IncreaseMaxHealth(int increasedAmount);
+#pragma endregion
+
+#pragma region Invincibility
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Invincibility")
+	bool GetIsInvincible() { return invincible; }
+
+	UFUNCTION(BlueprintCallable, Category = "Invincibility")
+	void SetIsInvincible(bool newInvincibility) { invincible = newInvincibility; }
+
+	UFUNCTION(BlueprintCallable, Category = "Invincibility")
+	void StartIFrames();
+
+	void ResetIFrames();
+#pragma endregion
 
 #pragma region Delegates
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)

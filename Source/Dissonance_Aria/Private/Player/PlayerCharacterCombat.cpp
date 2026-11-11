@@ -452,8 +452,6 @@ void APlayerCharacterCombat::Look_Implementation(const FInputActionValue& value)
 		cameraRotation.Pitch = FMath::Clamp(cameraRotation.Pitch, freeCameraRotationLowerLimit, freeCameraRotationUpperLimit);
 
 		camera->SetWorldRotation(cameraRotation);
-
-		GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(camera->GetComponentRotation().Pitch));
 	}
 }
 #pragma endregion
