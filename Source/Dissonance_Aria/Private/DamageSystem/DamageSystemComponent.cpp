@@ -2,6 +2,7 @@
 
 
 #include "DamageSystem/DamageSystemComponent.h"
+#include "BasicFunctions/GetGameInfo.h"
 
 // Sets default values for this component's properties
 UDamageSystemComponent::UDamageSystemComponent()
@@ -34,9 +35,10 @@ void UDamageSystemComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	// ...
 }
 
+#pragma region Health
 bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo, int& damageAmount)
 {
-	if (isDead)
+	if (isDead || invincible)
 	{
 		return false;
 	}
@@ -66,6 +68,7 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo, int&
 	}
 
 	OnTakeDamage.Broadcast(currentHealth);
+	StartIFrames();
 
 	return true;
 }
@@ -102,9 +105,25 @@ void UDamageSystemComponent::SetInitialHealth(int newHealth)
 	OnHealthChange.Broadcast(maxHealth, currentHealth);
 
 	isDead = false;
+	invincible = false;
 }
 
 void UDamageSystemComponent::IncreaseMaxHealth(int increasedAmount)
 {
 	SetMaxHealthAndCurrent(maxHealth + increasedAmount);
 }
+#pragma endregion
+
+#pragma region Invincibility
+void UDamageSystemComponent::StartIFrames()
+{
+	invincible = true;
+	GetWorld()->GetTimerManager().SetTimer(iFrameTimer, this, &UDamageSystemComponent::ResetIFrames, iFrameTime);
+}
+
+void UDamageSystemComponent::ResetIFrames()
+{
+	GameInfoUtilities::PrintToScreen("Reset");
+	invincible = false;
+}
+#pragma endregion
