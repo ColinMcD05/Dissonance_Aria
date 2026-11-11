@@ -94,6 +94,29 @@ AActor* ADAGameStateCombat::GetPreviousEnemy(int& currentIndex)
 	return enemies[currentIndex];
 }
 
+AActor* ADAGameStateCombat::GetClosestEnemy(AActor* player, int& currentIndex)
+{
+	float closest = 0;
+	AActor* closestEnemy = nullptr;
+
+	for (int i = 0; i < enemies.Num(); i++)
+	{
+		float newDistance = player->GetDistanceTo(enemies[i]);
+
+		if (closestEnemy == nullptr || newDistance < closest)
+		{
+			closest = newDistance;
+			closestEnemy = enemies[i];
+			currentIndex = i;
+		}
+	}
+
+	if(IsValid(closestEnemy))
+		SendLockedOn(closestEnemy);
+
+	return closestEnemy;
+}
+
 void ADAGameStateCombat::SendLockedOn(AActor* newEnemy)
 {
 	if (!IsValid(newEnemy))

@@ -22,21 +22,12 @@ void APlayerControllerBase::BeginPlay()
 		gameState->OnCombatEnd.AddUniqueDynamic(this, &APlayerControllerBase::DisconnentPlayerInput);
 	}
 
-	if (ADAGameModeBase* gameMode = Cast<ADAGameModeBase>(GetWorld()->GetAuthGameMode()))
-	{
-		gameMode->OnGameTypeChange.AddUniqueDynamic(this, &APlayerControllerBase::SwapUI);
-	}
-
 	//Add basic mapping
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
 	{
 		subsystem->AddMappingContext(basicMapping, 1);
 		subsystem->AddMappingContext(explorationMapping, 1);
-
-		if (playerBase && playerBase->GetUseFreeCamera())
-		{
-			subsystem->AddMappingContext(freeLookMapping, 0);
-		}
+		subsystem->AddMappingContext(freeLookMapping, 0);
 
 		FInputModeGameOnly gameOnly;
 		SetInputMode(gameOnly);

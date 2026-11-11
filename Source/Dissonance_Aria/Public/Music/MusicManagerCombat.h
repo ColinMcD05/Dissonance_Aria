@@ -40,7 +40,7 @@ protected:
 
 #pragma region Components
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true"))
-	UFMODAudioComponent* audioComponent;
+	TObjectPtr<UFMODAudioComponent> audioComponent;
 #pragma endregion
 
 public:	

@@ -20,7 +20,6 @@ AFixedCamera::AFixedCamera()
 void AFixedCamera::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void AFixedCamera::SetName()

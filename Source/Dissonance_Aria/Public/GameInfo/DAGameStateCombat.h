@@ -69,5 +69,7 @@ public:
 	//Get previous enemy
 	UFUNCTION(BlueprintCallable, Category = "Enemies")
 	AActor* GetPreviousEnemy(int& currentIndex);
+
+	AActor* GetClosestEnemy(AActor* player, int& currentIndex);
 #pragma endregion
 };

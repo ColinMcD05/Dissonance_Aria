@@ -210,6 +210,8 @@ public:
 	E_CombatDirections GetCombatDirection() { return previousDirection; }
 #pragma endregion
 
+	void SetPreviousDirection(E_CombatDirections newDirection) { previousDirection = newDirection; }
+
 #pragma region SetDodging
 	UFUNCTION()
 	void SetIsDodging(E_Directions directions);
