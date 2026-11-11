@@ -104,6 +104,9 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* changeLockon;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* changeCameraType;
+
 	bool canPause = false;
 #pragma endregion
 
@@ -130,6 +133,8 @@ private:
 	AActor* lockedOnEnemy;
 
 	int enemyIndex = -1;
+
+	bool lockOn = false;
 #pragma endregion
 
 #pragma region Timers
@@ -204,10 +209,14 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Input")
 	void ReadAnyKey(FKey pressedKey);
 
+	void ReadChangeCameraType();
+
 	virtual void PauseGame_Implementation() override;
 
 	UFUNCTION()
 	void CanPauseGame();
+
+	virtual void Look_Implementation(const FInputActionValue& value) override;
 #pragma endregion
 
 	E_ControllerType KeyboardOrGamepad(FKey pressedKey);
