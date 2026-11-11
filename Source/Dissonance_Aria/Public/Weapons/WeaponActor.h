@@ -53,6 +53,10 @@ private:
 	float radius = 30;
 
 	E_Genre currentGenre;
+
+	bool charged = false;
+
+	int chargeAmount = 0;
 #pragma endregion
 
 #pragma region Stat Increase
@@ -98,27 +102,9 @@ public:
 #pragma endregion
 
 #pragma region Attacking
-	//Perform light attack
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	float PerformLightAttack(const TArray<E_CombatActionType>& previousActions);
-
-	//Perform heavy attack
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	float PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
-
-	/*
-	//Start charge
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void StartChargeAttack();
-
-	//Charge attack ready
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
-	void ChargeAttack();
-	*/
-
 	//Starts the sphere trace for attacking
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void StartSphereTrace();
+	void StartSphereTrace(bool charging = false, int chargeCount = 0);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void PerformSphereTrace();
@@ -157,5 +143,25 @@ public:
 #pragma region AttackInterface
 	//Interface Functions
 	virtual bool OverlappedActor_Implementation(AActor* hitEnemy) override;
+#pragma endregion
+
+#pragma region Old
+//Perform light attack
+//UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+//float PerformLightAttack(const TArray<E_CombatActionType>& previousActions);
+
+//Perform heavy attack
+//UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+//float PerformHeavyAttack(const TArray<E_CombatActionType>& previousActions);
+
+/*
+//Start charge
+UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+void StartChargeAttack();
+
+//Charge attack ready
+UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack")
+void ChargeAttack();
+*/
 #pragma endregion
 };

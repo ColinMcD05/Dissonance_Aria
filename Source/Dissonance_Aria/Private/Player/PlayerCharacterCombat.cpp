@@ -87,6 +87,11 @@ void APlayerCharacterCombat::BeginPlay()
 		dodgeComponent->OnDodge.AddUniqueDynamic(combatSystem, &UCombatSystemComponent::SetIsDodging);
 	}
 
+	if (IsValid(combatSystem))
+	{
+		combatSystem->OnChargeSuccessChange.AddDynamic(this, &APlayerCharacterCombat::ChargeAttack);
+	}
+
 	//Get game state
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
@@ -476,13 +481,24 @@ void APlayerCharacterCombat::StopChargedAttack_Implementation()
 		return;
 
 	combatSystem->StopCharge();
-
-	canMove = true;
-	isCharging = false;
 }
 
 void APlayerCharacterCombat::ResetIsCharging()
 {
+	isCharging = false;
+}
+
+void APlayerCharacterCombat::ChargeAttack(E_ChargeSuccess success, int chargeCount)
+{
+	if(IsValid(weaponsSystem) && success == E_ChargeSuccess::Success)
+		weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace(true, chargeCount);
+	else
+		ChargeAnimationDone();
+}
+
+void APlayerCharacterCombat::ChargeAnimationDone()
+{
+	canMove = true;
 	isCharging = false;
 }
 #pragma endregion
@@ -522,20 +538,7 @@ void APlayerCharacterCombat::GetEquipmentInfo()
 
 //Implementation of Attack interface
 #pragma region AttacksInterface
-float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
-{
-	return weaponsSystem->GetCurrentHeldWeapon()->PerformLightAttack(previousActions);
-}
 
-float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
-{
-	return weaponsSystem->GetCurrentHeldWeapon()->PerformHeavyAttack(previousActions);
-}
-
-float APlayerCharacterCombat::SpecialAttack_Implementation()
-{
-	return 0;
-}
 #pragma endregion
 
 #pragma region DamageableInterface
@@ -693,6 +696,20 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 	{
 		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
 	}
+}
+float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
+{
+	return 0;
+}
+
+float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
+{
+	return 0;
+}
+
+float APlayerCharacterCombat::SpecialAttack_Implementation()
+{
+	return 0;
 }
 */
 #pragma endregion

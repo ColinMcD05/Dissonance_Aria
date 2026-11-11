@@ -253,7 +253,7 @@ bool UCombatSystemComponent::StartCharge()
 
 void UCombatSystemComponent::Charge()
 {
-	if (!isCharging || lastAttackBeat == musicManager->GetFocusedBeat())
+	if (!isCharging || lastAttackBeat == musicManager->GetFocusedBeat() || chargeSuccess != E_ChargeSuccess::None)
 		return;
 
 	if (passedChargingBeats < maxChargedBeat)
@@ -272,13 +272,11 @@ void UCombatSystemComponent::StopCharge()
 	if (!isCharging)
 		return;
 
-	canAttack = true;
-	isCharging = false;
-
 	if (!IsValid(musicManager))
 		return;
 
-	int beatPosition = musicManager->GetBeatInTimeSig();
+	int beatPosition = musicManager->GetHowCloseToBeat();
+	lastAttackBeat = musicManager->GetBeatInTimeSig();
 
 	if(!CheckIfValidAttack(beatPosition))
 	{
@@ -294,12 +292,13 @@ void UCombatSystemComponent::StopCharge()
 
 void UCombatSystemComponent::ChargeAttack()
 {
-
+	ChangeChargeSuccess(E_ChargeSuccess::Success);
+	GameInfoUtilities::PrintToScreen("Good Time");
 }
 
 void UCombatSystemComponent::ChargeFlubbed()
 {
-
+	ChangeChargeSuccess(E_ChargeSuccess::Failed);
 }
 
 void UCombatSystemComponent::ChargeFailed()
@@ -315,6 +314,27 @@ void UCombatSystemComponent::ChargeFailed()
 
 	owner->ResetCanMove();
 	owner->ResetIsCharging();
+}
+
+bool UCombatSystemComponent::GetChargeInfo(int& currentChargeCount)
+{
+	currentChargeCount = passedChargingBeats;
+	return isCharging;
+}
+
+void UCombatSystemComponent::ChangeChargeSuccess(E_ChargeSuccess newSuccess)
+{
+	chargeSuccess = newSuccess;
+
+	OnChargeSuccessChange.Broadcast(chargeSuccess, passedChargingBeats);
+
+	passedChargingBeats = 0;
+
+	if (newSuccess != E_ChargeSuccess::Success)
+	{
+		canAttack = true;
+		isCharging = false;
+	}
 }
 #pragma endregion
 
