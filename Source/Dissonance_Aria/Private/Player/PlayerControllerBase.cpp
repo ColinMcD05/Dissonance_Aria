@@ -27,11 +27,7 @@ void APlayerControllerBase::BeginPlay()
 	{
 		subsystem->AddMappingContext(basicMapping, 1);
 		subsystem->AddMappingContext(explorationMapping, 1);
-
-		if (playerBase && playerBase->GetUseFreeCamera())
-		{
-			subsystem->AddMappingContext(freeLookMapping, 0);
-		}
+		subsystem->AddMappingContext(freeLookMapping, 0);
 
 		FInputModeGameOnly gameOnly;
 		SetInputMode(gameOnly);
