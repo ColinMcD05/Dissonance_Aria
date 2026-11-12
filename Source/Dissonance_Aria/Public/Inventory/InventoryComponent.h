@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "Weapons/WeaponInfo.h"
 #include "Saving/SaveInfo.h"
+#include "BasicFunctions/GetGameInfo.h"
 #include "InventoryComponent.generated.h"
 
 class UPDA_Equipment;
@@ -133,7 +134,7 @@ public:
 	int GetGold() { return gold; }
 
 	UFUNCTION(BlueprintCallable, Category = "Gold")
-	void AddGold(int addAmount) { gold += addAmount * goldMult; }
+	void AddGold(int addAmount) {gold += addAmount * goldMult;  GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(addAmount));}
 
 	UFUNCTION(BlueprintCallable, Category = "Gold")
 	bool SpendGold(int spendAmount);

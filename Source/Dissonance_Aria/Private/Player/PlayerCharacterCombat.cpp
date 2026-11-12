@@ -69,7 +69,7 @@ APlayerCharacterCombat::APlayerCharacterCombat()
 void APlayerCharacterCombat::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	//Gets the inventory component
 	inventory = GameInfoUtilities::GetDAGameInstance(this)->GetInventory();
 
@@ -101,6 +101,8 @@ void APlayerCharacterCombat::BeginPlay()
 // Called to bind functionality to input
 void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	useFreeCamera = true;
+
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 	
 	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
@@ -115,6 +117,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
 		inputComponent->BindAction(changeLockon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeLockOn);
+		inputComponent->BindAction(changeCameraType, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChangeCameraType);
 		PlayerInputComponent->BindKey(EKeys::AnyKey, IE_Pressed, this, &APlayerCharacterCombat::ReadAnyKey);
 	}
 }
@@ -128,7 +131,7 @@ void APlayerCharacterCombat::ReadNormalAttack()
 		if (combatSystem->ReadInput())
 		{
 			weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace();
-			StartSnapToEnemy();
+			//StartSnapToEnemy();
 
 			if (canMove)
 				canMove = false;
@@ -234,6 +237,22 @@ void APlayerCharacterCombat::ReadAnyKey_Implementation(FKey pressedKey)
 	{
 		controllerType = KeyboardOrGamepad(pressedKey);
 		OnSwapController.Broadcast(controllerType);
+	}
+}
+
+void APlayerCharacterCombat::ReadChangeCameraType()
+{
+	lockOn = !lockOn;
+
+	if (lockOn)
+	{
+		CameraEnemySearch(nullptr);
+		FocusOnEnemy();
+	}
+	else
+	{
+		if(IsValid(lockedOnEnemy))
+			gameState->UnsendLockedOn(lockedOnEnemy);
 	}
 }
 
@@ -386,18 +405,15 @@ void APlayerCharacterCombat::UpdateHealth(int weaponHealth)
 //Relook for a valid enemy when one dies
 void APlayerCharacterCombat::CameraEnemySearch(AActor* newEnemy)
 {
-	if (gameState)
+	if (gameState && lockOn)
 	{
-		if (lockedOnEnemy == newEnemy)
-		{
-			lockedOnEnemy = gameState->GetNextEnemy(enemyIndex);
-		}
+		lockedOnEnemy = gameState->GetClosestEnemy(this, enemyIndex);
 	}
 }
 
 void APlayerCharacterCombat::FocusOnEnemy()
 {
-	if (lockedOnEnemy && enemyIndex > -1)
+	if (lockedOnEnemy && enemyIndex > -1 && lockOn)
 	{
 		RotatePlayer();
 		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &APlayerCharacterCombat::FocusOnEnemy);
@@ -406,7 +422,7 @@ void APlayerCharacterCombat::FocusOnEnemy()
 
 void APlayerCharacterCombat::RotatePlayer()
 {
-	if (camera && IsValid(Controller))
+	if (camera && IsValid(Controller) && lockOn)
 	{
 		//Get angle
 		FRotator rotator = UKismetMathLibrary::FindLookAtRotation(camera->GetComponentLocation(), lockedOnEnemy->GetActorLocation());
@@ -414,6 +430,28 @@ void APlayerCharacterCombat::RotatePlayer()
 		FRotator newRotation = FMath::RInterpTo(GetActorRotation(), rotator, GetWorld()->DeltaTimeSeconds, rotateSpeed);
 
 		Controller->SetControlRotation(FRotator(GetActorRotation().Pitch, newRotation.Yaw, GetActorRotation().Roll));
+	}
+}
+
+void APlayerCharacterCombat::Look_Implementation(const FInputActionValue& value)
+{
+	FVector2D lookVector = value.Get<FVector2D>();
+
+	if (camera->GetComponentRotation().Pitch > freeCameraRotationUpperLimit + lookVector.Y || camera->GetComponentRotation().Pitch < freeCameraRotationLowerLimit + lookVector.Y)
+	{
+		lookVector.Y = 0;
+	}
+
+	const FInputActionValue newValue(lookVector);
+
+	if (!lockOn)
+	{
+		Super::Look_Implementation(newValue);
+
+		FRotator cameraRotation = camera->GetComponentRotation();
+		cameraRotation.Pitch = FMath::Clamp(cameraRotation.Pitch, freeCameraRotationLowerLimit, freeCameraRotationUpperLimit);
+
+		camera->SetWorldRotation(cameraRotation);
 	}
 }
 #pragma endregion
@@ -576,8 +614,8 @@ void APlayerCharacterCombat::ResetCurrentLevel()
 
 void APlayerCharacterCombat::CombatStarted_Implementation()
 {
-	CameraEnemySearch(nullptr);
-	FocusOnEnemy();
+	lockOn = false;
+
 	canMove = true;
 
 	GetEquipmentInfo();
@@ -612,9 +650,9 @@ void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 	}
 }
 
-void APlayerCharacterCombat::SetMusicManager(AMusicManagerCombat* music)
+void APlayerCharacterCombat::SetMusicManager()
 {
-	musicManager = music;
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
 
 	if (combatSystem)
 		combatSystem->SetUp(musicManager);

@@ -33,9 +33,6 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	bool useCamera;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
-	bool useFreeCamera;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Speed", meta = (AllowPrivateAccess = "true"))
 	FS_PlayerWalkSpeeds walkSpeeds;
 
@@ -47,7 +44,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	bool useFreeCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float freeCameraRotationUpperLimit = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float freeCameraRotationLowerLimit = -15;
+
 public:	
+	bool canReadInput = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Jumping")
 	bool ableToJump = true;

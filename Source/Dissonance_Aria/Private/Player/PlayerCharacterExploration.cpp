@@ -10,6 +10,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "GameInfo/DAGameInstance.h"
+#include "Interactable/InteractableInterface.h"
 
 void APlayerCharacterExploration::BeginPlay()
 {
@@ -36,6 +37,7 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 	if (UEnhancedInputComponent* inputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		inputComponent->BindAction(GetMove(), ETriggerEvent::Completed, this, &APlayerCharacterExploration::SetNewForward);
+		inputComponent->BindAction(interactInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::Interact);
 	}
 }
 
@@ -43,6 +45,9 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 //Move player
 void APlayerCharacterExploration::Move_Implementation(const FInputActionValue& value)
 {
+	if (!canReadInput)
+		return;
+
 	if (currentCamera)
 	{
 		//Move based on camera forward
@@ -84,6 +89,34 @@ void APlayerCharacterExploration::SetRotation(FVector2D moveVector)
 
 			SetActorRotation(newRotation);
 		}
+	}
+}
+#pragma endregion
+
+#pragma region Interact
+void APlayerCharacterExploration::Interact_Implementation()
+{
+	if (!IsValid(interactingActor) || !interactingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
+	{
+		return;
+	}
+
+	IInteractableInterface::Execute_Interact(interactingActor, this);
+}
+
+void APlayerCharacterExploration::SetInteractingObject(AActor* newInteractingActor)
+{
+	if (!IsValid(newInteractingActor) || !newInteractingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
+	{
+		interactingActor = nullptr;
+
+		GameInfoUtilities::PrintToScreen("None");
+	}
+	else
+	{
+		interactingActor = newInteractingActor;
+
+		GameInfoUtilities::PrintToScreen(newInteractingActor->GetName());
 	}
 }
 #pragma endregion
