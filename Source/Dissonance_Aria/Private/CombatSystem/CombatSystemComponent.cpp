@@ -293,7 +293,7 @@ void UCombatSystemComponent::StopCharge()
 void UCombatSystemComponent::ChargeAttack()
 {
 	ChangeChargeSuccess(E_ChargeSuccess::Success);
-	GameInfoUtilities::PrintToScreen("Good Time");
+	GameInfoUtilities::PrintToScreen(FString::FromInt(passedChargingBeats));
 }
 
 void UCombatSystemComponent::ChargeFlubbed()
@@ -307,13 +307,10 @@ void UCombatSystemComponent::ChargeFailed()
 		return;
 
 	GameInfoUtilities::PrintToScreen("Failed");
-	canAttack = true;
-	isCharging = false;
 
 	ResetAttackInfo();
 
-	owner->ResetCanMove();
-	owner->ResetIsCharging();
+	ChangeChargeSuccess(E_ChargeSuccess::Failed);
 }
 
 bool UCombatSystemComponent::GetChargeInfo(int& currentChargeCount)
@@ -328,9 +325,12 @@ void UCombatSystemComponent::ChangeChargeSuccess(E_ChargeSuccess newSuccess)
 
 	OnChargeSuccessChange.Broadcast(chargeSuccess, passedChargingBeats);
 
-	passedChargingBeats = 0;
+	if(newSuccess != E_ChargeSuccess::Success)
+	{
+		passedChargingBeats = 0;
+	}
 
-	if (newSuccess != E_ChargeSuccess::Success)
+	if (newSuccess == E_ChargeSuccess::None)
 	{
 		canAttack = true;
 		isCharging = false;

@@ -272,6 +272,11 @@ public:
 	void ChargeAnimationDone();
 #pragma endregion
 
+#pragma region Damage Reactions
+UFUNCTION()
+void ReactToDamage(E_DamageResponse damageResponse);
+#pragma endregion
+
 #pragma region Tuning
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Tunings")
 	void StartTuning(float value, const TArray<E_QTEInput>& inputs);

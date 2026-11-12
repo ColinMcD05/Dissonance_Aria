@@ -36,5 +36,5 @@ public:
 	E_Genre genreAttack = E_Genre::None;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Damage")
-	E_DamageResponse damageResponse = E_DamageResponse::None;
+	E_DamageResponse damageResponse = E_DamageResponse::Stagger;
 };
