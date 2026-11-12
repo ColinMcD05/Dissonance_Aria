@@ -10,6 +10,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTakeDamage, float, newHealth);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnHealthChange, float, newMax, float, newCurrent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReactionChanged, E_DamageResponse, response);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UDamageSystemComponent : public UActorComponent
@@ -107,5 +108,8 @@ public:
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnHealthChange OnHealthChange;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnReactionChanged OnReactionChanged;
 #pragma endregion
 };

@@ -69,6 +69,8 @@ bool UDamageSystemComponent::HandleIncomingDamage(FS_DamageInfo damageInfo, int&
 
 	OnTakeDamage.Broadcast(currentHealth);
 	StartIFrames();
+	
+	OnReactionChanged.Broadcast(damageInfo.damageResponse);
 
 	return true;
 }

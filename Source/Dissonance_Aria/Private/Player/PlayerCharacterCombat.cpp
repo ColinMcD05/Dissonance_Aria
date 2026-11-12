@@ -18,6 +18,7 @@
 #include "Music/MusicManagerCombat.h"
 #include "Inventory/PDA_Equipment.h"
 
+#pragma region General Setup
 // Sets default values
 APlayerCharacterCombat::APlayerCharacterCombat()
 {
@@ -87,6 +88,16 @@ void APlayerCharacterCombat::BeginPlay()
 		dodgeComponent->OnDodge.AddUniqueDynamic(combatSystem, &UCombatSystemComponent::SetIsDodging);
 	}
 
+	if (IsValid(combatSystem))
+	{
+		combatSystem->OnChargeSuccessChange.AddDynamic(this, &APlayerCharacterCombat::ChargeAttack);
+	}
+
+	if (IsValid(damageSystem))
+	{
+		damageSystem->OnReactionChanged.AddDynamic(this, &APlayerCharacterCombat::ReactToDamage);
+	}
+
 	//Get game state
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
@@ -96,6 +107,58 @@ void APlayerCharacterCombat::BeginPlay()
 		gameState->OnCombatStart.AddUniqueDynamic(this, &APlayerCharacterCombat::CombatStarted);
 	}
 }
+#pragma endregion
+
+#pragma region Combat Setup
+void APlayerCharacterCombat::UpdateHealth(int weaponHealth)
+{
+	if (!damageSystem) return;
+
+	damageSystem->SetMaxHealthAndCurrent(weaponHealth + healthIncrease);
+}
+
+void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
+{
+	if (inventory)
+	{
+		inventory->UpdateWeaponInfo(updatedInfo, maxLevel);
+	}
+}
+
+void APlayerCharacterCombat::CombatStarted_Implementation()
+{
+	lockOn = false;
+
+	canMove = true;
+
+	GetEquipmentInfo();
+
+	if (damageSystem)
+	{
+		damageSystem->SetInitialHealth(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
+	}
+
+	OnPlayerSetUpDone.Broadcast();
+}
+
+void APlayerCharacterCombat::SetMusicManager()
+{
+	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
+
+	if (combatSystem)
+		combatSystem->SetUp(musicManager);
+
+	if (dodgeComponent)
+		dodgeComponent->SetUp(musicManager);
+
+	if (IsValid(musicManager))
+	{
+		//GameInfoUtilities::PrintToScreen("Added");
+
+		musicManager->OnBeat.AddUniqueDynamic(this, &APlayerCharacterCombat::CanPauseGame);
+	}
+}
+#pragma endregion
 
 #pragma region Inputs
 // Called to bind functionality to input
@@ -125,6 +188,9 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
+	if (!canReadInput)
+		return;
+
 	//GameInfoUtilities::PrintToScreen("Attack");
 	if (combatSystem)
 	{
@@ -150,6 +216,9 @@ void APlayerCharacterCombat::ReadNormalAttack()
 //Read the heavy attack input
 void APlayerCharacterCombat::ReadChargeAttack()
 {
+	if (!canReadInput)
+		return;
+
 	if (isCharging)
 		return;
 
@@ -166,6 +235,9 @@ void APlayerCharacterCombat::ReadChargeAttack()
 //Read the side step input
 void APlayerCharacterCombat::ReadSidestep()
 {
+	if (!canReadInput)
+		return;
+
 	if (!IsValid(dodgeComponent) || GetCharacterMovement()->IsFalling())
 		return;
 
@@ -190,6 +262,9 @@ void APlayerCharacterCombat::ReadSidestep()
 
 void APlayerCharacterCombat::ReadSwapTuning(const FInputActionValue& value)
 {
+	if (!canReadInput)
+		return;
+
 	float inputValue = value.Get<float>() - 2;
 
 	TArray<E_QTEInput> qteInputs;
@@ -271,6 +346,22 @@ void APlayerCharacterCombat::CanPauseGame()
 	canPause = true;
 
 	musicManager->OnBeat.Remove(this, "CanPauseGame");
+}
+
+E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
+{
+	if (pressedKey.IsGamepadKey())
+	{
+		return E_ControllerType::Controller;
+	}
+	if (pressedKey.IsTouch())
+	{
+		return E_ControllerType::Other;
+	}
+	else
+	{
+		return E_ControllerType::Keyboard;
+	}
 }
 #pragma endregion
 
@@ -356,23 +447,6 @@ E_Directions APlayerCharacterCombat::CalculateDirection(FVector vector2)
 
 	else return E_Directions::Backward;
 }
-#pragma endregion
-
-E_ControllerType APlayerCharacterCombat::KeyboardOrGamepad(FKey pressedKey)
-{
-	if (pressedKey.IsGamepadKey())
-	{
-		return E_ControllerType::Controller;
-	}
-	if (pressedKey.IsTouch())
-	{
-		return E_ControllerType::Other;
-	}
-	else
-	{
-		return E_ControllerType::Keyboard;
-	}
-}
 
 void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
 {
@@ -382,6 +456,58 @@ void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
 	}
 	else canMove = false;
 }
+#pragma endregion
+
+//Logic specifically for heavy attacks
+#pragma region HeavyAttack
+void APlayerCharacterCombat::StartChargedAttack_Implementation()
+{
+
+}
+
+void APlayerCharacterCombat::StopChargedAttack_Implementation()
+{
+	if (!IsValid(combatSystem) || !isCharging)
+		return;
+
+	combatSystem->StopCharge();
+}
+
+void APlayerCharacterCombat::ResetIsCharging()
+{
+	isCharging = false;
+}
+
+void APlayerCharacterCombat::ChargeAttack(E_ChargeSuccess success, int chargeCount)
+{
+	if (IsValid(weaponsSystem) && success == E_ChargeSuccess::Success)
+		weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace(true, chargeCount);
+	else
+		ChargeAnimationDone();
+}
+
+void APlayerCharacterCombat::ChargeAnimationDone()
+{
+	canMove = true;
+	isCharging = false;
+}
+#pragma endregion
+
+#pragma region Damage Reactions
+void APlayerCharacterCombat::ReactToDamage(E_DamageResponse damageResponse)
+{
+	switch (damageResponse)
+	{
+		default:
+		case E_DamageResponse::None:
+			canReadInput = true;
+			break;
+		case E_DamageResponse::Stagger:
+			canReadInput = false;
+			break;
+	}
+}
+#pragma endregion
 
 #pragma region Tuning
 void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
@@ -393,13 +519,6 @@ void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
 	}
 }
 #pragma endregion
-
-void APlayerCharacterCombat::UpdateHealth(int weaponHealth)
-{
-	if (!damageSystem) return;
-
-	damageSystem->SetMaxHealthAndCurrent(weaponHealth + healthIncrease);
-}
 
 #pragma region Camera
 //Relook for a valid enemy when one dies
@@ -456,37 +575,6 @@ void APlayerCharacterCombat::Look_Implementation(const FInputActionValue& value)
 }
 #pragma endregion
 
-void APlayerCharacterCombat::UpdateInventoryWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
-{
-	if (inventory)
-	{
-		inventory->UpdateWeaponInfo(updatedInfo, maxLevel);
-	}
-}
-//Logic specifically for heavy attacks
-#pragma region HeavyAttack
-void APlayerCharacterCombat::StartChargedAttack_Implementation()
-{
-
-}
-
-void APlayerCharacterCombat::StopChargedAttack_Implementation()
-{
-	if (!IsValid(combatSystem) || !isCharging)
-		return;
-
-	combatSystem->StopCharge();
-
-	canMove = true;
-	isCharging = false;
-}
-
-void APlayerCharacterCombat::ResetIsCharging()
-{
-	isCharging = false;
-}
-#pragma endregion
-
 #pragma region Equipment
 void APlayerCharacterCombat::GetEquipmentInfo()
 {
@@ -522,20 +610,7 @@ void APlayerCharacterCombat::GetEquipmentInfo()
 
 //Implementation of Attack interface
 #pragma region AttacksInterface
-float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
-{
-	return weaponsSystem->GetCurrentHeldWeapon()->PerformLightAttack(previousActions);
-}
 
-float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
-{
-	return weaponsSystem->GetCurrentHeldWeapon()->PerformHeavyAttack(previousActions);
-}
-
-float APlayerCharacterCombat::SpecialAttack_Implementation()
-{
-	return 0;
-}
 #pragma endregion
 
 #pragma region DamageableInterface
@@ -604,28 +679,12 @@ void APlayerCharacterCombat::HandleDeath_Implementation(AActor* killer)
 }
 #pragma endregion
 
+#pragma region Endings
 void APlayerCharacterCombat::ResetCurrentLevel()
 {
 	const FString CurrentMap = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 
 	UGameplayStatics::OpenLevel(GetWorld(), FName(*CurrentMap));
-}
-
-
-void APlayerCharacterCombat::CombatStarted_Implementation()
-{
-	lockOn = false;
-
-	canMove = true;
-
-	GetEquipmentInfo();
-
-	if (damageSystem)
-	{
-		damageSystem->SetInitialHealth(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
-	}
-
-	OnPlayerSetUpDone.Broadcast();
 }
 
 void APlayerCharacterCombat::CombatEnded(int exp, int gold)
@@ -649,24 +708,7 @@ void APlayerCharacterCombat::CombatEnded(int exp, int gold)
 		dodgeComponent->OnDodge.RemoveDynamic(this, &APlayerCharacterCombat::ListenToDodge);
 	}
 }
-
-void APlayerCharacterCombat::SetMusicManager()
-{
-	musicManager = Cast<AMusicManagerCombat>(UGameplayStatics::GetActorOfClass(this, AMusicManagerCombat::StaticClass()));
-
-	if (combatSystem)
-		combatSystem->SetUp(musicManager);
-
-	if (dodgeComponent)
-		dodgeComponent->SetUp(musicManager);
-
-	if (IsValid(musicManager))
-	{
-		//GameInfoUtilities::PrintToScreen("Added");
-
-		musicManager->OnBeat.AddUniqueDynamic(this, &APlayerCharacterCombat::CanPauseGame);
-	}
-}
+#pragma endregion
 
 #pragma region Old
 /*
@@ -693,6 +735,20 @@ void APlayerCharacterCombat::ReadSwapWeapon(const FInputActionValue& value)
 	{
 		damageSystem->SetMaxHealthAndCurrent(weaponsSystem->GetCurrentHeldWeapon()->GetMaxHealth());
 	}
+}
+float APlayerCharacterCombat::LightAttack_Implementation(TArray<E_CombatActionType>& previousActions)
+{
+	return 0;
+}
+
+float APlayerCharacterCombat::HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged)
+{
+	return 0;
+}
+
+float APlayerCharacterCombat::SpecialAttack_Implementation()
+{
+	return 0;
 }
 */
 #pragma endregion

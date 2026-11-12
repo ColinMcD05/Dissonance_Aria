@@ -86,54 +86,12 @@ void AWeaponActor::InitializeWeapon(APlayerCharacterCombat* player, FS_WeaponInf
 #pragma endregion
 
 #pragma region Attacking
-//Light attacks
-float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
-{
-	lastAttack = E_CombatActionType::LightAttack;
-	//Animation logic will go here, but I need animations first
-	return 1.5;
-}
-
-//Heavy attacks
-float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
-{
-	lastAttack = E_CombatActionType::HeavyAttack;
-	//Animation logic will go here, but I need animations first
-	return 1.5;
-}
-
-/*
-void AWeaponActor::StartChargeAttack_Implementation()
-{
-	originalLocation = weaponMesh->GetRelativeLocation();
-	speed = 200 / 0.8;
-	ChargeAttack();
-}
-
-void AWeaponActor::ChargeAttack_Implementation()
-{
-	if (attackCharged)
-	{
-		playerOwner->ChargeReady();
-		attackCharged = false;
-	}
-
-	if (originalLocation.Y - 100 <= weaponMesh->GetRelativeLocation().Y)
-	{
-		FVector addedVector = FVector(0, -speed * GetWorld()->DeltaTimeSeconds, 0);
-		weaponMesh->AddRelativeLocation(addedVector);
-		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::ChargeAttack);
-	}
-	else
-	{
-		playerOwner->ChargeReady();
-	}
-}
-*/
-
 //Starts the sphere tracing
-void AWeaponActor::StartSphereTrace_Implementation()
+void AWeaponActor::StartSphereTrace_Implementation(bool charging, int chargeCount)
 {
+	charged = charging;
+	chargeAmount = chargeCount;
+
 	attacking = true;
 	PerformSphereTrace();
 }
@@ -180,6 +138,8 @@ void AWeaponActor::SetWeaponInfo(FS_WeaponInfo& newWeaponInfo)
 void AWeaponActor::ChangeWeaponStats(FS_Stats* newStats)
 {
 	stats = *newStats;
+
+	GameInfoUtilities::PrintToScreen(FString::FromInt(stats.damage));
 }
 #pragma endregion
 
@@ -221,10 +181,75 @@ bool AWeaponActor::OverlappedActor_Implementation(AActor* enemyHit)
 
 	damageInfo.damageAmount = stats.damage + damageIncrease;
 
+
+	if (charged && chargeAmount > 0)
+	{
+		switch (chargeAmount)
+		{
+			case 1:
+				damageInfo.damageAmount *= 1.75;
+				break;
+			case 2:
+				damageInfo.damageAmount *= 2;
+				break;
+			case 3:
+				damageInfo.damageAmount *= 2.25;
+				break;
+		}
+	}
+
 	playerOwner->GetCombatSystem()->DealDamage(enemyHit, damageInfo);
 
 	hitEnemies.Add(enemyHit);
 
 	return true;
 }
+#pragma endregion
+
+#pragma region Old
+//Light attacks
+/*
+float AWeaponActor::PerformLightAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+{
+	lastAttack = E_CombatActionType::LightAttack;
+	//Animation logic will go here, but I need animations first
+	return 1.5;
+}
+
+//Heavy attacks
+float AWeaponActor::PerformHeavyAttack_Implementation(const TArray<E_CombatActionType>& previousActions)
+{
+	lastAttack = E_CombatActionType::HeavyAttack;
+	//Animation logic will go here, but I need animations first
+	return 1.5;
+}
+
+void AWeaponActor::StartChargeAttack_Implementation()
+{
+	originalLocation = weaponMesh->GetRelativeLocation();
+	speed = 200 / 0.8;
+	ChargeAttack();
+}
+
+void AWeaponActor::ChargeAttack_Implementation()
+{
+	if (attackCharged)
+	{
+		playerOwner->ChargeReady();
+		attackCharged = false;
+	}
+
+	if (originalLocation.Y - 100 <= weaponMesh->GetRelativeLocation().Y)
+	{
+		FVector addedVector = FVector(0, -speed * GetWorld()->DeltaTimeSeconds, 0);
+		weaponMesh->AddRelativeLocation(addedVector);
+		GetWorld()->GetTimerManager().SetTimerForNextTick(this, &AWeaponActor::ChargeAttack);
+	}
+	else
+	{
+		playerOwner->ChargeReady();
+	}
+}
+*/
+
 #pragma endregion

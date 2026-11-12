@@ -13,9 +13,21 @@
 class APlayerCharacterCombat;
 class AMusicManagerCombat;
 
+#pragma region Enums
+UENUM(BlueprintType)
+enum class E_ChargeSuccess : uint8
+{
+	None UMETA(DisplayName = "None"),
+	Success UMETA(DisplayName = "Success"),
+	Flubbed UMETA(DisplayName = "Flubbed"),
+	Failed UMETA(DisplayName = "Failed")
+};
+#pragma endregion
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnComboDrop);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComboChange, int, currentCombo);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnComboBarChange, float, comboBar);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnChargeSuccessChange, E_ChargeSuccess, newSuccess, int, chargeCount);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class DISSONANCE_ARIA_API UCombatSystemComponent : public UActorComponent
@@ -70,6 +82,8 @@ private:
 	int maxChargedBeat = 2;
 
 	int passedChargingBeats = 0;
+
+	E_ChargeSuccess chargeSuccess;
 #pragma endregion
 
 #pragma region Combo
@@ -190,6 +204,9 @@ public:
 	void ChargeFlubbed();
 
 	void ChargeFailed();
+
+	UFUNCTION(BlueprintCallable, Category = "Charge")
+	void ChangeChargeSuccess(E_ChargeSuccess newSuccess);
 #pragma endregion
 
 #pragma region Combos
@@ -208,9 +225,14 @@ public:
 	//Returns the combat direction
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	E_CombatDirections GetCombatDirection() { return previousDirection; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool GetChargeInfo(int& currentChargeCount);
 #pragma endregion
 
+#pragma region Setters
 	void SetPreviousDirection(E_CombatDirections newDirection) { previousDirection = newDirection; }
+#pragma endregion
 
 #pragma region SetDodging
 	UFUNCTION()
@@ -226,6 +248,9 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnComboBarChange OnComboBarChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnChargeSuccessChange OnChargeSuccessChange;
 #pragma endregion
 
 #pragma region Old

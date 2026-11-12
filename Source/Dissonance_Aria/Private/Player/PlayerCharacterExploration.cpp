@@ -133,7 +133,10 @@ void APlayerCharacterExploration::SetBestCamera()
 	{
 		float distance;
 
-		SetCurrentCamera(Cast<AFixedCamera>(UGameplayStatics::FindNearestActor(GetActorLocation(), cameras, distance))->GetCamera());
+		AFixedCamera* actor = Cast<AFixedCamera>(UGameplayStatics::FindNearestActor(GetActorLocation(), cameras, distance));
+
+		SetCurrentCamera(actor->GetCamera());
+		instance->SetLastCamera(actor->GetName());
 	}
 	else
 	{

@@ -28,7 +28,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwapController, E_ControllerType, newController);
 
 UCLASS()
-class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, public IAttacksInterface, public IDamageableInterface
+class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, public IDamageableInterface
 {
 	GENERATED_BODY()
 
@@ -256,7 +256,7 @@ public:
 #pragma endregion
 
 	//Logic specifically for heavy attacks
-#pragma region HeavyAttack
+#pragma region ChargeAttack
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Components")
 	void StartChargedAttack();
 
@@ -264,6 +264,17 @@ public:
 	void StopChargedAttack();
 
 	void ResetIsCharging();
+
+	UFUNCTION()
+	void ChargeAttack(E_ChargeSuccess success, int chargeCount);
+
+	UFUNCTION(BlueprintCallable, Category = "Components")
+	void ChargeAnimationDone();
+#pragma endregion
+
+#pragma region Damage Reactions
+UFUNCTION()
+void ReactToDamage(E_DamageResponse damageResponse);
 #pragma endregion
 
 #pragma region Tuning
@@ -296,9 +307,7 @@ public:
 
 	//Implementation of Attack interface
 #pragma region AttackInterface
-	virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;
-	virtual float HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged) override;
-	virtual float SpecialAttack_Implementation() override;
+
 #pragma
 
 #pragma region DamageableInterface
@@ -314,6 +323,9 @@ public:
 /*
 	//Read Swap Weapon input
 	void ReadSwapWeapon(const FInputActionValue& value);
+		virtual float LightAttack_Implementation(TArray<E_CombatActionType>& previousActions) override;
+	virtual float HeavyAttack_Implementation(TArray<E_CombatActionType>& previousActions, bool charged) override;
+	virtual float SpecialAttack_Implementation() override;
 */
 #pragma endregion
 };
