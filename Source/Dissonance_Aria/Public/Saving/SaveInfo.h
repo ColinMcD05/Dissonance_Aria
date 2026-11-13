@@ -35,10 +35,10 @@ public:
 	int gold;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	TArray<FS_Tuning> equppiedTunings;
+	TArray<UPDA_Tuning*> equppiedTunings;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	TArray<FS_Tuning> allTunings;
+	TArray<UPDA_Tuning*> allTunings;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
 	TArray<UPDA_Equipment*> gainedEquipment;
