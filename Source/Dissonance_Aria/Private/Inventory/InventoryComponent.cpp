@@ -81,20 +81,19 @@ void UInventoryComponent::GainEquipment(UPDA_Equipment* newEquipment)
 
 bool UInventoryComponent::SwapEquipment(UPDA_Equipment* newlyEquipped, UPDA_Equipment* removed)
 {
-	if (!equipedEquipment.Contains(removed))
-		return false;
-
-	int i = 0;
-	for (i = 0; i < equipedEquipment.Num(); i++)
+	if (!equipedEquipment.Contains(removed) || !gainedEquipment.Contains(newlyEquipped))
 	{
-		if (equipedEquipment[i] == removed)
-		{
-			break;
-		}
-
-		i++;
+		return false;
 	}
 
+	int i = equipedEquipment.Find(removed);
+
+	if (i == INDEX_NONE)
+	{
+		return false;
+	}
+
+	gainedEquipment.Remove(newlyEquipped);
 	gainedEquipment.Add(removed);
 	equipedEquipment[i] = newlyEquipped;
 

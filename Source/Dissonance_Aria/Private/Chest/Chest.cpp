@@ -59,6 +59,6 @@ void AChest::EndOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherA
 {
 	if (APlayerCharacterExploration* player = Cast<APlayerCharacterExploration>(otherActor))
 	{
-		player->SetInteractingObject(nullptr);
+		player->SetInteractingObject(this, true);
 	}
 }
