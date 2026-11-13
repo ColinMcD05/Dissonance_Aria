@@ -60,7 +60,7 @@ void UWeaponsSystemComponent::SpawnWeapons(UInventoryComponent* inventory, APlay
 	//Setup Tunings
 	equippedTunings = inventory->GetEquippedTunings();
 
-	currentTuning = &baseTuning;
+	currentTuning = baseTuning;
 	OnChangeMusic.Broadcast(static_cast<int8>(currentTuning->genre));
 	GiveTuningInfo();
 
@@ -74,11 +74,11 @@ void UWeaponsSystemComponent::SwapTunings(int tuning)
 {
 	if (tuning == -1)
 	{
-		currentTuning = &baseTuning;
+		currentTuning = baseTuning;
 	}
 	else
 	{
-		currentTuning = &equippedTunings[tuning];
+		currentTuning = equippedTunings[tuning];
 	}
 
 	//GameInfoUtilities::PrintToScreen(FString::SanitizeFloat(static_cast<int8>(currentTuning->genre)));
@@ -106,12 +106,12 @@ int UWeaponsSystemComponent::CanTune(int tuning, TArray<E_QTEInput>& qteInputs)
 	{
 		return -1;
 	}
-	if (currentTuning == &equippedTunings[tuning])
+	if (currentTuning == equippedTunings[tuning])
 	{
 		return -1;
 	}
 
-	qteInputs = equippedTunings[tuning].qteInputs;
+	qteInputs = equippedTunings[tuning]->qteInputs;
 	return tuning;
 }
 
@@ -138,7 +138,7 @@ void  UWeaponsSystemComponent::ResetCanSwapTuning()
 
 void UWeaponsSystemComponent::CopyTunings(UInventoryComponent* inventory)
 {
-	TArray <FS_Tuning>& tunings = inventory->GetEquippedTunings();
+	TArray <UPDA_Tuning*>& tunings = inventory->GetEquippedTunings();
 
 	for (int i = 0; i < inventory->GetEquippedTunings().Num(); i++)
 	{
