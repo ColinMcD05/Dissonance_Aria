@@ -33,9 +33,9 @@ private:
 
 #pragma region Tunings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<FS_Tuning> equppiedTunings;
+	TArray<UPDA_Tuning*> equppiedTunings;
 
-	TArray<FS_Tuning> allTunings;
+	TArray<UPDA_Tuning*> allTunings;
 #pragma endregion
 
 #pragma region Gold
@@ -82,7 +82,7 @@ public:
 
 	FS_WeaponInfo* GetWeapon() { return &weapon; }
 
-	TArray<FS_Tuning>& GetEquippedTunings() { return equppiedTunings; }
+	TArray<UPDA_Tuning*>& GetEquippedTunings() { return equppiedTunings; }
 #pragma endregion
 
 #pragma region Levelup
