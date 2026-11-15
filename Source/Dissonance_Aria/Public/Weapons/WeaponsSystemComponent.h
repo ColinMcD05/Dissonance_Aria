@@ -38,11 +38,11 @@ private:
 #pragma region Tunings
 	//Tuning that is always equipped and considered the base weapon
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tunings", meta = (AllowPrivateAccess = "true"))
-	FS_Tuning baseTuning;
+	UPDA_Tuning* baseTuning;
 
-	TArray<FS_Tuning> equippedTunings;
+	TArray<UPDA_Tuning*> equippedTunings;
 
-	FS_Tuning* currentTuning;
+	UPDA_Tuning* currentTuning;
 
 	//Checks for swapping weapons and tunings
 	bool canSwapTuning = false;

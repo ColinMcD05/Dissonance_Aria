@@ -60,7 +60,7 @@ public:
 	void Interact();
 
 	UFUNCTION(BlueprintCallable, Category = "Interact")
-	void SetInteractingObject(AActor* newInteractingActor);
+	void SetInteractingObject(AActor* newInteractingActor, bool leaving = false);
 #pragma endregion
 
 #pragma region Camera

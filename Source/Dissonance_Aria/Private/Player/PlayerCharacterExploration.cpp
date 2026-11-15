@@ -104,15 +104,23 @@ void APlayerCharacterExploration::Interact_Implementation()
 	IInteractableInterface::Execute_Interact(interactingActor, this);
 }
 
-void APlayerCharacterExploration::SetInteractingObject(AActor* newInteractingActor)
+void APlayerCharacterExploration::SetInteractingObject(AActor* newInteractingActor, bool leaving)
 {
 	if (!IsValid(newInteractingActor) || !newInteractingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
 	{
 		interactingActor = nullptr;
 
 		GameInfoUtilities::PrintToScreen("None");
+
+		return;
 	}
-	else
+
+	if (newInteractingActor == interactingActor && leaving)
+	{
+		interactingActor = nullptr;
+		GameInfoUtilities::PrintToScreen("None");
+	}
+	else if(!leaving)
 	{
 		interactingActor = newInteractingActor;
 
