@@ -93,6 +93,9 @@ private:
 	UCombatActionBase* chargeAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* specialAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* sideStep;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
@@ -197,6 +200,9 @@ public:
 
 	//Read the heavy attack input
 	void ReadChargeAttack();
+
+	//Read the special attack input
+	void ReadSpecialAttack();
 
 	//Read the side step input
 	void ReadSidestep();

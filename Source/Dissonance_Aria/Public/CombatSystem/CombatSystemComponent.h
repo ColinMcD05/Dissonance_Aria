@@ -209,6 +209,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Charge")
 	void ChangeChargeSuccess(E_ChargeSuccess newSuccess);
+
+	void CanUseSpecial();
 #pragma endregion
 
 #pragma region Combos

@@ -355,6 +355,11 @@ void UCombatSystemComponent::ChangeChargeSuccess(E_ChargeSuccess newSuccess)
 		owner->ableToJump = true;
 	}
 }
+
+void UCombatSystemComponent::CanUseSpecial()
+{
+
+}
 #pragma endregion
 
 #pragma region Combos

@@ -176,6 +176,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChargeAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(specialAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSpecialAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
@@ -188,7 +189,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
-	if (!canReadInput || dodging)
+	if (!canReadInput || dodging || GetCharacterMovement()->IsFalling())
 		return;
 
 	//GameInfoUtilities::PrintToScreen("Attack");
@@ -231,6 +232,14 @@ void APlayerCharacterCombat::ReadChargeAttack()
 			ableToJump = false;
 		}
 	}
+}
+
+void APlayerCharacterCombat::ReadSpecialAttack()
+{
+	if (!canReadInput || GetCharacterMovement()->IsFalling() || dodging)
+		return;
+
+
 }
 
 //Read the side step input

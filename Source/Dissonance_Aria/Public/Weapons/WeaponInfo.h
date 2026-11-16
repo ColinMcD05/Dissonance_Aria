@@ -72,7 +72,7 @@ public:
 	TArray<E_QTEInput> qteInputs;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
-	UTexture2D* icon;
+	TArray<UTexture2D*> icons;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	FColor color;
