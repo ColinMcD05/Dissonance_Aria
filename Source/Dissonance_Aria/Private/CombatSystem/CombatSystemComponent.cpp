@@ -142,6 +142,24 @@ void UCombatSystemComponent::ResetAttackInfo()
 	OnComboChange.Broadcast(0);
 }
 
+void UCombatSystemComponent::ResetOnDamage()
+{
+	OnComboDrop.Broadcast();
+
+	//Sets previous direction to none
+	previousDirection = E_CombatDirections::None;
+
+	//Sets combo to 0
+	combo = 0;
+	OnComboChange.Broadcast(0);
+
+	owner->ableToJump = true;
+
+	passedChargingBeats = 0;
+	isCharging = false;
+	ChangeChargeSuccess(E_ChargeSuccess::None);
+}
+
 //Returns if the player can attack this turn
 bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
 {
@@ -334,6 +352,7 @@ void UCombatSystemComponent::ChangeChargeSuccess(E_ChargeSuccess newSuccess)
 	{
 		canAttack = true;
 		isCharging = false;
+		owner->ableToJump = true;
 	}
 }
 #pragma endregion

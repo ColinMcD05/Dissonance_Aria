@@ -34,4 +34,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetLastCamera(FString newCamera) { lastCamera = newCamera; }
+
+	UFUNCTION(BlueprintCallable)
+	void ResetInfo();
 };

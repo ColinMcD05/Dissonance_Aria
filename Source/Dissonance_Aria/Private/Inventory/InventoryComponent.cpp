@@ -138,6 +138,28 @@ bool UInventoryComponent::CanBuy(int spendAmount)
 #pragma endregion
 
 #pragma region Save
+void UInventoryComponent::ResetInventory()
+{
+	equppiedTunings.Empty();
+	allTunings.Empty();
+
+	for (int i = 0; i < startingTunings.Num(); i++)
+	{
+		if (i < MAX_TUNING_AMOUNT)
+		{
+			equppiedTunings.Add(startingTunings[i]);
+		}
+		else
+		{
+			allTunings.Add(startingTunings[i]);
+		}
+	}
+
+	weapon.exp.currentExperience = 0;
+	weapon.exp.storedExperience = 0;
+	weapon.level = 1;
+}
+
 FS_InventorySave UInventoryComponent::SaveInventory()
 {
 	FS_InventorySave newSave;
