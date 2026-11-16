@@ -175,6 +175,8 @@ public:
 
 	//Resets canReadInput to true
 	void ResetReadInputs() { canReadInput = true; }
+
+	void ResetOnDamage();
 #pragma endregion
 
 #pragma region Attack

@@ -188,7 +188,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
-	if (!canReadInput)
+	if (!canReadInput || dodging)
 		return;
 
 	//GameInfoUtilities::PrintToScreen("Attack");
@@ -216,7 +216,7 @@ void APlayerCharacterCombat::ReadNormalAttack()
 //Read the heavy attack input
 void APlayerCharacterCombat::ReadChargeAttack()
 {
-	if (!canReadInput)
+	if (!canReadInput || GetCharacterMovement()->IsFalling() || dodging)
 		return;
 
 	if (isCharging)
@@ -228,6 +228,7 @@ void APlayerCharacterCombat::ReadChargeAttack()
 		{
 			canMove = false;
 			isCharging = true;
+			ableToJump = false;
 		}
 	}
 }
@@ -453,8 +454,13 @@ void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
 	if (moveDirection == E_Directions::None)
 	{
 		canMove = true;
+		dodging = false;
 	}
-	else canMove = false;
+	else
+	{
+		canMove = false;
+		dodging = true;
+	}
 }
 #pragma endregion
 
@@ -504,6 +510,10 @@ void APlayerCharacterCombat::ReactToDamage(E_DamageResponse damageResponse)
 			break;
 		case E_DamageResponse::Stagger:
 			canReadInput = false;
+			if (IsValid(combatSystem))
+				combatSystem->ResetOnDamage();
+			if (IsValid(weaponsSystem))
+				weaponsSystem->GetCurrentHeldWeapon()->StopSphereTrace();
 			break;
 	}
 }
