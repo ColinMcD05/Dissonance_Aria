@@ -33,6 +33,9 @@ private:
 
 #pragma region Tunings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<UPDA_Tuning*> startingTunings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TArray<UPDA_Tuning*> equppiedTunings;
 
 	TArray<UPDA_Tuning*> allTunings;
@@ -92,6 +95,8 @@ public:
 #pragma endregion
 
 #pragma region Saving and Loading
+	void ResetInventory();
+
 	//Returns an InventorySace struct for saving.
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	FS_InventorySave SaveInventory();

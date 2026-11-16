@@ -108,6 +108,8 @@ private:
 	UInputAction* changeCameraType;
 
 	bool canPause = false;
+
+	bool dodging = false;
 #pragma endregion
 
 #pragma region Camera
