@@ -41,14 +41,14 @@ void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
 	if (musicManager)
 	{
 		musicManager->OnBeat.AddUniqueDynamic(this, &UCombatSystemComponent::DownBeat);
-		//GameInfoUtilities::PrintToScreen("Got It");
 	}
-	else
-	{
-		//GameInfoUtilities::PrintToScreen("Nope.");
-	}
-}
 
+	comboBar = 0;
+	combo = 0;
+	OnComboChange.Broadcast(combo);
+	OnComboBarChange.Broadcast(comboBar);
+}
+ 
 void UCombatSystemComponent::TearDown()
 {
 	if (musicManager)
@@ -356,9 +356,18 @@ void UCombatSystemComponent::ChangeChargeSuccess(E_ChargeSuccess newSuccess)
 	}
 }
 
-void UCombatSystemComponent::CanUseSpecial()
+bool UCombatSystemComponent::CanUseSpecial(float cost)
 {
+	GameInfoUtilities::PrintToScreen(FString::Format(TEXT("{0}: {1}"), { cost, comboBar }));
 
+	if (cost <= comboBar)
+	{
+		comboBar = FMath::Max(comboBar - cost, 0);
+		OnComboBarChange.Broadcast(comboBar);
+		return true;
+	}
+	else
+		return false;
 }
 #pragma endregion
 

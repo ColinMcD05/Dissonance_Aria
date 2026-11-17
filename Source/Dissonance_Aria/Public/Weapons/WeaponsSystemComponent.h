@@ -130,6 +130,8 @@ public:
 
 	void CopyTunings(UInventoryComponent* inventory);
 
+	float GetSpecialCost();
+
 #pragma region Old
 /*
 	//Swap held weapon and stored weapon

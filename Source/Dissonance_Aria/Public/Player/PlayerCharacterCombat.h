@@ -26,6 +26,7 @@ class UMusicManagerCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwapController, E_ControllerType, newController);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpecialUsage, bool, useSpecial);
 
 UCLASS()
 class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, public IDamageableInterface
@@ -293,6 +294,10 @@ void ReactToDamage(E_DamageResponse damageResponse);
 	void ReadSuccess(bool successful, int tuning);
 #pragma
 	
+#pragma region Specials
+	void ListenToSpecialUsage(bool useSpecial);
+#pragma endregion
+
 	UFUNCTION(BlueprintNativeEvent)
 	void CombatStarted();
 
@@ -307,6 +312,9 @@ void ReactToDamage(E_DamageResponse damageResponse);
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnSwapController OnSwapController;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnSpecialUsage OnSpecialUsage;
 #pragma
 
 #pragma region Equipment

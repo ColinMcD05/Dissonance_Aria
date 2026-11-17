@@ -236,10 +236,17 @@ void APlayerCharacterCombat::ReadChargeAttack()
 
 void APlayerCharacterCombat::ReadSpecialAttack()
 {
-	if (!canReadInput || GetCharacterMovement()->IsFalling() || dodging)
+	if (!canReadInput || GetCharacterMovement()->IsFalling() || dodging || isCharging)
 		return;
 
+	if (!IsValid(combatSystem) || !IsValid(weaponsSystem))
+		return;
 
+	if (combatSystem->CanUseSpecial(weaponsSystem->GetSpecialCost()))
+	{
+		OnSpecialUsage.Broadcast(true);
+		GameInfoUtilities::PrintToScreen("Using Special");
+	}
 }
 
 //Read the side step input
@@ -536,6 +543,13 @@ void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
 		weaponsSystem->SwapTunings(tuning);
 		Execute_Heal(this, .15f, this);
 	}
+}
+#pragma endregion
+
+#pragma region Specials
+void APlayerCharacterCombat::ListenToSpecialUsage(bool useSpecial)
+{
+	canReadInput = !useSpecial;
 }
 #pragma endregion
 
