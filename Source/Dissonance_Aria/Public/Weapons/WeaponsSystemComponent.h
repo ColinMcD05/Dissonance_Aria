@@ -103,6 +103,9 @@ public:
 	int CanTune(int tuning, TArray<E_QTEInput>& qteInputs);
 
 	void GiveTuningInfo();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UPDA_Tuning* GetCurrentTuning() { return currentTuning; }
 #pragma endregion
 
 #pragma region Resetters

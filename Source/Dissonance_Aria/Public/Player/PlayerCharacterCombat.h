@@ -295,6 +295,7 @@ void ReactToDamage(E_DamageResponse damageResponse);
 #pragma
 	
 #pragma region Specials
+	UFUNCTION()
 	void ListenToSpecialUsage(bool useSpecial);
 #pragma endregion
 
