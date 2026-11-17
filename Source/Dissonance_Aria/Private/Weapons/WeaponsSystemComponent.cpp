@@ -146,6 +146,15 @@ void UWeaponsSystemComponent::CopyTunings(UInventoryComponent* inventory)
 	}
 }
 
+float UWeaponsSystemComponent::GetSpecialCost()
+{
+	if (IsValid(currentTuning))
+		return currentTuning->comboCost;
+
+	else
+		return -1;
+}
+
 #pragma region Old
 /*
 //Get current weapon type

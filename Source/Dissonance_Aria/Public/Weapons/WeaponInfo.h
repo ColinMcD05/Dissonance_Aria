@@ -68,11 +68,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	UDataTable* statsTable;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings", meta = (ClampMin = "0", ClampMax = "1"))
+	float comboCost;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	TArray<E_QTEInput> qteInputs;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
-	UTexture2D* icon;
+	TArray<UTexture2D*> icons;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	FColor color;

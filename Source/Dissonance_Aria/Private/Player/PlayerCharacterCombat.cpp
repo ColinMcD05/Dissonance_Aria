@@ -176,6 +176,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChargeAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(specialAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSpecialAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
@@ -188,7 +189,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
-	if (!canReadInput || dodging)
+	if (!canReadInput || dodging || GetCharacterMovement()->IsFalling())
 		return;
 
 	//GameInfoUtilities::PrintToScreen("Attack");
@@ -230,6 +231,21 @@ void APlayerCharacterCombat::ReadChargeAttack()
 			isCharging = true;
 			ableToJump = false;
 		}
+	}
+}
+
+void APlayerCharacterCombat::ReadSpecialAttack()
+{
+	if (!canReadInput || GetCharacterMovement()->IsFalling() || dodging || isCharging)
+		return;
+
+	if (!IsValid(combatSystem) || !IsValid(weaponsSystem))
+		return;
+
+	if (combatSystem->CanUseSpecial(weaponsSystem->GetSpecialCost()))
+	{
+		OnSpecialUsage.Broadcast(true);
+		GameInfoUtilities::PrintToScreen("Using Special");
 	}
 }
 
@@ -527,6 +543,13 @@ void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
 		weaponsSystem->SwapTunings(tuning);
 		Execute_Heal(this, .15f, this);
 	}
+}
+#pragma endregion
+
+#pragma region Specials
+void APlayerCharacterCombat::ListenToSpecialUsage(bool useSpecial)
+{
+	canReadInput = !useSpecial;
 }
 #pragma endregion
 
