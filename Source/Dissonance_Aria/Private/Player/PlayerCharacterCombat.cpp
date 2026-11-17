@@ -98,6 +98,8 @@ void APlayerCharacterCombat::BeginPlay()
 		damageSystem->OnReactionChanged.AddDynamic(this, &APlayerCharacterCombat::ReactToDamage);
 	}
 
+	OnSpecialUsage.AddDynamic(this, &APlayerCharacterCombat::ListenToSpecialUsage);
+
 	//Get game state
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
@@ -550,6 +552,11 @@ void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
 void APlayerCharacterCombat::ListenToSpecialUsage(bool useSpecial)
 {
 	canReadInput = !useSpecial;
+
+	if (IsValid(damageSystem))
+	{
+		damageSystem->SetIsInvincible(useSpecial);
+	}
 }
 #pragma endregion
 

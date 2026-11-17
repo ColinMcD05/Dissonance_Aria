@@ -43,7 +43,7 @@ void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
 		musicManager->OnBeat.AddUniqueDynamic(this, &UCombatSystemComponent::DownBeat);
 	}
 
-	comboBar = 0;
+	comboBar = 1;
 	combo = 0;
 	OnComboChange.Broadcast(combo);
 	OnComboBarChange.Broadcast(comboBar);
