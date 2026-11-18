@@ -125,7 +125,7 @@ void UDamageSystemComponent::StartIFrames()
 
 void UDamageSystemComponent::ResetIFrames()
 {
-	GameInfoUtilities::PrintToScreen("Reset");
+	//GameInfoUtilities::PrintToScreen("Reset");
 	invincible = false;
 }
 #pragma endregion

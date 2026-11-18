@@ -140,6 +140,7 @@ private:
 
 	int enemyIndex = -1;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	bool lockOn = false;
 #pragma endregion
 
