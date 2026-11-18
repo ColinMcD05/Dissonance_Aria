@@ -33,9 +33,12 @@ private:
 
 #pragma region Tunings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<FS_Tuning> equppiedTunings;
+	TArray<UPDA_Tuning*> startingTunings;
 
-	TArray<FS_Tuning> allTunings;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<UPDA_Tuning*> equppiedTunings;
+
+	TArray<UPDA_Tuning*> allTunings;
 #pragma endregion
 
 #pragma region Gold
@@ -82,7 +85,7 @@ public:
 
 	FS_WeaponInfo* GetWeapon() { return &weapon; }
 
-	TArray<FS_Tuning>& GetEquippedTunings() { return equppiedTunings; }
+	TArray<UPDA_Tuning*>& GetEquippedTunings() { return equppiedTunings; }
 #pragma endregion
 
 #pragma region Levelup
@@ -92,6 +95,8 @@ public:
 #pragma endregion
 
 #pragma region Saving and Loading
+	void ResetInventory();
+
 	//Returns an InventorySace struct for saving.
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	FS_InventorySave SaveInventory();

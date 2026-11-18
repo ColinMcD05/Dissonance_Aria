@@ -175,6 +175,8 @@ public:
 
 	//Resets canReadInput to true
 	void ResetReadInputs() { canReadInput = true; }
+
+	void ResetOnDamage();
 #pragma endregion
 
 #pragma region Attack
@@ -207,6 +209,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Charge")
 	void ChangeChargeSuccess(E_ChargeSuccess newSuccess);
+
+	bool CanUseSpecial(float cost);
 #pragma endregion
 
 #pragma region Combos

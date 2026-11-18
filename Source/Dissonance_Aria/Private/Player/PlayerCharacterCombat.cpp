@@ -98,6 +98,8 @@ void APlayerCharacterCombat::BeginPlay()
 		damageSystem->OnReactionChanged.AddDynamic(this, &APlayerCharacterCombat::ReactToDamage);
 	}
 
+	OnSpecialUsage.AddDynamic(this, &APlayerCharacterCombat::ListenToSpecialUsage);
+
 	//Get game state
 	gameState = GameInfoUtilities::GetDAGameState<ADAGameStateCombat>(this);
 	if (gameState)
@@ -176,6 +178,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadChargeAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Completed, this, &APlayerCharacterCombat::StopChargedAttack);
 		inputComponent->BindAction(chargeAttack, ETriggerEvent::Canceled, this, &APlayerCharacterCombat::StopChargedAttack);
+		inputComponent->BindAction(specialAttack, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSpecialAttack);
 		inputComponent->BindAction(sideStep, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSidestep);
 		//inputComponent->BindAction(swapWeapon, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapWeapon);
 		inputComponent->BindAction(swapTuning, ETriggerEvent::Started, this, &APlayerCharacterCombat::ReadSwapTuning);
@@ -188,7 +191,7 @@ void APlayerCharacterCombat::SetupPlayerInputComponent(UInputComponent* PlayerIn
 //Read the light attack input
 void APlayerCharacterCombat::ReadNormalAttack()
 {
-	if (!canReadInput)
+	if (!canReadInput || dodging || GetCharacterMovement()->IsFalling())
 		return;
 
 	//GameInfoUtilities::PrintToScreen("Attack");
@@ -216,7 +219,7 @@ void APlayerCharacterCombat::ReadNormalAttack()
 //Read the heavy attack input
 void APlayerCharacterCombat::ReadChargeAttack()
 {
-	if (!canReadInput)
+	if (!canReadInput || GetCharacterMovement()->IsFalling() || dodging)
 		return;
 
 	if (isCharging)
@@ -228,7 +231,23 @@ void APlayerCharacterCombat::ReadChargeAttack()
 		{
 			canMove = false;
 			isCharging = true;
+			ableToJump = false;
 		}
+	}
+}
+
+void APlayerCharacterCombat::ReadSpecialAttack()
+{
+	if (!canReadInput || GetCharacterMovement()->IsFalling() || dodging || isCharging)
+		return;
+
+	if (!IsValid(combatSystem) || !IsValid(weaponsSystem))
+		return;
+
+	if (combatSystem->CanUseSpecial(weaponsSystem->GetSpecialCost()))
+	{
+		OnSpecialUsage.Broadcast(true);
+		GameInfoUtilities::PrintToScreen("Using Special");
 	}
 }
 
@@ -453,8 +472,13 @@ void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
 	if (moveDirection == E_Directions::None)
 	{
 		canMove = true;
+		dodging = false;
 	}
-	else canMove = false;
+	else
+	{
+		canMove = false;
+		dodging = true;
+	}
 }
 #pragma endregion
 
@@ -504,6 +528,10 @@ void APlayerCharacterCombat::ReactToDamage(E_DamageResponse damageResponse)
 			break;
 		case E_DamageResponse::Stagger:
 			canReadInput = false;
+			if (IsValid(combatSystem))
+				combatSystem->ResetOnDamage();
+			if (IsValid(weaponsSystem))
+				weaponsSystem->GetCurrentHeldWeapon()->StopSphereTrace();
 			break;
 	}
 }
@@ -516,6 +544,18 @@ void APlayerCharacterCombat::ReadSuccess(bool successful, int tuning)
 	{
 		weaponsSystem->SwapTunings(tuning);
 		Execute_Heal(this, .15f, this);
+	}
+}
+#pragma endregion
+
+#pragma region Specials
+void APlayerCharacterCombat::ListenToSpecialUsage(bool useSpecial)
+{
+	canReadInput = !useSpecial;
+
+	if (IsValid(damageSystem))
+	{
+		damageSystem->SetIsInvincible(useSpecial);
 	}
 }
 #pragma endregion

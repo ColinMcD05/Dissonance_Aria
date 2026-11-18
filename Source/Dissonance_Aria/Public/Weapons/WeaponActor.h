@@ -116,7 +116,7 @@ public:
 
 #pragma region Weapon Info
 	//Gets the weapon info
-	UFUNCTION(BlueprintCallable, Category = "WeaponData")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "WeaponData")
 	FS_WeaponInfo& GetWeaponInfo() { return weaponInfo; }
 
 	//Sets weapon info

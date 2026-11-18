@@ -81,20 +81,19 @@ void UInventoryComponent::GainEquipment(UPDA_Equipment* newEquipment)
 
 bool UInventoryComponent::SwapEquipment(UPDA_Equipment* newlyEquipped, UPDA_Equipment* removed)
 {
-	if (!equipedEquipment.Contains(removed))
-		return false;
-
-	int i = 0;
-	for (i = 0; i < equipedEquipment.Num(); i++)
+	if (!equipedEquipment.Contains(removed) || !gainedEquipment.Contains(newlyEquipped))
 	{
-		if (equipedEquipment[i] == removed)
-		{
-			break;
-		}
-
-		i++;
+		return false;
 	}
 
+	int i = equipedEquipment.Find(removed);
+
+	if (i == INDEX_NONE)
+	{
+		return false;
+	}
+
+	gainedEquipment.Remove(newlyEquipped);
 	gainedEquipment.Add(removed);
 	equipedEquipment[i] = newlyEquipped;
 
@@ -139,6 +138,28 @@ bool UInventoryComponent::CanBuy(int spendAmount)
 #pragma endregion
 
 #pragma region Save
+void UInventoryComponent::ResetInventory()
+{
+	equppiedTunings.Empty();
+	allTunings.Empty();
+
+	for (int i = 0; i < startingTunings.Num(); i++)
+	{
+		if (i < MAX_TUNING_AMOUNT)
+		{
+			equppiedTunings.Add(startingTunings[i]);
+		}
+		else
+		{
+			allTunings.Add(startingTunings[i]);
+		}
+	}
+
+	weapon.exp.currentExperience = 0;
+	weapon.exp.storedExperience = 0;
+	weapon.level = 1;
+}
+
 FS_InventorySave UInventoryComponent::SaveInventory()
 {
 	FS_InventorySave newSave;

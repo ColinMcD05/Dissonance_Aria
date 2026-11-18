@@ -26,6 +26,7 @@ class UMusicManagerCombat;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerSetUpDone);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSwapController, E_ControllerType, newController);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnSpecialUsage, bool, useSpecial);
 
 UCLASS()
 class DISSONANCE_ARIA_API APlayerCharacterCombat : public APlayerCharacterBase, public IDamageableInterface
@@ -93,6 +94,9 @@ private:
 	UCombatActionBase* chargeAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* specialAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* sideStep;
 
 	//UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
@@ -108,6 +112,8 @@ private:
 	UInputAction* changeCameraType;
 
 	bool canPause = false;
+
+	bool dodging = false;
 #pragma endregion
 
 #pragma region Camera
@@ -195,6 +201,9 @@ public:
 
 	//Read the heavy attack input
 	void ReadChargeAttack();
+
+	//Read the special attack input
+	void ReadSpecialAttack();
 
 	//Read the side step input
 	void ReadSidestep();
@@ -285,6 +294,11 @@ void ReactToDamage(E_DamageResponse damageResponse);
 	void ReadSuccess(bool successful, int tuning);
 #pragma
 	
+#pragma region Specials
+	UFUNCTION()
+	void ListenToSpecialUsage(bool useSpecial);
+#pragma endregion
+
 	UFUNCTION(BlueprintNativeEvent)
 	void CombatStarted();
 
@@ -299,6 +313,9 @@ void ReactToDamage(E_DamageResponse damageResponse);
 
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnSwapController OnSwapController;
+
+	UPROPERTY(BlueprintCallable, BlueprintAssignable)
+	FOnSpecialUsage OnSpecialUsage;
 #pragma
 
 #pragma region Equipment

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Music/MusicInfo.h"
 #include "Player/PlayerWalkSpeeds.h"
+#include "Engine/DataAsset.h"
 #include "WeaponInfo.generated.h"
 
 class AWeaponActor;
@@ -52,10 +53,10 @@ public:
 };
 
 //Struct holding the tuning information
-USTRUCT(BlueprintType)
-struct FS_Tuning
+UCLASS()
+class DISSONANCE_ARIA_API UPDA_Tuning : public UPrimaryDataAsset
 {
-	GENERATED_BODY();
+	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
@@ -67,8 +68,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	UDataTable* statsTable;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings", meta = (ClampMin = "0", ClampMax = "1"))
+	float comboCost;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	TArray<E_QTEInput> qteInputs;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
+	TArray<UTexture2D*> icons;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
+	FColor color;
 };
 
 //Struct for all important weapon info. This is what weapons reference
