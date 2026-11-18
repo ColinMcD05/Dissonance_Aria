@@ -106,6 +106,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 	UPDA_Tuning* GetCurrentTuning() { return currentTuning; }
+
+	void CopyTunings(UInventoryComponent* inventory);
+#pragma endregion
+
+#pragma region Special
+	float GetSpecialCost();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetSpecialAttackDamage();
 #pragma endregion
 
 #pragma region Resetters
@@ -130,10 +139,6 @@ public:
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnTuningToleranceChange OnTuningToleranceChange;
 #pragma endregion
-
-	void CopyTunings(UInventoryComponent* inventory);
-
-	float GetSpecialCost();
 
 #pragma region Old
 /*
