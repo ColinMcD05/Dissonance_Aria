@@ -146,6 +146,7 @@ void UWeaponsSystemComponent::CopyTunings(UInventoryComponent* inventory)
 	}
 }
 
+#pragma region Specials
 float UWeaponsSystemComponent::GetSpecialCost()
 {
 	if (IsValid(currentTuning))
@@ -154,6 +155,20 @@ float UWeaponsSystemComponent::GetSpecialCost()
 	else
 		return -1;
 }
+
+float UWeaponsSystemComponent::GetSpecialAttackDamage()
+{
+	if (!IsValid(currentTuning) || !IsValid(currentTuning->statsTable) || !IsValid(currentHeldWeapon))
+		return 0;
+
+	FS_Stats* stats = currentTuning->statsTable->FindRow<FS_Stats>(FName(*FString::FromInt(currentHeldWeapon->GetWeaponInfo().level)), "", true);
+
+	if (stats == nullptr)
+		return 0;
+
+	return stats->specialDamage;
+}
+#pragma endregion
 
 #pragma region Old
 /*

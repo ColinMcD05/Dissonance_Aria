@@ -46,6 +46,9 @@ public:
 	float damage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
+	float specialDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	FS_PlayerWalkSpeeds speeds;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
