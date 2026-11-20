@@ -621,29 +621,42 @@ void APlayerCharacterCombat::GetEquipmentInfo()
 	healthIncrease = 0;
 	damageIncrease = 0;
 
+	healthMult = 1;
+	damageMult = 1;
+
 	TArray<UPDA_Equipment*> equipment = inventory->GetEquippedEquipment();
 
 	for (UPDA_Equipment* equip : equipment)
 	{
-		switch (equip->affectedStat)
+		for (FS_StatAffected stat : equip->affectedStats)
 		{
-		case E_StatType::Health:
-			healthIncrease += equip->affectedAmount;
-			break;
-		case E_StatType::Damage:
-			damageIncrease += equip->affectedAmount;
-			break;
+			switch (stat.affectedStat)
+			{
+			case E_StatType::Health:
+				if (stat.additionType == E_AdditiveType::AddSub)
+					healthIncrease += stat.affectedAmount;
+				else
+					healthMult *= stat.affectedAmount;
+				break;
+			case E_StatType::Damage:
+				if (stat.additionType == E_AdditiveType::AddSub)
+					damageIncrease += stat.affectedAmount;
+				else
+					damageMult *= stat.affectedAmount;
+				break;
+			}
 		}
 	}
 
 	if (damageSystem)
 	{
+		damageSystem->MultMaxHealth(healthMult);
 		damageSystem->IncreaseMaxHealth(healthIncrease);
 	}
 
 	if (weaponsSystem)
 	{
-		weaponsSystem->GetCurrentHeldWeapon()->SetDamageIncrease(damageIncrease);
+		weaponsSystem->GetCurrentHeldWeapon()->SetDamageIncrease(damageMult, damageIncrease);
 	}
 }
 #pragma endregion

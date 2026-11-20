@@ -86,6 +86,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	void SetInitialHealth(int newHealth);
 
+	void MultMaxHealth(float multAmount);
+
 	void IncreaseMaxHealth(int increasedAmount);
 #pragma endregion
 
