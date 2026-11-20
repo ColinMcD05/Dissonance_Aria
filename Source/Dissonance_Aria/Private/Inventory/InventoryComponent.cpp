@@ -108,14 +108,18 @@ void UInventoryComponent::CheckForEquipmentMults()
 
 	for (UPDA_Equipment* equipment : equipedEquipment)
 	{
-		switch (equipment->affectedStat)
+		for (FS_StatAffected stat : equipment->affectedStats)
 		{
+
+			switch (stat.affectedStat)
+			{
 			case E_StatType::Gold:
-				goldMult += equipment->affectedAmount;
+				goldMult += stat.affectedAmount;
 				break;
 			case E_StatType::Experience:
-				expMult += equipment->affectedAmount;
+				expMult += stat.affectedAmount;
 				break;
+			}
 		}
 	}
 }

@@ -59,7 +59,10 @@ private:
 
 #pragma region Equipment Affects
 	int healthIncrease;
+	float healthMult;
+
 	float damageIncrease;
+	float damageMult;
 #pragma endregion
 
 	//Needed components and actors

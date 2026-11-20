@@ -110,6 +110,11 @@ void UDamageSystemComponent::SetInitialHealth(int newHealth)
 	invincible = false;
 }
 
+void UDamageSystemComponent::MultMaxHealth(float multAmount)
+{
+	SetMaxHealthAndCurrent(maxHealth * multAmount);
+}
+
 void UDamageSystemComponent::IncreaseMaxHealth(int increasedAmount)
 {
 	SetMaxHealthAndCurrent(maxHealth + increasedAmount);
