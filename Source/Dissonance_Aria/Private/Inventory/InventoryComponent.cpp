@@ -114,10 +114,10 @@ void UInventoryComponent::CheckForEquipmentMults()
 			switch (stat.affectedStat)
 			{
 			case E_StatType::Gold:
-				goldMult += stat.affectedAmount;
+				goldMult *= stat.affectedAmount;
 				break;
 			case E_StatType::Experience:
-				expMult += stat.affectedAmount;
+				expMult *= stat.affectedAmount;
 				break;
 			}
 		}
