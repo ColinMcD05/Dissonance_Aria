@@ -38,11 +38,11 @@ void AChest::SetUp(bool newPickedUp)
 
 void AChest::Interact_Implementation(APlayerCharacterExploration* player)
 {
-	if (pickedUp || !IsValid(player) || !IsValid(equipment))
+	if (pickedUp || !IsValid(player) || !IsValid(item))
 		return;
 
 	pickedUp = true;
-	GameInfoUtilities::GetDAGameInstance(this)->GetInventory()->GainEquipment(equipment);
+	GameInfoUtilities::GetDAGameInstance(this)->GetInventory()->GainItem(item);
 }
 
 void AChest::StartedOverlap(UPrimitiveComponent* overlappedComponent, AActor* otherActor,

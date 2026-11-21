@@ -43,7 +43,7 @@ void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
 		musicManager->OnBeat.AddUniqueDynamic(this, &UCombatSystemComponent::DownBeat);
 	}
 
-	comboBar = 1;
+	comboBar = 0;
 	combo = 0;
 	OnComboChange.Broadcast(combo);
 	OnComboBarChange.Broadcast(comboBar);
@@ -176,7 +176,7 @@ bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
 	//Check song position
 	if (beatPosition > preBeatLeniency && beatPosition < 1 - postBeatLeniency)
 	{
-		DepleteBar(beatPosition * depletionMult);
+		//DepleteBar(beatPosition * depletionMult);
 		return false;
 	}
 

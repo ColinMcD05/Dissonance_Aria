@@ -63,6 +63,14 @@ public:
 	void PlayerDeath();
 #pragma endregion
 
+#pragma region Music Minigame
+	UFUNCTION(BlueprintImplementableEvent)
+	void StartMinigame();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void StopMinigame();
+#pragma endregion
+
 	void CanGoBackToLevel();
 
 	void BackToLevel();

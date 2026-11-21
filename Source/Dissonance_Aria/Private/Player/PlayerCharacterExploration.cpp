@@ -38,6 +38,14 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 	{
 		inputComponent->BindAction(GetMove(), ETriggerEvent::Completed, this, &APlayerCharacterExploration::SetNewForward);
 		inputComponent->BindAction(interactInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::Interact);
+
+		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
+
+		if (IsValid(controller))
+		{
+			inputComponent->BindAction(startSongInput, ETriggerEvent::Started, controller, &APlayerControllerBase::StartMinigame);
+			inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, controller, &APlayerControllerBase::StopMinigame);
+		}
 	}
 }
 
