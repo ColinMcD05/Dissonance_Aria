@@ -22,6 +22,15 @@ enum class E_AdditiveType : uint8
 	MultDiv UMETA(DisplayName = "Mult/Div")
 };
 
+UENUM()
+enum class E_ItemType : uint8
+{
+	Equipment UMETA(DisplayName = "Equipment"),
+	Potion UMETA(DisplayName = "Potion"),
+	Song UMETA(DisplayName = "Song"),
+	Tuning UMETA(DisplayName = "Tuning")
+};
+
 USTRUCT(BlueprintType)
 struct FS_StatAffected
 {
@@ -40,7 +49,7 @@ public:
  * 
  */
 UCLASS()
-class DISSONANCE_ARIA_API UPDA_Equipment : public UPrimaryDataAsset
+class DISSONANCE_ARIA_API UPDA_InventoryPiece : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
@@ -50,7 +59,20 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FString> description;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	E_ItemType itemType;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	int amount;
+};
+
+UCLASS()
+class DISSONANCE_ARIA_API UPDA_Equipment : public UPDA_InventoryPiece
+{
+	GENERATED_BODY()
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	TArray<FS_StatAffected> affectedStats;
 };

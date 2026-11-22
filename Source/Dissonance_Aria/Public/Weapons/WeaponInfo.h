@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Music/MusicInfo.h"
 #include "Player/PlayerWalkSpeeds.h"
+#include "Inventory/PDA_Equipment.h"
 #include "Engine/DataAsset.h"
 #include "WeaponInfo.generated.h"
 
@@ -57,14 +58,11 @@ public:
 
 //Struct holding the tuning information
 UCLASS()
-class DISSONANCE_ARIA_API UPDA_Tuning : public UPrimaryDataAsset
+class DISSONANCE_ARIA_API UPDA_Tuning : public UPDA_InventoryPiece
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
-	FString name;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Tunings")
 	E_Genre genre;
 

@@ -3,11 +3,15 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Inventory/InventoryComponent.h"
 #include "Player/PlayerCharacterBase.h"
 #include "Camera/CameraComponent.h"
+#include "Music/SongInfo.h"
 #include "PlayerCharacterExploration.generated.h"
 
 class AFixedCamera;
+
+#define MAX_NOTES 6
 
 /**
  * 
@@ -18,6 +22,10 @@ class DISSONANCE_ARIA_API APlayerCharacterExploration : public APlayerCharacterB
 	GENERATED_BODY()
 	
 private:
+
+#pragma region Components
+	UInventoryComponent* inventory;
+#pragma endregion
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float rotationSpeed = 6;
@@ -32,10 +40,20 @@ private:
 #pragma region Inputs
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
 	UInputAction* interactInput;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* startSongInput;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inputs", meta = (AllowPrivateAccess = "true"))
+	UInputAction* performSongInput;
 #pragma endregion
 
 #pragma region Interaction
 	AActor* interactingActor;
+#pragma endregion
+
+#pragma region Music Minigame
+	TArray<UPDA_Notes*> notes;
 #pragma endregion
 
 protected:
@@ -73,5 +91,16 @@ public:
 
 	//Get the nearest camera
 	//AFixedCamera* FindNearestCamera();
+#pragma endregion
+
+#pragma region Music Minigame
+	void MinigameStarted();
+
+	void MinigameStopped();
+
+	void PerformSong(const FInputActionValue& value);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
+	UPDA_Notes* GetNoteFromInput(int input);
 #pragma endregion
 };
