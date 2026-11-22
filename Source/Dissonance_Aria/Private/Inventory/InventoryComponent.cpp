@@ -178,9 +178,9 @@ void UInventoryComponent::GainSong(UPDA_SongInfo* newSong)
 	foundSongs.AddUnique(newSong);
 }
 
-UPDA_SongInfo*& CompareSong(TArray<UPDA_Notes> notes)
+UPDA_SongInfo* UInventoryComponent::CompareSong(const TArray<UPDA_Notes*>& notes)
 {
-
+	return nullptr;
 }
 #pragma endregion
 

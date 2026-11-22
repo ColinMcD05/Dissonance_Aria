@@ -203,7 +203,7 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 {
 	const int input = value.Get<float>();
 
-	UPDA_Notes*& inputNotes = GetNoteFromInput(input);
+	UPDA_Notes* inputNotes = GetNoteFromInput(input);
 
 	notes.Add(inputNotes);
 

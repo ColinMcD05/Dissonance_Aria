@@ -101,8 +101,6 @@ public:
 	void PerformSong(const FInputActionValue& value);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
-	UPDA_Notes*& GetNoteFromInput(int input);
-
-	
+	UPDA_Notes* GetNoteFromInput(int input);
 #pragma endregion
 };
