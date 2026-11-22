@@ -9,6 +9,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnBPMChange, float, newBPM, float, newSPB);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBeat);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnMeasureStart);
 
 UCLASS()
 class DISSONANCE_ARIA_API AMusicManagerCombat : public AActor
@@ -105,5 +106,8 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnBeat OnBeat;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnMeasureStart OnMeasureStart;
 #pragma endregion
 };

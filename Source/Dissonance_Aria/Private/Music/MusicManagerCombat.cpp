@@ -142,6 +142,13 @@ void AMusicManagerCombat::OnDownBeat(int bar, int beat, int position, float temp
 
 	OnBeat.Broadcast();
 
+	if (beat == 1)
+	{
+		GameInfoUtilities::PrintToScreen("1");
+		OnMeasureStart.Broadcast();
+	}
+
+
 	//Check if bpm changed
 	if (bpm != tempo)
 	{
