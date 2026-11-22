@@ -47,7 +47,7 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 
 		inputComponent->BindAction(startSongInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::MinigameStarted);
 		inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::MinigameStopped);
-		inputComponent->BindAction(performSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::PerformSong);
+		inputComponent->BindAction(performSongInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::PerformSong);
 
 		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
 
@@ -192,22 +192,30 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 void APlayerCharacterExploration::MinigameStarted()
 {
 	notes.Empty();
+	performingMinigame = true;
 }
 
 void APlayerCharacterExploration::MinigameStopped()
 {
+	performingMinigame = false;
 
 }
 
 void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 {
+	if(!performingMinigame)
+		return;
+
 	const int input = value.Get<float>();
 
 	UPDA_Notes* inputNotes = GetNoteFromInput(input);
 
 	notes.Add(inputNotes);
+	GameInfoUtilities::PrintToScreen(inputNotes->note);
+	GameInfoUtilities::PrintToScreen(FString::FromInt(notes.Num()));
 
-	if (notes.Num() + 1 >= MAX_NOTES)
+
+	if (notes.Num() >= MAX_NOTES)
 	{
 		if (IsValid(inventory))
 		{
@@ -216,6 +224,11 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 
 			APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
 			controller->StopMinigame();
+
+			if (IsValid(playedSong))
+				GameInfoUtilities::PrintToScreen(playedSong->name);
+			else
+				GameInfoUtilities::PrintToScreen("None");
 		}
 	}
 }

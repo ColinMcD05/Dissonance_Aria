@@ -53,6 +53,8 @@ private:
 #pragma endregion
 
 #pragma region Music Minigame
+	bool performingMinigame;
+
 	TArray<UPDA_Notes*> notes;
 #pragma endregion
 
