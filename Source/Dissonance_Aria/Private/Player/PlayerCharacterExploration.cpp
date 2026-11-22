@@ -16,6 +16,12 @@ void APlayerCharacterExploration::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UDAGameInstance* instance = GameInfoUtilities::GetDAGameInstance(this);
+
+	if (IsValid(instance))
+	{
+		inventory = instance->GetInventory();
+	}
 
 	bUseControllerRotationYaw = false;
 
@@ -38,6 +44,10 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 	{
 		inputComponent->BindAction(GetMove(), ETriggerEvent::Completed, this, &APlayerCharacterExploration::SetNewForward);
 		inputComponent->BindAction(interactInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::Interact);
+
+		inputComponent->BindAction(startSongInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::MinigameStarted);
+		inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::MinigameStopped);
+		inputComponent->BindAction(performSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::PerformSong);
 
 		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
 
@@ -174,6 +184,39 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 	if (APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController()))
 	{
 		controller->SetCurrentCamera(newCamera);
+	}
+}
+#pragma endregion
+
+#pragma region Music Minigame
+void APlayerCharacterExploration::MinigameStarted()
+{
+	notes.Empty();
+}
+
+void APlayerCharacterExploration::MinigameStopped()
+{
+
+}
+
+void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
+{
+	const int input = value.Get<float>();
+
+	UPDA_Notes*& inputNotes = GetNoteFromInput(input);
+
+	notes.Add(inputNotes);
+
+	if (notes.Num() + 1 >= MAX_NOTES)
+	{
+		if (IsValid(inventory))
+		{
+			UPDA_SongInfo* playedSong = inventory->CompareSong(notes);
+			MinigameStopped();
+
+			APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
+			controller->StopMinigame();
+		}
 	}
 }
 #pragma endregion

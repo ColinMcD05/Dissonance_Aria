@@ -177,6 +177,11 @@ void UInventoryComponent::GainSong(UPDA_SongInfo* newSong)
 {
 	foundSongs.AddUnique(newSong);
 }
+
+UPDA_SongInfo*& CompareSong(TArray<UPDA_Notes> notes)
+{
+
+}
 #pragma endregion
 
 #pragma region Gold

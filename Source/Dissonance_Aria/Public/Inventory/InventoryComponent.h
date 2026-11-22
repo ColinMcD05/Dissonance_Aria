@@ -134,6 +134,8 @@ public:
 
 #pragma region Songs
 	void GainSong(UPDA_SongInfo* newSong);
+
+	UPDA_SongInfo*& CompareSong(TArray<UPDA_Notes*> notes);
 #pragma endregion
 
 #pragma region Delegate
