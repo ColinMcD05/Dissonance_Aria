@@ -5,6 +5,7 @@
 #include "Engine/DataAsset.h"
 #include "CoreMinimal.h"
 #include "Inventory/PDA_Equipment.h"
+#include "FMODEvent.h"
 #include "SongInfo.generated.h"
 
 UCLASS()
@@ -19,6 +20,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notes")
 	UTexture2D* image;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Notes")
+	UFMODEvent* sound;
 };
 
 UCLASS()
