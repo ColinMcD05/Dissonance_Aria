@@ -10,6 +10,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "GameInfo/DAGameInstance.h"
+#include "FMODBlueprintStatics.h"
 #include "Interactable/InteractableInterface.h"
 
 void APlayerCharacterExploration::BeginPlay()
@@ -209,6 +210,9 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 	const int input = value.Get<float>();
 
 	UPDA_Notes* inputNotes = GetNoteFromInput(input);
+
+	if (IsValid(inputNotes) && IsValid(inputNotes->sound))
+		UFMODBlueprintStatics::PlayEvent2D(this, inputNotes->sound, true);
 
 	notes.Add(inputNotes);
 	GameInfoUtilities::PrintToScreen(inputNotes->note);
