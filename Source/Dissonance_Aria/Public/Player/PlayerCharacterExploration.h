@@ -10,6 +10,7 @@
 #include "PlayerCharacterExploration.generated.h"
 
 class AFixedCamera;
+class AFogMinigame;
 
 #define MAX_NOTES 6
 
@@ -56,6 +57,8 @@ private:
 	bool performingMinigame;
 
 	TArray<UPDA_Notes*> notes;
+
+	AFogMinigame* currentMinigame;
 #pragma endregion
 
 protected:
@@ -104,5 +107,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
 	UPDA_Notes* GetNoteFromInput(int input);
+
+	void SetCurrentMinigame(AFogMinigame* newMinigame) { currentMinigame = newMinigame; }
 #pragma endregion
 };

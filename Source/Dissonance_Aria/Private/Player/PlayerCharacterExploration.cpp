@@ -11,6 +11,7 @@
 #include "BasicFunctions/GetGameInfo.h"
 #include "GameInfo/DAGameInstance.h"
 #include "FMODBlueprintStatics.h"
+#include "Level/FogMinigame.h"
 #include "Interactable/InteractableInterface.h"
 
 void APlayerCharacterExploration::BeginPlay()
@@ -224,16 +225,35 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 		if (IsValid(inventory))
 		{
 			UPDA_SongInfo* playedSong = inventory->CompareSong(notes);
-			MinigameStopped();
-
-			APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
-			controller->StopMinigame();
 
 			if (IsValid(playedSong))
+			{
 				GameInfoUtilities::PrintToScreen(playedSong->name);
+				
+				if (IsValid(currentMinigame))
+				{
+					UPDA_SongInfo* minigameSong = currentMinigame->GetAttachedSong();
+
+					if (IsValid(minigameSong))
+					{
+						if (minigameSong->name.Compare(playedSong->name) == 0)
+						{
+							currentMinigame->RemoveFog();
+						}
+					}
+				}
+
+			}
 			else
 				GameInfoUtilities::PrintToScreen("None");
 		}
+
+
+		MinigameStopped();
+
+
+		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
+		controller->StopMinigame();
 	}
 }
 #pragma endregion
