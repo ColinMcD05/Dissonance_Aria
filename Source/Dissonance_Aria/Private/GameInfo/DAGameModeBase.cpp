@@ -33,6 +33,7 @@ void ADAGameModeBase::SwapGameState(E_GameStateType gameStateSwapped)
 		case E_GameStateType::Boss:
 			exploringCharacter->canReadInput = false;
 			LoadBoss();
+			gameStateSwapped = E_GameStateType::Combat;
 			break;
 	}
 	OnGameTypeChange.Broadcast(gameStateSwapped);
