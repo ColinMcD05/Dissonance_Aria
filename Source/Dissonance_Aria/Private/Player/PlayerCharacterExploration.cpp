@@ -218,7 +218,11 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 	if (IsValid(inputNotes) && IsValid(inputNotes->sound))
 		UFMODBlueprintStatics::PlayEvent2D(this, inputNotes->sound, true);
 
-	SendNoteInput(inputNotes);
+	if (IsValid(controller))
+	{
+		controller->SendNoteInput(inputNotes);
+	}
+
 	notes.Add(inputNotes);
 	GameInfoUtilities::PrintToScreen(inputNotes->note);
 	GameInfoUtilities::PrintToScreen(FString::FromInt(notes.Num()));
