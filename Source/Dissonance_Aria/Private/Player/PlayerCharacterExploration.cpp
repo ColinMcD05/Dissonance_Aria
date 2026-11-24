@@ -10,7 +10,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "GameInfo/DAGameInstance.h"
-#include "FMODBlueprintStatics.h"
 #include "Level/FogMinigame.h"
 #include "Interactable/InteractableInterface.h"
 
@@ -224,20 +223,30 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 	}
 
 	notes.Add(inputNotes);
-	GameInfoUtilities::PrintToScreen(inputNotes->note);
-	GameInfoUtilities::PrintToScreen(FString::FromInt(notes.Num()));
-
 
 	if (notes.Num() >= MAX_NOTES)
 	{
+		performingMinigame = false;
+
+		float waitTime = 0.5f;
+
 		if (IsValid(inventory))
 		{
 			UPDA_SongInfo* playedSong = inventory->CompareSong(notes);
 
 			if (IsValid(playedSong))
 			{
-				GameInfoUtilities::PrintToScreen(playedSong->name);
+				if (IsValid(controller))
+				{
+					controller->SendPlayedSong(playedSong);
+				}
 				
+				if (IsValid(playedSong->song))
+				{
+					currentSong = UFMODBlueprintStatics::PlayEvent2D(this, playedSong->song, true);
+					waitTime = playedSong->length + 1;
+				}
+
 				if (IsValid(currentMinigame))
 				{
 					UPDA_SongInfo* minigameSong = currentMinigame->GetAttachedSong();
@@ -252,18 +261,17 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 				}
 
 			}
-			else
-				GameInfoUtilities::PrintToScreen("None");
 		}
 
-
-		MinigameStopped();
-
-
-		if (IsValid(controller))
-		{
-			controller->StopMinigame();
-		}
+		GetWorld()->GetTimerManager().SetTimer(minigameDoneTimer, this, &APlayerCharacterExploration::MinigameDone, waitTime);
 	}
+}
+
+void APlayerCharacterExploration::MinigameDone()
+{
+	UFMODBlueprintStatics::EventInstanceStop(currentSong);
+
+	performingMinigame = true;
+	MinigameStopped();
 }
 #pragma endregion

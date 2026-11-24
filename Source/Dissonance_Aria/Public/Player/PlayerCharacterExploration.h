@@ -7,6 +7,7 @@
 #include "Player/PlayerCharacterBase.h"
 #include "Camera/CameraComponent.h"
 #include "Music/SongInfo.h"
+#include "FMODBlueprintStatics.h"
 #include "PlayerCharacterExploration.generated.h"
 
 class AFixedCamera;
@@ -62,6 +63,10 @@ private:
 	TArray<UPDA_Notes*> notes;
 
 	AFogMinigame* currentMinigame;
+
+	FTimerHandle minigameDoneTimer;
+
+	FFMODEventInstance currentSong;
 #pragma endregion
 
 protected:
@@ -105,6 +110,8 @@ public:
 	void MinigameStarted();
 
 	void MinigameStopped();
+
+	void MinigameDone();
 
 	void PerformSong(const FInputActionValue& value);
 

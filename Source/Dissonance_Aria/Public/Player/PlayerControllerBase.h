@@ -10,6 +10,7 @@
 
 class APlayerCharacterBase;
 class UPDA_Notes;
+class UPDA_SongInfo;
 
 /**
  * 
@@ -78,4 +79,7 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
 	void SendNoteInput(UPDA_Notes* note);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
+	void SendPlayedSong(UPDA_SongInfo* playedSong);
 };
