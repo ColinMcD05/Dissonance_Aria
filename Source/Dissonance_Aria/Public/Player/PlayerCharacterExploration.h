@@ -11,6 +11,7 @@
 
 class AFixedCamera;
 class AFogMinigame;
+class APlayerControllerBase;
 
 #define MAX_NOTES 6
 
@@ -26,6 +27,8 @@ private:
 
 #pragma region Components
 	UInventoryComponent* inventory;
+
+	APlayerControllerBase* controller;
 #pragma endregion
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))

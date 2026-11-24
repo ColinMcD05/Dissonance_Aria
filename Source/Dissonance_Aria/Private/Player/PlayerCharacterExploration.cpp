@@ -51,13 +51,7 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 		inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::MinigameStopped);
 		inputComponent->BindAction(performSongInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::PerformSong);
 
-		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
-
-		if (IsValid(controller))
-		{
-			inputComponent->BindAction(startSongInput, ETriggerEvent::Started, controller, &APlayerControllerBase::StartMinigame);
-			inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, controller, &APlayerControllerBase::StopMinigame);
-		}
+		controller = Cast<APlayerControllerBase>(Controller);
 	}
 }
 
@@ -183,7 +177,7 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 {
 	//Sets the new camera
 	currentCamera = newCamera;
-	if (APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController()))
+	if (IsValid(controller))
 	{
 		controller->SetCurrentCamera(newCamera);
 	}
@@ -193,14 +187,23 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 #pragma region Music Minigame
 void APlayerCharacterExploration::MinigameStarted()
 {
+	if (!canReadInput)
+		return;
+
 	notes.Empty();
 	performingMinigame = true;
+	canReadInput = false;
+	controller->StartMinigame();
 }
 
 void APlayerCharacterExploration::MinigameStopped()
 {
-	performingMinigame = false;
+	if (!performingMinigame)
+		return;
 
+	performingMinigame = false;
+	canReadInput = true;
+	controller->StopMinigame();
 }
 
 void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
@@ -215,6 +218,7 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 	if (IsValid(inputNotes) && IsValid(inputNotes->sound))
 		UFMODBlueprintStatics::PlayEvent2D(this, inputNotes->sound, true);
 
+	SendNoteInput(inputNotes);
 	notes.Add(inputNotes);
 	GameInfoUtilities::PrintToScreen(inputNotes->note);
 	GameInfoUtilities::PrintToScreen(FString::FromInt(notes.Num()));
@@ -252,8 +256,10 @@ void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 		MinigameStopped();
 
 
-		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
-		controller->StopMinigame();
+		if (IsValid(controller))
+		{
+			controller->StopMinigame();
+		}
 	}
 }
 #pragma endregion
