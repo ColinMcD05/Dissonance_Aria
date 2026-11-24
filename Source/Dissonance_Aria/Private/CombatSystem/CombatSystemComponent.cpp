@@ -41,14 +41,14 @@ void UCombatSystemComponent::SetUp(AMusicManagerCombat* music)
 	if (musicManager)
 	{
 		musicManager->OnBeat.AddUniqueDynamic(this, &UCombatSystemComponent::DownBeat);
-		//GameInfoUtilities::PrintToScreen("Got It");
 	}
-	else
-	{
-		//GameInfoUtilities::PrintToScreen("Nope.");
-	}
-}
 
+	comboBar = 0;
+	combo = 0;
+	OnComboChange.Broadcast(combo);
+	OnComboBarChange.Broadcast(comboBar);
+}
+ 
 void UCombatSystemComponent::TearDown()
 {
 	if (musicManager)
@@ -142,6 +142,24 @@ void UCombatSystemComponent::ResetAttackInfo()
 	OnComboChange.Broadcast(0);
 }
 
+void UCombatSystemComponent::ResetOnDamage()
+{
+	OnComboDrop.Broadcast();
+
+	//Sets previous direction to none
+	previousDirection = E_CombatDirections::None;
+
+	//Sets combo to 0
+	combo = 0;
+	OnComboChange.Broadcast(0);
+
+	owner->ableToJump = true;
+
+	passedChargingBeats = 0;
+	isCharging = false;
+	ChangeChargeSuccess(E_ChargeSuccess::None);
+}
+
 //Returns if the player can attack this turn
 bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
 {
@@ -158,7 +176,7 @@ bool UCombatSystemComponent::CheckIfValidAttack(float beatPosition)
 	//Check song position
 	if (beatPosition > preBeatLeniency && beatPosition < 1 - postBeatLeniency)
 	{
-		DepleteBar(beatPosition * depletionMult);
+		//DepleteBar(beatPosition * depletionMult);
 		return false;
 	}
 
@@ -334,7 +352,22 @@ void UCombatSystemComponent::ChangeChargeSuccess(E_ChargeSuccess newSuccess)
 	{
 		canAttack = true;
 		isCharging = false;
+		owner->ableToJump = true;
 	}
+}
+
+bool UCombatSystemComponent::CanUseSpecial(float cost)
+{
+	GameInfoUtilities::PrintToScreen(FString::Format(TEXT("{0}: {1}"), { cost, comboBar }));
+
+	if (cost <= comboBar)
+	{
+		comboBar = FMath::Max(comboBar - cost, 0);
+		OnComboBarChange.Broadcast(comboBar);
+		return true;
+	}
+	else
+		return false;
 }
 #pragma endregion
 

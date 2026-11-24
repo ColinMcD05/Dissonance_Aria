@@ -110,6 +110,11 @@ void UDamageSystemComponent::SetInitialHealth(int newHealth)
 	invincible = false;
 }
 
+void UDamageSystemComponent::MultMaxHealth(float multAmount)
+{
+	SetMaxHealthAndCurrent(maxHealth * multAmount);
+}
+
 void UDamageSystemComponent::IncreaseMaxHealth(int increasedAmount)
 {
 	SetMaxHealthAndCurrent(maxHealth + increasedAmount);
@@ -125,7 +130,7 @@ void UDamageSystemComponent::StartIFrames()
 
 void UDamageSystemComponent::ResetIFrames()
 {
-	GameInfoUtilities::PrintToScreen("Reset");
+	//GameInfoUtilities::PrintToScreen("Reset");
 	invincible = false;
 }
 #pragma endregion

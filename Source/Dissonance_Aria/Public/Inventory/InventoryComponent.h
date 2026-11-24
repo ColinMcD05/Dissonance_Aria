@@ -7,11 +7,12 @@
 #include "Weapons/WeaponInfo.h"
 #include "Saving/SaveInfo.h"
 #include "BasicFunctions/GetGameInfo.h"
+#include "Music/SongInfo.h"
 #include "InventoryComponent.generated.h"
 
 class UPDA_Equipment;
 
-#define MAX_TUNING_AMOUNT 4
+#define MAX_TUNING_AMOUNT 3
 #define MAX_LEVEL 10
 #define MAX_EQUIPMENT 2
 
@@ -31,11 +32,23 @@ private:
 	FS_WeaponInfo weapon;
 #pragma endregion
 
+#pragma region Inventory
+	TArray<UPDA_InventoryPiece*> inventory;
+#pragma endregion
+
 #pragma region Tunings
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TArray<FS_Tuning> equppiedTunings;
+	TArray<UPDA_Tuning*> startingTunings;
 
-	TArray<FS_Tuning> allTunings;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<UPDA_Tuning*> equippedTunings;
+
+	TArray<UPDA_Tuning*> allTunings;
+#pragma endregion
+
+#pragma region Songs
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TArray<UPDA_SongInfo*> foundSongs;
 #pragma endregion
 
 #pragma region Gold
@@ -48,7 +61,7 @@ private:
 	TArray<UPDA_Equipment*> gainedEquipment;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Equipment", meta = (AllowPrivateAccess = "true"))
-	TArray<UPDA_Equipment*> equipedEquipment;
+	TArray<UPDA_Equipment*> equippedEquipment;
 
 	float expMult = 1;
 	float goldMult = 1;
@@ -68,6 +81,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
+#pragma region General/Set up
 	// Sets default values for this component's properties
 	UInventoryComponent();
 
@@ -75,6 +89,16 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void SetupInventory();
+#pragma endregion
+
+#pragma region Inventory
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	TArray<UPDA_InventoryPiece*>& GetInventory() { return inventory; }
+
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void GainItem(UPDA_InventoryPiece* newItem);
+#pragma endregion
+
 #pragma region Weapon and Tunings
 	void UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel);
 
@@ -82,7 +106,9 @@ public:
 
 	FS_WeaponInfo* GetWeapon() { return &weapon; }
 
-	TArray<FS_Tuning>& GetEquippedTunings() { return equppiedTunings; }
+	TArray<UPDA_Tuning*>& GetEquippedTunings() { return equippedTunings; }
+
+	void GainTuning(UPDA_Tuning* newTuning);
 #pragma endregion
 
 #pragma region Levelup
@@ -91,30 +117,25 @@ public:
 	void LevelUp(FS_WeaponInfo* info, int maxLevel);
 #pragma endregion
 
-#pragma region Saving and Loading
-	//Returns an InventorySace struct for saving.
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	FS_InventorySave SaveInventory();
-
-	//Takes an InventorySace struct for loading
-	UFUNCTION(BlueprintCallable, Category = "Inventory")
-	void LoadInventory(const FS_InventorySave& loadedInventory);
-#pragma endregion
-
 #pragma region Equipment
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	TArray<UPDA_Equipment*> GetEquippedEquipment() { return equipedEquipment; }
+	TArray<UPDA_Equipment*>& GetEquippedEquipment() { return equippedEquipment; }
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
-	TArray<UPDA_Equipment*> GetGainedEquipment() { return gainedEquipment; }
+	TArray<UPDA_Equipment*>& GetGainedEquipment() { return gainedEquipment; }
 
-	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	void GainEquipment(UPDA_Equipment* newEquipment);
 
 	UFUNCTION(BlueprintCallable, Category = "Equipment")
 	bool SwapEquipment(UPDA_Equipment* newlyEquipped, UPDA_Equipment* removed);
 
 	void CheckForEquipmentMults();
+#pragma endregion
+
+#pragma region Songs
+	void GainSong(UPDA_SongInfo* newSong);
+
+	UPDA_SongInfo* CompareSong(const TArray<UPDA_Notes*>& notes);
 #pragma endregion
 
 #pragma region Delegate
@@ -140,6 +161,18 @@ public:
 	bool SpendGold(int spendAmount);
 
 	bool CanBuy(int spendAmount);
+#pragma endregion
+
+#pragma region Saving and Loading
+	void ResetInventory();
+
+	//Returns an InventorySace struct for saving.
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	FS_InventorySave SaveInventory();
+
+	//Takes an InventorySace struct for loading
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void LoadInventory(const FS_InventorySave& loadedInventory);
 #pragma endregion
 
 #pragma region Old

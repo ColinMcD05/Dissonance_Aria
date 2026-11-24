@@ -12,3 +12,10 @@ void UDAGameInstance::SetInventory(UInventoryComponent* newInventory)
 {
 	inventory->SetWeapon(newInventory->GetWeapon());
 }
+
+void UDAGameInstance::ResetInfo()
+{
+	lastCamera = nullptr;
+	if (IsValid(inventory))
+		inventory->ResetInventory();
+}

@@ -61,6 +61,7 @@ private:
 
 #pragma region Stat Increase
 	int damageIncrease;
+	float damageMult;
 	float expMult;
 #pragma endregion
 
@@ -116,7 +117,7 @@ public:
 
 #pragma region Weapon Info
 	//Gets the weapon info
-	UFUNCTION(BlueprintCallable, Category = "WeaponData")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "WeaponData")
 	FS_WeaponInfo& GetWeaponInfo() { return weaponInfo; }
 
 	//Sets weapon info
@@ -132,7 +133,7 @@ public:
 	//Gets stats of weapon
 	FS_Stats GetStats() { return stats; }
 
-	void SetDamageIncrease(int newDamageIncrease) { damageIncrease = newDamageIncrease; }
+	void SetDamageIncrease(float newMult, int newDamageIncrease) { damageMult = newMult; damageIncrease = newDamageIncrease; }
 #pragma endregion
 
 #pragma region EndCombat

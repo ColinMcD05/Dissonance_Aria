@@ -3,6 +3,7 @@
 
 #include "Inventory/InventoryComponent.h"
 
+#pragma region General adn Setup
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent()
 {
@@ -28,12 +29,64 @@ void UInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 }
 
+#pragma endregion
+
+void UInventoryComponent::CombatEnd(int gainedExp, int gainedGold)
+{
+	weapon.exp.currentExperience += gainedExp * expMult;
+	LevelUp(&weapon, MAX_LEVEL);
+	AddGold(gainedGold);
+}
+
+#pragma region Inventory
+void UInventoryComponent::GainItem(UPDA_InventoryPiece* newItem)
+{
+	E_ItemType gainedType = newItem->itemType;
+
+	if (inventory.Contains(newItem))
+	{
+		if (gainedType == E_ItemType::Potion)
+		{
+			return;
+		}
+		return;
+	}
+
+	switch (gainedType)
+	{
+	case  E_ItemType::Equipment:
+		if(UPDA_Equipment* newEquipment = Cast<UPDA_Equipment>(newItem))
+			GainEquipment(newEquipment);
+		break;
+	case E_ItemType::Tuning:
+		if (UPDA_Tuning* newTuning = Cast<UPDA_Tuning>(newItem))
+			GainTuning(newTuning);
+		break;
+	case E_ItemType::Song:
+		break;
+	case E_ItemType::Potion:
+		break;
+	}
+}
+#pragma endregion
+
+#pragma region Weapon and Tunings
 void UInventoryComponent::UpdateWeaponInfo(FS_WeaponInfo updatedInfo, int maxLevel)
 {
 	weapon = updatedInfo;
 	LevelUp(&weapon, maxLevel);
 }
 
+void UInventoryComponent::GainTuning(UPDA_Tuning* newTuning)
+{
+	if (equippedTunings.Num() < MAX_TUNING_AMOUNT)
+		equippedTunings.AddUnique(newTuning);
+	else
+		allTunings.AddUnique(newTuning);
+}
+#pragma endregion
+
+#pragma region Level up
 bool UInventoryComponent::CheckLevelUp(FS_WeaponInfo* info, int maxLevel)
 {
 	if (info->level == MAX_LEVEL || info->level >= levelsTable->GetRowNames().Num() || info->level >= maxLevel)
@@ -60,43 +113,36 @@ void UInventoryComponent::LevelUp(FS_WeaponInfo* info, int maxLevel)
 		OnWeaponLevelUp.Broadcast(*info);
 	}
 }
-
-void UInventoryComponent::CombatEnd(int gainedExp, int gainedGold)
-{
-	weapon.exp.currentExperience += gainedExp * expMult;
-	LevelUp(&weapon, MAX_LEVEL);
-	AddGold(gainedGold);
-}
+#pragma endregion
 
 #pragma region Equipment
 void UInventoryComponent::GainEquipment(UPDA_Equipment* newEquipment)
 {
-	if (equipedEquipment.Num() < MAX_EQUIPMENT)
+	if (equippedEquipment.Num() < MAX_EQUIPMENT)
 	{
-		equipedEquipment.Add(newEquipment);
+		equippedEquipment.AddUnique(newEquipment);
 	}
 	else 
-		gainedEquipment.Add(newEquipment);
+		gainedEquipment.AddUnique(newEquipment);
 }
 
 bool UInventoryComponent::SwapEquipment(UPDA_Equipment* newlyEquipped, UPDA_Equipment* removed)
 {
-	if (!equipedEquipment.Contains(removed))
-		return false;
-
-	int i = 0;
-	for (i = 0; i < equipedEquipment.Num(); i++)
+	if (!equippedEquipment.Contains(removed) || !gainedEquipment.Contains(newlyEquipped))
 	{
-		if (equipedEquipment[i] == removed)
-		{
-			break;
-		}
-
-		i++;
+		return false;
 	}
 
+	int i = equippedEquipment.Find(removed);
+
+	if (i == INDEX_NONE)
+	{
+		return false;
+	}
+
+	gainedEquipment.Remove(newlyEquipped);
 	gainedEquipment.Add(removed);
-	equipedEquipment[i] = newlyEquipped;
+	equippedEquipment[i] = newlyEquipped;
 
 	CheckForEquipmentMults();
 	return true;
@@ -107,18 +153,34 @@ void UInventoryComponent::CheckForEquipmentMults()
 	goldMult = 1;
 	expMult = 1;
 
-	for (UPDA_Equipment* equipment : equipedEquipment)
+	for (UPDA_Equipment* equipment : equippedEquipment)
 	{
-		switch (equipment->affectedStat)
+		for (FS_StatAffected stat : equipment->affectedStats)
 		{
+
+			switch (stat.affectedStat)
+			{
 			case E_StatType::Gold:
-				goldMult += equipment->affectedAmount;
+				goldMult *= stat.affectedAmount;
 				break;
 			case E_StatType::Experience:
-				expMult += equipment->affectedAmount;
+				expMult *= stat.affectedAmount;
 				break;
+			}
 		}
 	}
+}
+#pragma endregion
+
+#pragma region Songs
+void UInventoryComponent::GainSong(UPDA_SongInfo* newSong)
+{
+	foundSongs.AddUnique(newSong);
+}
+
+UPDA_SongInfo* UInventoryComponent::CompareSong(const TArray<UPDA_Notes*>& notes)
+{
+	return nullptr;
 }
 #pragma endregion
 
@@ -139,6 +201,28 @@ bool UInventoryComponent::CanBuy(int spendAmount)
 #pragma endregion
 
 #pragma region Save
+void UInventoryComponent::ResetInventory()
+{
+	equippedTunings.Empty();
+	allTunings.Empty();
+
+	for (int i = 0; i < startingTunings.Num(); i++)
+	{
+		if (i < MAX_TUNING_AMOUNT)
+		{
+			equippedTunings.Add(startingTunings[i]);
+		}
+		else
+		{
+			allTunings.Add(startingTunings[i]);
+		}
+	}
+
+	weapon.exp.currentExperience = 0;
+	weapon.exp.storedExperience = 0;
+	weapon.level = 1;
+}
+
 FS_InventorySave UInventoryComponent::SaveInventory()
 {
 	FS_InventorySave newSave;
@@ -148,10 +232,16 @@ FS_InventorySave UInventoryComponent::SaveInventory()
 	weaponSave.experience = weapon.exp;
 	newSave.weapons.Add(weaponSave);
 
+	newSave.inventory = inventory;
+
 	newSave.allTunings = allTunings;
-	newSave.equppiedTunings = equppiedTunings;
+	newSave.equppiedTunings = equippedTunings;
+
 	newSave.gainedEquipment = gainedEquipment;
-	newSave.equipedEquipment = equipedEquipment;
+	newSave.equipedEquipment = equippedEquipment;
+
+	newSave.foundSongs = foundSongs;
+
 	newSave.gold = gold;
 
 	return newSave;
@@ -168,17 +258,23 @@ void UInventoryComponent::LoadInventory(const FS_InventorySave& loadedInventory)
 		break;
 	}
 
+	if (loadedInventory.inventory.Num() != 0)
+		inventory = loadedInventory.inventory;
+
 	if(loadedInventory.allTunings.Num() != 0)
 		allTunings = loadedInventory.allTunings;
 
 	if (loadedInventory.equppiedTunings.Num() != 0)
-		equppiedTunings = loadedInventory.equppiedTunings;
+		equippedTunings = loadedInventory.equppiedTunings;
 
 	if (loadedInventory.gainedEquipment.Num() != 0)
 		gainedEquipment = loadedInventory.gainedEquipment;
 
 	if (loadedInventory.equipedEquipment.Num() != 0)
-		equipedEquipment = loadedInventory.equipedEquipment;
+		equippedEquipment = loadedInventory.equipedEquipment;
+
+	if (loadedInventory.foundSongs.Num() != 0)
+		foundSongs = loadedInventory.foundSongs;
 
 	CheckForEquipmentMults();
 }

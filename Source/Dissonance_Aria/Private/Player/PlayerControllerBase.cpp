@@ -31,6 +31,7 @@ void APlayerControllerBase::BeginPlay()
 
 		FInputModeGameOnly gameOnly;
 		SetInputMode(gameOnly);
+		bShowMouseCursor = false;
 	}
 }
 

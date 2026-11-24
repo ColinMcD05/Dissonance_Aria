@@ -38,11 +38,11 @@ private:
 #pragma region Tunings
 	//Tuning that is always equipped and considered the base weapon
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tunings", meta = (AllowPrivateAccess = "true"))
-	FS_Tuning baseTuning;
+	UPDA_Tuning* baseTuning;
 
-	TArray<FS_Tuning> equippedTunings;
+	TArray<UPDA_Tuning*> equippedTunings;
 
-	FS_Tuning* currentTuning;
+	UPDA_Tuning* currentTuning;
 
 	//Checks for swapping weapons and tunings
 	bool canSwapTuning = false;
@@ -103,6 +103,18 @@ public:
 	int CanTune(int tuning, TArray<E_QTEInput>& qteInputs);
 
 	void GiveTuningInfo();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	UPDA_Tuning* GetCurrentTuning() { return currentTuning; }
+
+	void CopyTunings(UInventoryComponent* inventory);
+#pragma endregion
+
+#pragma region Special
+	float GetSpecialCost();
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	float GetSpecialAttackDamage();
 #pragma endregion
 
 #pragma region Resetters
@@ -127,8 +139,6 @@ public:
 	UPROPERTY(BlueprintCallable, BlueprintAssignable)
 	FOnTuningToleranceChange OnTuningToleranceChange;
 #pragma endregion
-
-	void CopyTunings(UInventoryComponent* inventory);
 
 #pragma region Old
 /*

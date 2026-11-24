@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Weapons/WeaponInfo.h"
 #include "Inventory/PDA_Equipment.h"
+#include "Music/SongInfo.h"
 #include "SaveInfo.generated.h"
 
 //Information about weapons that need to be saved
@@ -35,14 +36,20 @@ public:
 	int gold;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	TArray<FS_Tuning> equppiedTunings;
+	TArray<UPDA_InventoryPiece*> inventory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
-	TArray<FS_Tuning> allTunings;
+	TArray<UPDA_Tuning*> equppiedTunings;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
+	TArray<UPDA_Tuning*> allTunings;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
 	TArray<UPDA_Equipment*> gainedEquipment;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
 	TArray<UPDA_Equipment*> equipedEquipment;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SaveInfo")
+	TArray<UPDA_SongInfo*> foundSongs;
 };

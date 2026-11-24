@@ -9,7 +9,7 @@
 
 class UBoxComponent;
 class UStaticMeshComponent;
-class UPDA_Equipment;
+class UPDA_InventoryPiece;
 
 UCLASS()
 class DISSONANCE_ARIA_API AChest : public AActor, public IInteractableInterface
@@ -26,7 +26,7 @@ private:
 	bool pickedUp = false;
 
 	UPROPERTY(EditAnywhere)
-	UPDA_Equipment* equipment;
+	UPDA_InventoryPiece* item;
 public:	
 	// Sets default values for this actor's properties
 	AChest();

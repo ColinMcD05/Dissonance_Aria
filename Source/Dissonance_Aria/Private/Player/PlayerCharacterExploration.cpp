@@ -16,6 +16,12 @@ void APlayerCharacterExploration::BeginPlay()
 {
 	Super::BeginPlay();
 
+	UDAGameInstance* instance = GameInfoUtilities::GetDAGameInstance(this);
+
+	if (IsValid(instance))
+	{
+		inventory = instance->GetInventory();
+	}
 
 	bUseControllerRotationYaw = false;
 
@@ -38,6 +44,18 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 	{
 		inputComponent->BindAction(GetMove(), ETriggerEvent::Completed, this, &APlayerCharacterExploration::SetNewForward);
 		inputComponent->BindAction(interactInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::Interact);
+
+		inputComponent->BindAction(startSongInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::MinigameStarted);
+		inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::MinigameStopped);
+		inputComponent->BindAction(performSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::PerformSong);
+
+		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
+
+		if (IsValid(controller))
+		{
+			inputComponent->BindAction(startSongInput, ETriggerEvent::Started, controller, &APlayerControllerBase::StartMinigame);
+			inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, controller, &APlayerControllerBase::StopMinigame);
+		}
 	}
 }
 
@@ -104,15 +122,23 @@ void APlayerCharacterExploration::Interact_Implementation()
 	IInteractableInterface::Execute_Interact(interactingActor, this);
 }
 
-void APlayerCharacterExploration::SetInteractingObject(AActor* newInteractingActor)
+void APlayerCharacterExploration::SetInteractingObject(AActor* newInteractingActor, bool leaving)
 {
 	if (!IsValid(newInteractingActor) || !newInteractingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
 	{
 		interactingActor = nullptr;
 
 		GameInfoUtilities::PrintToScreen("None");
+
+		return;
 	}
-	else
+
+	if (newInteractingActor == interactingActor && leaving)
+	{
+		interactingActor = nullptr;
+		GameInfoUtilities::PrintToScreen("None");
+	}
+	else if(!leaving)
 	{
 		interactingActor = newInteractingActor;
 
@@ -158,6 +184,39 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 	if (APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController()))
 	{
 		controller->SetCurrentCamera(newCamera);
+	}
+}
+#pragma endregion
+
+#pragma region Music Minigame
+void APlayerCharacterExploration::MinigameStarted()
+{
+	notes.Empty();
+}
+
+void APlayerCharacterExploration::MinigameStopped()
+{
+
+}
+
+void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
+{
+	const int input = value.Get<float>();
+
+	UPDA_Notes* inputNotes = GetNoteFromInput(input);
+
+	notes.Add(inputNotes);
+
+	if (notes.Num() + 1 >= MAX_NOTES)
+	{
+		if (IsValid(inventory))
+		{
+			UPDA_SongInfo* playedSong = inventory->CompareSong(notes);
+			MinigameStopped();
+
+			APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
+			controller->StopMinigame();
+		}
 	}
 }
 #pragma endregion
