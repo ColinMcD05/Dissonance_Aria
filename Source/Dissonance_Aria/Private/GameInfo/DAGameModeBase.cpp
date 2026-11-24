@@ -5,6 +5,7 @@
 #include "GameInfo/DAGameStateCombat.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "Player/PlayerCharacterBase.h"
+#include "Player/PlayerCharacterExploration.h"
 #include "Player/PlayerControllerBase.h"
 #include "Engine/LevelStreamingDynamic.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,7 +24,9 @@ void ADAGameModeBase::SwapGameState(E_GameStateType gameStateSwapped)
 	switch (gameStateSwapped)
 	{
 		case E_GameStateType::Combat:
+			exploringCharacter->MinigameStopped();
 			exploringCharacter->canReadInput = false;
+			controller->StopMinigame();
 			LoadCombat();
 			break;
 		case E_GameStateType::Exploration:
@@ -47,7 +50,7 @@ void ADAGameModeBase::StartCombat()
 	}
 }
 
-void ADAGameModeBase::SetupExplorerCharacter(APlayerControllerBase* newController, APlayerCharacterBase* newExploringCharacter)
+void ADAGameModeBase::SetupExplorerCharacter(APlayerControllerBase* newController, APlayerCharacterExploration* newExploringCharacter)
 { 
 	controller = newController; 
 	exploringCharacter = newExploringCharacter; 
