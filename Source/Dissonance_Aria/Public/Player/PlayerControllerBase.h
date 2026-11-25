@@ -9,6 +9,8 @@
 #include "PlayerControllerBase.generated.h"
 
 class APlayerCharacterBase;
+class UPDA_Notes;
+class UPDA_SongInfo;
 
 /**
  * 
@@ -74,4 +76,10 @@ public:
 	void CanGoBackToLevel();
 
 	void BackToLevel();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
+	void SendNoteInput(UPDA_Notes* note);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
+	void SendPlayedSong(UPDA_SongInfo* playedSong);
 };
