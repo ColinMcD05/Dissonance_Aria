@@ -69,6 +69,10 @@ private:
 	FFMODEventInstance currentSong;
 #pragma endregion
 
+#pragma region Dialogue
+	bool inDialogue;
+#pragma endregion
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -119,5 +123,10 @@ public:
 	UPDA_Notes* GetNoteFromInput(int input);
 
 	void SetCurrentMinigame(AFogMinigame* newMinigame) { currentMinigame = newMinigame; }
+#pragma endregion
+
+#pragma region Dialogue
+	UFUNCTION(BlueprintCallable, Category = "Dialogue")
+	void SetInDialogue(bool newInDialogue);
 #pragma endregion
 };

@@ -109,6 +109,9 @@ void APlayerCharacterExploration::SetRotation(FVector2D moveVector)
 #pragma region Interact
 void APlayerCharacterExploration::Interact_Implementation()
 {
+	if (!canReadInput && !inDialogue)
+		return;
+
 	if (!IsValid(interactingActor) || !interactingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
 	{
 		return;
@@ -273,5 +276,13 @@ void APlayerCharacterExploration::MinigameDone()
 
 	performingMinigame = true;
 	MinigameStopped();
+}
+#pragma endregion
+
+#pragma region Dialogue
+void APlayerCharacterExploration::SetInDialogue(bool newInDialogue)
+{
+	inDialogue = newInDialogue;
+	canReadInput = !newInDialogue;
 }
 #pragma endregion
