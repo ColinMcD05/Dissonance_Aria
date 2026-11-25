@@ -24,12 +24,13 @@ void ADAGameModeBase::SwapGameState(E_GameStateType gameStateSwapped)
 	switch (gameStateSwapped)
 	{
 		case E_GameStateType::Combat:
-			exploringCharacter->MinigameStopped();
+			GameInfoUtilities::PrintToScreen("Swapping to Combat");
+			exploringCharacter->MinigameDone();
 			exploringCharacter->canReadInput = false;
-			controller->StopMinigame();
 			LoadCombat();
 			break;
 		case E_GameStateType::Exploration:
+			GameInfoUtilities::PrintToScreen("Swapping to Exploration");
 			exploringCharacter->canReadInput = true;
 			LoadExploration();
 			break;
