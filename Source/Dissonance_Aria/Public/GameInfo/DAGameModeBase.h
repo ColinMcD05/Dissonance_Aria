@@ -19,6 +19,7 @@ enum class E_GameStateType : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameTypeChange, E_GameStateType, newState);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueChanged, bool, dialogueActive);
 
 /**
  * 
@@ -87,4 +88,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FGameTypeChange OnGameTypeChange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDialogueChanged OnDialogueChanged;
 };

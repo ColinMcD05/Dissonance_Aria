@@ -10,6 +10,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "GameInfo/DAGameInstance.h"
+#include "GameInfo/DAGameModeBase.h"
 #include "Level/FogMinigame.h"
 #include "Interactable/InteractableInterface.h"
 
@@ -284,5 +285,7 @@ void APlayerCharacterExploration::SetInDialogue(bool newInDialogue)
 {
 	inDialogue = newInDialogue;
 	canReadInput = !newInDialogue;
+
+	GameInfoUtilities::GetDAGameMode<ADAGameModeBase>(this)->OnDialogueChanged.Broadcast(newInDialogue);
 }
 #pragma endregion
