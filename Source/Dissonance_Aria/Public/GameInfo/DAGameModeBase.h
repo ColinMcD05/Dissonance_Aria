@@ -7,7 +7,6 @@
 #include "DAGameModeBase.generated.h"
 
 class APlayerCharacterBase;
-class APlayerCharacterExploration;
 class APlayerControllerBase;
 
 UENUM(BlueprintType)
@@ -19,7 +18,6 @@ enum class E_GameStateType : uint8
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameTypeChange, E_GameStateType, newState);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDialogueChanged, bool, dialogueActive);
 
 /**
  * 
@@ -49,7 +47,7 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	//Explorer Character
-	APlayerCharacterExploration* exploringCharacter;
+	APlayerCharacterBase* exploringCharacter;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	//Combat Character
@@ -84,11 +82,8 @@ public:
 	void SetupCombatCharacter();
 
 	UFUNCTION(BlueprintCallable, Category = "Setup")
-	void SetupExplorerCharacter(APlayerControllerBase* newController, APlayerCharacterExploration* newExploringCharacter);
+	void SetupExplorerCharacter(APlayerControllerBase* newController, APlayerCharacterBase* newExploringCharacter);
 
 	UPROPERTY(BlueprintAssignable)
 	FGameTypeChange OnGameTypeChange;
-
-	UPROPERTY(BlueprintAssignable)
-	FOnDialogueChanged OnDialogueChanged;
 };

@@ -7,12 +7,10 @@
 #include "Player/PlayerCharacterBase.h"
 #include "Camera/CameraComponent.h"
 #include "Music/SongInfo.h"
-#include "FMODBlueprintStatics.h"
 #include "PlayerCharacterExploration.generated.h"
 
 class AFixedCamera;
 class AFogMinigame;
-class APlayerControllerBase;
 
 #define MAX_NOTES 6
 
@@ -28,8 +26,6 @@ private:
 
 #pragma region Components
 	UInventoryComponent* inventory;
-
-	APlayerControllerBase* controller;
 #pragma endregion
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -63,14 +59,6 @@ private:
 	TArray<UPDA_Notes*> notes;
 
 	AFogMinigame* currentMinigame;
-
-	FTimerHandle minigameDoneTimer;
-
-	FFMODEventInstance currentSong;
-#pragma endregion
-
-#pragma region Dialogue
-	bool inDialogue;
 #pragma endregion
 
 protected:
@@ -115,18 +103,11 @@ public:
 
 	void MinigameStopped();
 
-	void MinigameDone();
-
 	void PerformSong(const FInputActionValue& value);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Music Minigame")
 	UPDA_Notes* GetNoteFromInput(int input);
 
 	void SetCurrentMinigame(AFogMinigame* newMinigame) { currentMinigame = newMinigame; }
-#pragma endregion
-
-#pragma region Dialogue
-	UFUNCTION(BlueprintCallable, Category = "Dialogue")
-	void SetInDialogue(bool newInDialogue);
 #pragma endregion
 };

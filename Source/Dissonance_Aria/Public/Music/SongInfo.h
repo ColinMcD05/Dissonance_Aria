@@ -11,13 +11,18 @@
 UENUM(BlueprintType)
 enum class E_NoteTypes : uint8
 {
-	C UMETA(DisplayName = "C"),
+	C UMETA(DisplayName = "C/B#"),
+	Df UMETA(DisplayName = "Db/C#"),
 	D UMETA(DisplayName = "D"),
-	E UMETA(DisplayName = "E"),
-	F UMETA(DisplayName = "F"),
+	Eb UMETA(DisplayName = "Eb/D#"),
+	E UMETA(DisplayName = "E/Fb"),
+	F UMETA(DisplayName = "F/E#"),
+	Gb UMETA(DisplayName = "Gb/F#"),
 	G UMETA(DisplayName = "G"),
+	Ab UMETA(DisplayName = "Ab/G#"),
 	A UMETA(DisplayName = "A"),
-	B UMETA(DisplayName = "B")
+	Bb UMETA(DisplayName = "Bb/A#"),
+	B UMETA(DisplayName = "B/Cb")
 };
 
 UCLASS()
@@ -49,10 +54,4 @@ class DISSONANCE_ARIA_API UPDA_SongInfo : public UPDA_InventoryPiece
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Song")
 	TArray<UPDA_Notes*> notes;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song")
-	UFMODEvent* song;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Song")
-	float length;
 };
