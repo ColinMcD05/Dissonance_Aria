@@ -180,7 +180,26 @@ void UInventoryComponent::GainSong(UPDA_SongInfo* newSong)
 
 UPDA_SongInfo* UInventoryComponent::CompareSong(const TArray<UPDA_Notes*>& notes)
 {
-	return nullptr;
+	UPDA_SongInfo* foundSong = nullptr;
+
+	for (UPDA_SongInfo* song : foundSongs)
+	{
+		if (notes.Num() != song->notes.Num())
+			continue;
+
+		for (int i = 0; i < notes.Num(); i++)
+		{
+			if (song->notes[i]->note.Compare(notes[i]->note, ESearchCase::IgnoreCase) != 0)
+			{
+				break;
+			}
+
+			if (i + 1 >= notes.Num())
+				return song;
+
+		}
+	}
+	return foundSong;
 }
 #pragma endregion
 

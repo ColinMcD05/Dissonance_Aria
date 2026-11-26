@@ -10,6 +10,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "BasicFunctions/GetGameInfo.h"
 #include "GameInfo/DAGameInstance.h"
+#include "GameInfo/DAGameModeBase.h"
+#include "Level/FogMinigame.h"
 #include "Interactable/InteractableInterface.h"
 
 void APlayerCharacterExploration::BeginPlay()
@@ -47,15 +49,9 @@ void APlayerCharacterExploration::SetupPlayerInputComponent(class UInputComponen
 
 		inputComponent->BindAction(startSongInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::MinigameStarted);
 		inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::MinigameStopped);
-		inputComponent->BindAction(performSongInput, ETriggerEvent::Completed, this, &APlayerCharacterExploration::PerformSong);
+		inputComponent->BindAction(performSongInput, ETriggerEvent::Started, this, &APlayerCharacterExploration::PerformSong);
 
-		APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
-
-		if (IsValid(controller))
-		{
-			inputComponent->BindAction(startSongInput, ETriggerEvent::Started, controller, &APlayerControllerBase::StartMinigame);
-			inputComponent->BindAction(startSongInput, ETriggerEvent::Completed, controller, &APlayerControllerBase::StopMinigame);
-		}
+		controller = Cast<APlayerControllerBase>(Controller);
 	}
 }
 
@@ -114,6 +110,9 @@ void APlayerCharacterExploration::SetRotation(FVector2D moveVector)
 #pragma region Interact
 void APlayerCharacterExploration::Interact_Implementation()
 {
+	if (!canReadInput && !inDialogue)
+		return;
+
 	if (!IsValid(interactingActor) || !interactingActor->GetClass()->ImplementsInterface(UInteractableInterface::StaticClass()))
 	{
 		return;
@@ -181,7 +180,7 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 {
 	//Sets the new camera
 	currentCamera = newCamera;
-	if (APlayerControllerBase* controller = Cast<APlayerControllerBase>(GetController()))
+	if (IsValid(controller))
 	{
 		controller->SetCurrentCamera(newCamera);
 	}
@@ -191,32 +190,102 @@ void APlayerCharacterExploration::SetCurrentCamera(UCameraComponent* newCamera)
 #pragma region Music Minigame
 void APlayerCharacterExploration::MinigameStarted()
 {
+	if (!canReadInput)
+		return;
+
 	notes.Empty();
+	performingMinigame = true;
+	canReadInput = false;
+	controller->StartMinigame();
 }
 
 void APlayerCharacterExploration::MinigameStopped()
 {
+	if (!performingMinigame)
+		return;
 
+	performingMinigame = false;
+	canReadInput = true;
+	controller->StopMinigame();
 }
 
 void APlayerCharacterExploration::PerformSong(const FInputActionValue& value)
 {
+	if(!performingMinigame)
+		return;
+
 	const int input = value.Get<float>();
 
 	UPDA_Notes* inputNotes = GetNoteFromInput(input);
 
+	if (IsValid(inputNotes) && IsValid(inputNotes->sound))
+		UFMODBlueprintStatics::PlayEvent2D(this, inputNotes->sound, true);
+
+	if (IsValid(controller))
+	{
+		controller->SendNoteInput(inputNotes);
+	}
+
 	notes.Add(inputNotes);
 
-	if (notes.Num() + 1 >= MAX_NOTES)
+	if (notes.Num() >= MAX_NOTES)
 	{
+		performingMinigame = false;
+
+		float waitTime = 0.5f;
+
 		if (IsValid(inventory))
 		{
 			UPDA_SongInfo* playedSong = inventory->CompareSong(notes);
-			MinigameStopped();
 
-			APlayerControllerBase* controller = Cast<APlayerControllerBase>(Controller);
-			controller->StopMinigame();
+			if (IsValid(playedSong))
+			{
+				if (IsValid(controller))
+				{
+					controller->SendPlayedSong(playedSong);
+				}
+				
+				if (IsValid(playedSong->song))
+				{
+					currentSong = UFMODBlueprintStatics::PlayEvent2D(this, playedSong->song, true);
+					waitTime = playedSong->length + 1;
+				}
+
+				if (IsValid(currentMinigame))
+				{
+					UPDA_SongInfo* minigameSong = currentMinigame->GetAttachedSong();
+
+					if (IsValid(minigameSong))
+					{
+						if (minigameSong->name.Compare(playedSong->name) == 0)
+						{
+							currentMinigame->RemoveFog();
+						}
+					}
+				}
+
+			}
 		}
+
+		GetWorld()->GetTimerManager().SetTimer(minigameDoneTimer, this, &APlayerCharacterExploration::MinigameDone, waitTime);
 	}
+}
+
+void APlayerCharacterExploration::MinigameDone()
+{
+	UFMODBlueprintStatics::EventInstanceStop(currentSong);
+
+	performingMinigame = true;
+	MinigameStopped();
+}
+#pragma endregion
+
+#pragma region Dialogue
+void APlayerCharacterExploration::SetInDialogue(bool newInDialogue)
+{
+	inDialogue = newInDialogue;
+	canReadInput = !newInDialogue;
+
+	GameInfoUtilities::GetDAGameMode<ADAGameModeBase>(this)->OnDialogueChanged.Broadcast(newInDialogue);
 }
 #pragma endregion
