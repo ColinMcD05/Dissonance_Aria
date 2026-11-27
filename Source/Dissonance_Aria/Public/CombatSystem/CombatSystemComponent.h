@@ -47,6 +47,8 @@ private:
 	bool canReadInput = true;
 
 	bool isCharging = false;
+
+	bool canCharge = true;
 #pragma endregion
 
 #pragma region Music
@@ -109,6 +111,8 @@ private:
 	FTimerHandle readInputTimer;
 
 	FTimerHandle chargeFailedTimer;
+
+	FTimerHandle resetChargeTimer;
 #pragma endregion
 
 #pragma region Old
@@ -206,6 +210,10 @@ public:
 	void ChargeFlubbed();
 
 	void ChargeFailed();
+
+	void CancelCharge();
+	
+	void CanChargeAgain() { canCharge = true; }
 
 	UFUNCTION(BlueprintCallable, Category = "Charge")
 	void ChangeChargeSuccess(E_ChargeSuccess newSuccess);

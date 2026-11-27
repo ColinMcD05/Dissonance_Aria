@@ -247,7 +247,7 @@ bool UCombatSystemComponent::StartCharge()
 	//Get how close to beat input was
 	float beatPosition = musicManager->GetHowCloseToBeat();
 
-	if (isCharging || !CheckIfValidAttack(beatPosition))
+	if (isCharging || !CheckIfValidAttack(beatPosition) || !canCharge)
 	{
 		GameInfoUtilities::PrintToScreen("Charging");
 		return false;
@@ -262,6 +262,7 @@ bool UCombatSystemComponent::StartCharge()
 	lastAttackBeat = musicManager->GetFocusedBeat();
 
 	passedChargingBeats = 0;
+	canCharge = false;
 	Charge();
 
 	GameInfoUtilities::PrintToScreen("Started");
@@ -306,6 +307,8 @@ void UCombatSystemComponent::StopCharge()
 		//GameInfoUtilities::PrintToScreen("Good Time");
 		ChargeAttack();
 	}
+
+	GetWorld()->GetTimerManager().SetTimer(resetChargeTimer, this, &UCombatSystemComponent::CanChargeAgain, 0.5f);
 }
 
 void UCombatSystemComponent::ChargeAttack()
@@ -329,6 +332,18 @@ void UCombatSystemComponent::ChargeFailed()
 	ResetAttackInfo();
 
 	ChangeChargeSuccess(E_ChargeSuccess::Failed);
+
+	GetWorld()->GetTimerManager().SetTimer(resetChargeTimer, this, &UCombatSystemComponent::CanChargeAgain, 0.5f);
+}
+
+void UCombatSystemComponent::CancelCharge()
+{
+	if (!isCharging)
+		return;
+
+	isCharging = false;
+	OnChargeSuccessChange.Broadcast(E_ChargeSuccess::None, 0);
+	GetWorld()->GetTimerManager().SetTimer(resetChargeTimer, this, &UCombatSystemComponent::CanChargeAgain, 0.5f);
 }
 
 bool UCombatSystemComponent::GetChargeInfo(int& currentChargeCount)
@@ -415,7 +430,9 @@ void UCombatSystemComponent::SetIsDodging(E_Directions directions)
 
 	if (directions == E_Directions::None)
 	{
-		lastAttackBeat = musicManager->GetFocusedBeat();
+		if(IsValid(musicManager))
+			lastAttackBeat = musicManager->GetFocusedBeat();
+		
 		canAttack = true;
 		owner->ableToJump = true;
 	}
@@ -423,6 +440,7 @@ void UCombatSystemComponent::SetIsDodging(E_Directions directions)
 	{
 		canAttack = false;
 		owner->ableToJump = false;
+		CancelCharge();
 	}
 }
 #pragma endregion

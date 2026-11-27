@@ -254,7 +254,7 @@ void APlayerCharacterCombat::ReadSpecialAttack()
 //Read the side step input
 void APlayerCharacterCombat::ReadSidestep()
 {
-	if (!canReadInput)
+	if (!canReadInput || !canDodge)
 		return;
 
 	if (!IsValid(dodgeComponent) || GetCharacterMovement()->IsFalling())
@@ -478,6 +478,10 @@ void APlayerCharacterCombat::ListenToDodge(E_Directions moveDirection)
 	{
 		canMove = false;
 		dodging = true;
+		if (IsValid(weaponsSystem) && IsValid(weaponsSystem->GetCurrentHeldWeapon()))
+		{
+			weaponsSystem->GetCurrentHeldWeapon()->StopSphereTrace();
+		}
 	}
 }
 #pragma endregion
@@ -505,15 +509,21 @@ void APlayerCharacterCombat::ResetIsCharging()
 void APlayerCharacterCombat::ChargeAttack(E_ChargeSuccess success, int chargeCount)
 {
 	if (IsValid(weaponsSystem) && success == E_ChargeSuccess::Success)
+	{
 		weaponsSystem->GetCurrentHeldWeapon()->StartSphereTrace(true, chargeCount);
+		canDodge = false;
+	}
 	else
+	{
 		ChargeAnimationDone();
+	}
 }
 
 void APlayerCharacterCombat::ChargeAnimationDone()
 {
 	canMove = true;
 	isCharging = false;
+	canDodge = true;
 }
 #pragma endregion
 
