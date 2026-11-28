@@ -54,6 +54,8 @@ private:
 
 #pragma region Attacks
 	bool isCharging = false;
+
+	bool canDodge = true;
 #pragma endregion
 
 

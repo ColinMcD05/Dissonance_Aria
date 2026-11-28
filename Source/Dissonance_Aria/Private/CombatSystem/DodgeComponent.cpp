@@ -138,7 +138,7 @@ void UDodgeComponent::CalculateDodgeDistance(float& distance, FVector tempEndPoi
 	if (hit.bBlockingHit)
 		distance = hit.Distance - 50;
 
-	tempEndPoint.Y = player->GetMesh()->GetSocketLocation("Top").Y;
+	tempEndPoint.Y = player->GetMesh()->GetSocketLocation("Top").Z;
 
 	UKismetSystemLibrary::LineTraceSingle(this, player->GetMesh()->GetSocketLocation("Top"), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
 		false, {}, EDrawDebugTrace::None, hit, true);
@@ -146,7 +146,7 @@ void UDodgeComponent::CalculateDodgeDistance(float& distance, FVector tempEndPoi
 	if (hit.bBlockingHit && distance > hit.Distance)
 		distance = hit.Distance - 50;
 
-	tempEndPoint.Y = player->GetMesh()->GetSocketLocation("Bottom").Y;
+	tempEndPoint.Y = player->GetMesh()->GetSocketLocation("Bottom").Z;
 
 	UKismetSystemLibrary::LineTraceSingle(this, player->GetMesh()->GetSocketLocation("Bottom"), tempEndPoint, UEngineTypes::ConvertToTraceType(ECC_GameTraceChannel5),
 		false, {}, EDrawDebugTrace::None, hit, true);
